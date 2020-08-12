@@ -12,7 +12,7 @@
 using namespace std;
 using namespace sf;
 
-const int SPEED = 1;
+const int SPEED = 5;
 
 int main()
 {
@@ -23,16 +23,24 @@ int main()
 	Environment environment(
 		ENVIRONMENT_SIZE_X / 2, 
 		ENVIRONMENT_SIZE_Y / 2,
-		shared_ptr<Entity>(new Cell(Ration{ 2,1,2 }, Gen({
-			move_left,
-			move_right,
-			move_right,
-			move_left,
+		shared_ptr<Cell>(new Cell(Ration{ 2,1,2 }, Gen({
+			move_top,
+			move_top,
+			furcation,
+			move_top,
+			furcation,
+			move_top,
+			furcation,
+			fotosintesis,
+			furcation,
+			move_top,
 			fotosintesis,
 			move_top,
 			fotosintesis,
 			fotosintesis,
-		})))
+			move_top,
+			move_top,
+		}, 100)))
 	);
 
 	// Главный цикл приложения. Выполняется, пока открыто окно
@@ -70,7 +78,7 @@ int main()
 			window.draw(background_light_level);
 			
 			// update entities in environment
-			vector<EntityState> envdata = environment.UpdateEntities();
+			vector<CellState> envdata = environment.UpdateEntities();
 			// draw all entities
 			for (const auto& entity : envdata)
 			{
@@ -97,7 +105,7 @@ int main()
 		}
 
 		loopback++;
-		if (loopback == 10000 * SPEED)
+		if (loopback == 10000 / SPEED)
 			loopback = 0;
 
 	}

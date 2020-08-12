@@ -111,7 +111,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cell.h" />
-    <ClInclude Include="entity.h" />
     <ClInclude Include="ration.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="gen.h" />

@@ -1,7 +1,7 @@
 #pragma once
 #include "ration.h"
 
-const short CELL_SIZE = 10;
+const short CELL_SIZE = 15;
 
 enum Command
 {
@@ -11,6 +11,7 @@ enum Command
 	move_top,
 	skip,
 	fotosintesis,
+	furcation,  // деление на две
 };
 
 struct ObjectColor

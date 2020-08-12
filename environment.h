@@ -2,14 +2,15 @@
 #include "mineral.h"
 #include "object.h"
 #include "ration.h"
-#include "entity.h"
 #include "cell.h"
 #include <vector>
 #include <map>
 #include <memory>
+#include <algorithm>
+#include <ctime>
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = 800;
+const int ENVIRONMENT_SIZE_X = CELL_SIZE * 80;
 const int ENVIRONMENT_SIZE_Y = CELL_SIZE * 50;
 
 struct Position
@@ -18,15 +19,16 @@ struct Position
 	size_t y;
 };
 
-bool operator < (const Position& lhs, const Position& rhs)
+bool operator == (const Position& lhs, const Position& rhs)
 {
-	return lhs.x < rhs.x && lhs.y < rhs.y;
+	return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
+using CellId = size_t;
 using ObjectId = size_t;
 using PositionId = size_t;
 
-struct EntityState
+struct CellState
 {
 	Position position;
 	ObjectColor color;
@@ -43,112 +45,195 @@ public:
 		abyss	= CELL_SIZE * 4 + CELL_SIZE * 8 + CELL_SIZE * 12,
 	};
 
-	explicit Environment(size_t x, size_t y, shared_ptr<Entity> e)
+	explicit Environment(size_t x, size_t y, shared_ptr<Cell> e)
 	{
 		entities.push_back(e);
 		positions.push_back({ x, y });
-		entities_front_position[positions.end() - 1] = entities.end() - 1;
-		entities_back_position[entities.end() - 1] = positions.end() - 1;
+		entities_front_position[positions.size() - 1] = entities.size() - 1;
+		entities_back_position[entities.size() - 1] = positions.size() - 1;
 	}
 
-	vector<EntityState> UpdateEntities()
+	vector<CellState> UpdateEntities()
 	{
-		vector<EntityState> result;
-		vector<shared_ptr<Entity>>::iterator it = entities.begin();
-		while (it != entities.end())
+		vector<CellState> result;
+		auto it = entities.begin();
+		for (size_t i = 0; i < entities.size(); i++)
 		{
-			auto& entity = *it;
-			Command command = entity->Tic();
-			Event(command, entities_back_position[it]);
+			//auto& entity = entities[i];
+			Command command = entities[i]->Tic();
+			Event(command, entities_back_position[i]);
 						
-			if (entity->Dying())
+			if (entities[i]->Dying())
 			{
-				unsigned short residue = entity->Die();
+				unsigned short residue = entities[i]->Die();
 				if (residue)
 				{
 					materials.push_back(shared_ptr<Object>(new Mineral(residue)));
-					materials_front_position[entities_back_position[it]] = materials.end() - 1;
-					materials_back_position[materials.end() - 1] = entities_back_position[it];
+					materials_front_position[entities_back_position[i]] = materials.size() - 1;
+					materials_back_position[materials.size() - 1] = entities_back_position[i];
 				}
-				entities_front_position.erase(entities_back_position[it]);
-				entities_back_position.erase(it);
+				entities_front_position.erase(entities_back_position[i]);
+				entities_back_position.erase(i);
 				it = entities.erase(it);
+				if(it != entities.end())
+					it++;
 				continue;
 			}
 
-			EntityState stat; 
-			stat.color = entity->Color();
-			stat.position = *(entities_back_position[it]);
+			CellState stat; 
+			stat.color = entities[i]->Color();
+			stat.position = positions[entities_back_position[i]];
 			result.push_back(stat);
-			it++;
 		}
 		return result;
 	}
-	vector<EntityState> UpdateMaterials()
+
+	vector<CellState> UpdateMaterials()
 	{
-		vector<EntityState> result;
-		vector<shared_ptr<Object>>::iterator it = materials.begin();
-		while (it != materials.end())
+		vector<CellState> result;
+		auto it = materials.begin();
+		for (size_t i = 0; i < materials.size(); i++)
 		{
-			auto& entity = *it;
-			Command command = entity->Tic();
-			Event(command, materials_back_position[it]);
+			auto& material = *it;
+			Command command = material->Tic();
+			Event(command, materials_back_position[i]);
 			
-			EntityState stat;
-			stat.color = entity->Color();
-			stat.position = *(materials_back_position[it]);
+			CellState stat;
+			stat.color = material->Color();
+			stat.position = positions[materials_back_position[i]];
 			result.push_back(stat);
 			it++;
 		}
 		return result;
 	}
 private:
-	void Erase(vector<shared_ptr<Entity>>::iterator id)
-	{
-		positions.erase(entities_back_position[id]);
-		entities_front_position.erase(entities_back_position[id]);
-		entities_back_position.erase(id);
-		id = entities.erase(id);
-	}
-	void Erase(vector<shared_ptr<Object>>::iterator id)
-	{
-		positions.erase(materials_back_position[id]);
-		materials_front_position.erase(materials_back_position[id]);
-		materials_back_position.erase(id);
-		id = materials.erase(id);
-	}
 
-	void Event(Command command, vector<Position>::iterator entity)
+	void Event(Command command, PositionId entity)
 	{
 		switch (command)
 		{
 		case skip:
 			break;
 		case move_left:
-			if(entity->x > 0)
-				entity->x -= CELL_SIZE;
+			if (positions[entity].x > 0)
+			{
+				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x - CELL_SIZE, positions[entity].y});
+				if (it == positions.end())
+				{
+					entities[entities_front_position[entity]]->SetViewPoint(view_point::left);
+					positions[entity].x -= CELL_SIZE;
+				}
+			}
 			break;
 		case move_right:
-			if (entity->x < ENVIRONMENT_SIZE_X - 10)
-				entity->x += CELL_SIZE;
+			if (positions[entity].x < ENVIRONMENT_SIZE_X - CELL_SIZE)
+			{
+				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x + CELL_SIZE, positions[entity].y });
+				if (it == positions.end())
+				{
+					entities[entities_front_position[entity]]->SetViewPoint(view_point::right);
+					positions[entity].x += CELL_SIZE;
+				}
+			}
 			break;
 		case move_bottom:
-			if (entity->y < ENVIRONMENT_SIZE_Y - 10)
-				entity->y += CELL_SIZE;
+			if (positions[entity].y < ENVIRONMENT_SIZE_Y - CELL_SIZE)
+			{
+				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x, CELL_SIZE + positions[entity].y });
+				if (it == positions.end())
+				{
+					entities[entities_front_position[entity]]->SetViewPoint(view_point::bottom);
+					positions[entity].y += CELL_SIZE;
+				}
+			}
 			break;
 		case move_top:
-			if (entity->y > 0)
-				entity->y -= CELL_SIZE;
+			if (positions[entity].y > 0)
+			{
+				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x, positions[entity].y - CELL_SIZE });
+				if (it == positions.end())
+				{
+					entities[entities_front_position[entity]]->SetViewPoint(view_point::top);
+					positions[entity].y -= CELL_SIZE;
+				}
+			}
 			break;
 		case fotosintesis:
-			auto& ration = (*entities_front_position[entity])->GetRation();
+		{
+			auto& ration = entities[entities_front_position[entity]]->GetRation();
 			if (ration.fotosintesis > ration.entities && ration.entities < 10)
 			{
-				(*entities_front_position[entity])->Fotosintesis(Fotosintesis(entity->y));
+				entities[entities_front_position[entity]]->Fotosintesis(Fotosintesis(positions[entity].y));
+			}
+		}
+			break;
+		case furcation:
+			if (entities[entities_front_position[entity]]->AccEnergy() >= 200)
+			{
+				view_point vpoint = entities[entities_front_position[entity]]->GetViewPoint();
+				view_point new_vpoint = vpoint;
+				bool isSuccess = false;
+				for (int i = -1; i < 4; i++)
+				{
+					if (i != -1)
+						vpoint = static_cast<view_point>(i);
+
+					Position position{ positions[entity].x, positions[entity].y };
+					if (vpoint == view_point::bottom)
+					{
+						if (positions[entity].y < ENVIRONMENT_SIZE_Y - CELL_SIZE)
+						{
+							new_vpoint = view_point::bottom;
+							position.y += CELL_SIZE;
+						}
+					}
+					if (vpoint == view_point::top)
+					{
+						if (position.y > 0)
+						{
+							new_vpoint = view_point::top;
+							position.y -= CELL_SIZE;
+						}
+					}
+					if (vpoint == view_point::left)
+					{
+						if (positions[entity].x > 0)
+						{
+							new_vpoint = view_point::left;
+							position.x -= CELL_SIZE;
+						}
+					}
+					if (vpoint == view_point::right)
+					{
+						if (positions[entity].x < ENVIRONMENT_SIZE_X - CELL_SIZE)
+						{
+							new_vpoint = view_point::right;
+							position.x += CELL_SIZE;
+						}
+					}
+					auto it = find(positions.begin(), positions.end(), position);
+					if (positions.end() == it)
+					{
+						auto new_cell = entities[entities_front_position[entity]]->Furcation();
+						entities.push_back(new_cell);
+						positions.push_back(position);
+						entities_front_position[positions.size() - 1] = entities.size() - 1;
+						entities_back_position[entities.size() - 1] = positions.size() - 1;
+						isSuccess = true;
+						entities[entities_front_position[positions.size() - 1]]->SetViewPoint(new_vpoint);
+						entities[entities_front_position[entity]]->SetViewPoint(new_vpoint);
+						break;
+					}
+				}
+				if (isSuccess)
+				{
+					entities[entities_front_position[entity]]->DecreaceAccEnergy(200);
+				}
 			}
 			break;
 		}
 	}
+
 	unsigned short Fotosintesis(size_t y)
 	{
 		if (y < light_level::surface)
@@ -175,11 +260,11 @@ private:
 
 	vector<Position> positions;
 	
-	vector<shared_ptr<Entity>> entities;
-	map<vector<Position>::iterator, vector<shared_ptr<Entity>>::iterator> entities_front_position;
-	map<vector<shared_ptr<Entity>>::iterator, vector<Position>::iterator> entities_back_position;
+	vector<shared_ptr<Cell>> entities;
+	map<PositionId, CellId> entities_front_position;
+	map<CellId, PositionId> entities_back_position;
 
 	vector<shared_ptr<Object>> materials;
-	map<vector<Position>::iterator, vector<shared_ptr<Object>>::iterator> materials_front_position;
-	map<vector<shared_ptr<Object>>::iterator, vector<Position>::iterator> materials_back_position;
+	map<ObjectId, PositionId> materials_front_position;
+	map<PositionId, ObjectId> materials_back_position;
 };

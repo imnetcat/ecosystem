@@ -4,8 +4,14 @@
 class Gen
 {
 public:
-	explicit Gen(std::array<Command, 8> d) : data(d) {};
-	std::array<Command, 8> data;
+	static const size_t length = 16;
+	static const size_t commands = 6;
+	explicit Gen(std::array<Command, length> d, size_t mh, size_t g = 1)
+		: generation(g), mutationChance(mh), data(d) {};
+
+	size_t generation;
+	size_t mutationChance;
+	std::array<Command, length> data;
 
 	Command Read()
 	{
@@ -18,6 +24,7 @@ public:
 			return data[index++];
 	}
 private:
+
 	// указатель текущей команды
 	size_t index = 0;
 };

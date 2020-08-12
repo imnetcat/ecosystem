@@ -26,9 +26,6 @@
     <ClInclude Include="environment.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="entity.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="gen.h">
       <Filter>Source Files</Filter>
     </ClInclude>

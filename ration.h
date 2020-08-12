@@ -1,8 +1,8 @@
 #pragma once
 
-enum Ration
+struct Ration
 {
-	minerals,			// червь
-	entities,			// хищник
-	fotosintesis		// фотосинтезатор
+	unsigned short minerals = 1;
+	unsigned short entities = 1;
+	unsigned short fotosintesis = 1;
 };

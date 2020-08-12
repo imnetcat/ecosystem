@@ -1,4 +1,5 @@
 #pragma once
+#include "ration.h"
 
 const short CELL_SIZE = 10;
 
@@ -9,6 +10,7 @@ enum Command
 	move_bottom,
 	move_top,
 	skip,
+	fotosintesis,
 };
 
 struct ObjectColor
@@ -21,8 +23,7 @@ struct ObjectColor
 
 struct Object
 {
+	virtual void IncreaceEnergy(unsigned short value) = 0;
 	virtual Command Tic() = 0;
 	virtual ObjectColor Color() = 0;
-	virtual unsigned short Die() = 0;
-	virtual bool Dying() = 0;
 };

@@ -7,7 +7,13 @@ struct Mineral : Object
 
 	ObjectColor Color() override
 	{
-		return { 0, 71, 181 };
+		return { 0, 227, 208 };
+	}
+
+
+	void IncreaceEnergy(unsigned short value) override
+	{
+		energy += value;
 	}
 
 	Command Tic() override
@@ -15,13 +21,5 @@ struct Mineral : Object
 		return move_bottom;
 	}
 
-	unsigned short Die() override
-	{
-		return 0;
-	}
-	bool Dying() override
-	{
-		return false;
-	}
 	unsigned short energy = 100;
 };

@@ -9,22 +9,32 @@
 
 using namespace sf;
 
+const int SPEED = 1;
+
 int main()
 {
+	int loopback = 0;
 	// Объект, который, собственно, является главным окном приложения
-	RenderWindow window(VideoMode(800, 500), "Ecosystem");
-	sf::RectangleShape background(sf::Vector2f(120.f, 50.f));
-	background.setPosition(10.f, 50.f);
-	background.setFillColor(sf::Color(150, 199, 255));
-	background.setSize(sf::Vector2f(100.f, 100.f));
-	
-	Environment environment(new Cell(Gen({0,1,2,5,3,5,18,6})));
+	RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X, ENVIRONMENT_SIZE_Y), "Ecosystem");
+
+	Environment environment(
+		ENVIRONMENT_SIZE_X / 2, 
+		ENVIRONMENT_SIZE_Y / 2,
+		shared_ptr<Object>(new Cell(fotosintesis, Gen({
+			move_left,
+			move_left,
+			skip,
+			move_top,
+			move_top,
+			move_top,
+			move_top,
+			move_top,
+		})))
+	);
 
 	// Главный цикл приложения. Выполняется, пока открыто окно
 	while (window.isOpen())
 	{
-		environment.Update();
-
 		// Обрабатываем очередь событий в цикле
 		Event event;
 		while (window.pollEvent(event))
@@ -35,14 +45,32 @@ int main()
 				window.close();
 		}
 
-		// clear the window with black color
-		window.clear(sf::Color::Black);
 
-		// draw everything here...
-		window.draw(background);
+		if (!loopback)
+		{
+			// clear the window and draw background with background color
+			window.clear(sf::Color(156, 195, 255));
 
-		// Отрисовка окна	
-		window.display();
+			// update environment
+			vector<EntityState> envdata = environment.Update();
+			// draw all entities
+			for (const auto& entity : envdata)
+			{
+				sf::RectangleShape entity_sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+				entity_sprite.setPosition(entity.position.x, entity.position.y);
+				entity_sprite.setFillColor({ entity.color.r, entity.color.g, entity.color.b });
+
+				window.draw(entity_sprite);
+			}
+
+			// Отрисовка окна	
+			window.display();
+		}
+
+		loopback++;
+		if (loopback == 10000 * SPEED)
+			loopback = 0;
+
 	}
 
 	return 0;

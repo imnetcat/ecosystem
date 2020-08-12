@@ -32,5 +32,14 @@
     <ClInclude Include="gen.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="mineral.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ration.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

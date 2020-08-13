@@ -13,8 +13,8 @@
 #include <array>
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = 16;
-const int ENVIRONMENT_SIZE_Y = 12;
+const int ENVIRONMENT_SIZE_X = 36;
+const int ENVIRONMENT_SIZE_Y = 16;
 
 struct Position
 {
@@ -38,6 +38,7 @@ struct Stat
 {
 	Position position;
 	RGBColor color;
+	bool outline;
 };
 
 struct LightSource
@@ -106,6 +107,7 @@ public:
 
 				Stat stat;
 				stat.color = terrain[y][x]->Color();
+				stat.outline = terrain[y][x]->Outline();
 				stat.position = { x * CELL_OUTLINE, y * CELL_OUTLINE };
 				result.push_back(stat);
 			}
@@ -119,6 +121,24 @@ private:
 		switch (command)
 		{
 		case skip:
+			break;
+		case gravity:
+			if (y < ENVIRONMENT_SIZE_Y - 1)
+			{
+				if (terrain[y + 1][x]->IsWalkable())
+				{
+					if (terrain[y + 1][x]->IsContainsEntity())
+					{
+						terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y][x]->DelEntity();
+					}
+					if (terrain[y + 1][x]->IsContainsStruct())
+					{
+						terrain[y + 1][x]->SetStruct(terrain[y][x]->GetStruct());
+						terrain[y][x]->DelStruct();
+					}
+				}
+			}
 			break;
 		case die:
 			terrain[y][x]->SetStruct(shared_ptr<Structure>(new Mineral(100)));
@@ -226,7 +246,4 @@ private:
 		return koef * light_level;
 	}
 	std::array<std::array<shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> terrain;
-	//std::array<std::array<shared_ptr<Entity>,ENVIRONMENT_SIZE_Y>, ENVIRONMENT_SIZE_X> environmet_entities;
-	//std::array<std::array<shared_ptr<Resource>, ENVIRONMENT_SIZE_Y>, ENVIRONMENT_SIZE_X> environmet_resources;
-	//std::array<std::array<shared_ptr<Structure>, ENVIRONMENT_SIZE_Y>, ENVIRONMENT_SIZE_X> terrain;
 };

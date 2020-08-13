@@ -87,7 +87,14 @@ int main()
 				entity_sprite.setPosition(entity.position.x, entity.position.y);
 				entity_sprite.setFillColor({ entity.color.r, entity.color.g, entity.color.b });
 				entity_sprite.setOutlineThickness(OUTLINE);
-				entity_sprite.setOutlineColor(sf::Color(0,0,0));
+				if (entity.outline)
+				{
+					entity_sprite.setOutlineColor(sf::Color(0,0,0));
+				}
+				else
+				{
+					entity_sprite.setOutlineColor(sf::Color(entity.color.r, entity.color.g, entity.color.b));
+				}
 
 				window.draw(entity_sprite);
 			}

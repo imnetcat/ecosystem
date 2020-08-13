@@ -6,6 +6,7 @@ const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 
 enum Command
 {
+	gravity,
 	die,
 	move_left,
 	move_right,
@@ -28,4 +29,5 @@ struct Object
 {
 	virtual void Tic(std::vector<Command>& commands) = 0;
 	virtual RGBColor Color() = 0;
+	virtual bool Outline() = 0;
 };

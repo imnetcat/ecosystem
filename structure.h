@@ -43,12 +43,12 @@ public:
 
 	void Tic(std::vector<Command>& commands) override
 	{
+		if (gravityOn)
+			commands.push_back(gravity);
 		if(contains_struct)
 			structure->Tic(commands);
 		if (contains_entity)
 			entity->Tic(commands);
-		if (gravityOn)
-			commands.push_back(move_bottom);
 	}
 
 	bool isEatable()
@@ -62,6 +62,16 @@ public:
 	void SetLightLevel(unsigned short lv)
 	{
 		light_level = lv;
+	}
+
+	bool Outline() override
+	{
+		if (contains_entity)
+			return entity->Outline();
+		if (contains_struct)
+			return structure->Outline();
+
+		return false;
 	}
 
 	void SetStruct(std::shared_ptr<Structure> obj)
@@ -108,7 +118,7 @@ public:
 		return walkable;
 	}
 
-	bool IsContainsObject()
+	bool IsContainsStruct()
 	{
 		return contains_struct;
 	}

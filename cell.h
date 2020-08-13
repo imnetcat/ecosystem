@@ -146,4 +146,9 @@ public:
 
 		IncreaceEnergy(value);
 	}
+
+	bool Outline() override
+	{
+		return true;
+	}
 };

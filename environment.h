@@ -13,8 +13,8 @@
 #include <array>
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = 36;
-const int ENVIRONMENT_SIZE_Y = 16;
+const int ENVIRONMENT_SIZE_X = 20;
+const int ENVIRONMENT_SIZE_Y = 60;
 
 struct Position
 {
@@ -27,9 +27,6 @@ bool operator == (const Position& lhs, const Position& rhs)
 	return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
-
-#define NAC shared_ptr<Cell>(nullptr) // Not A Cell
-#define NAM shared_ptr<Resource>(nullptr) // Not A Material
 using CellId = size_t;
 using ObjectId = size_t;
 using PositionId = size_t;
@@ -39,6 +36,7 @@ struct Stat
 	Position position;
 	RGBColor color;
 	bool outline;
+	unsigned char shadow;
 };
 
 struct LightSource
@@ -83,7 +81,7 @@ public:
 				}
 				else
 				{
-					terrain[y][x] = shared_ptr<Structure>(new Water(0));
+					terrain[y][x] = shared_ptr<Structure>(new Water(5));
 				}
 			}
 		}
@@ -114,6 +112,7 @@ public:
 				Stat stat;
 				stat.color = terrain[y][x]->Color();
 				stat.outline = terrain[y][x]->Outline();
+				stat.shadow = Shadow(y, x);
 				stat.position = { x * CELL_OUTLINE, y * CELL_OUTLINE };
 				result.push_back(stat);
 			}
@@ -121,6 +120,11 @@ public:
 		return result;
 	}
 private:
+
+	unsigned char Shadow(size_t y, size_t x)
+	{
+		return 255;
+	}
 
 	void Event(const Command& command, const size_t& x, const size_t& y)
 	{
@@ -133,11 +137,6 @@ private:
 			{
 				if (terrain[y + 1][x]->IsWalkable())
 				{
-					if (terrain[y][x]->IsContainsEntity())
-					{
-						terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y][x]->DelEntity();
-					}
 					if (terrain[y][x]->IsContainsStruct())
 					{
 						terrain[y + 1][x]->SetStruct(terrain[y][x]->GetStruct());

@@ -6,11 +6,13 @@ class Entity : public Object
 {
 protected:
 	Ration ration;
-	unsigned short hp ;
+	unsigned short age;
+	unsigned short hp;
 	unsigned short energy;
 	unsigned int accumulated_energy;
 public:
 	Entity(Ration r, unsigned short h, unsigned short e) :
+		age(0),
 		hp(h),
 		energy(e),
 		accumulated_energy(0),

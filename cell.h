@@ -126,8 +126,9 @@ public:
 	
 	void Tic(std::vector<Command>& commands) override
 	{
-		DecreaceEnergy(25);
-		if (!hp)
+		age++;
+		DecreaceEnergy(ENERGY_PER_TIC);
+		if (!hp || age == MAX_CELL_AGE)
 			commands.push_back(die);
 		else
 			commands.push_back(genom.Read());

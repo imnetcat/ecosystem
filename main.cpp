@@ -81,22 +81,28 @@ int main()
 			// update environment
 			auto envdata = environment.Update();
 			// draw all entities
-			for (const auto& entity : envdata)
+			for (const auto& object : envdata)
 			{
-				sf::RectangleShape entity_sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-				entity_sprite.setPosition(entity.position.x, entity.position.y);
-				entity_sprite.setFillColor({ entity.color.r, entity.color.g, entity.color.b });
-				entity_sprite.setOutlineThickness(OUTLINE);
-				if (entity.outline)
+				sf::RectangleShape sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+				sprite.setPosition(object.position.x, object.position.y);
+				sprite.setFillColor({ object.color.r, object.color.g, object.color.b });
+				sprite.setOutlineThickness(OUTLINE);
+				if (object.outline)
 				{
-					entity_sprite.setOutlineColor(sf::Color(0,0,0));
+					sprite.setOutlineColor(sf::Color(0,0,0));
 				}
 				else
 				{
-					entity_sprite.setOutlineColor(sf::Color(entity.color.r, entity.color.g, entity.color.b));
+					sprite.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b));
 				}
 
-				window.draw(entity_sprite);
+				window.draw(sprite);
+
+				// shadow
+				//sprite.setFillColor({ 0, 0, 0, object.shadow });
+				//sprite.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b, 0));
+
+				//window.draw(sprite);
 			}
 
 			// Отрисовка окна	
@@ -104,7 +110,7 @@ int main()
 		}
 
 		loopback++;
-		if (loopback == 100000 / SPEED)
+		if (loopback == 10000 / SPEED)
 			loopback = 0;
 
 	}

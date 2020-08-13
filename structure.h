@@ -86,7 +86,7 @@ public:
 
 		return false;
 	}
-
+	
 	void SetStruct(std::shared_ptr<Structure> obj)
 	{
 		structure = obj;

@@ -4,6 +4,9 @@ const short OUTLINE = 1;
 const short CELL_SIZE = 15;
 const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 
+const unsigned int MAX_CELL_AGE = 50; // в тиках
+const unsigned short ENERGY_PER_TIC = 5; // в тиках
+
 enum Command
 {
 	gravity,

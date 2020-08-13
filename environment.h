@@ -79,11 +79,11 @@ public:
 				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
 					(y == ENVIRONMENT_SIZE_Y - 1))
 				{
-					terrain[y][x] = shared_ptr<Structure>(new Glass(5));
+					terrain[y][x] = shared_ptr<Structure>(new Glass(1));
 				}
 				else
 				{
-					terrain[y][x] = shared_ptr<Structure>(new Water(5));
+					terrain[y][x] = shared_ptr<Structure>(new Water(0));
 				}
 			}
 		}
@@ -104,7 +104,13 @@ public:
 				{
 					Event(command, x, y);
 				}
-
+			}
+		}
+		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
+		{
+			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
+			{
+				terrain[y][x]->Untick();
 				Stat stat;
 				stat.color = terrain[y][x]->Color();
 				stat.outline = terrain[y][x]->Outline();
@@ -116,23 +122,23 @@ public:
 	}
 private:
 
-	void Event(Command command, size_t x, size_t y)
+	void Event(const Command& command, const size_t& x, const size_t& y)
 	{
 		switch (command)
 		{
 		case skip:
 			break;
 		case gravity:
-			if (y < ENVIRONMENT_SIZE_Y - 1)
+			if (y < ENVIRONMENT_SIZE_Y)
 			{
 				if (terrain[y + 1][x]->IsWalkable())
 				{
-					if (terrain[y + 1][x]->IsContainsEntity())
+					if (terrain[y][x]->IsContainsEntity())
 					{
 						terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
 						terrain[y][x]->DelEntity();
 					}
-					if (terrain[y + 1][x]->IsContainsStruct())
+					if (terrain[y][x]->IsContainsStruct())
 					{
 						terrain[y + 1][x]->SetStruct(terrain[y][x]->GetStruct());
 						terrain[y][x]->DelStruct();
@@ -155,7 +161,7 @@ private:
 			}
 			break;
 		case move_right:
-			if (x < ENVIRONMENT_SIZE_X - 1)
+			if (x < ENVIRONMENT_SIZE_X)
 			{
 				if (terrain[y][x + 1]->IsWalkable())
 				{
@@ -165,7 +171,7 @@ private:
 			}
 			break;
 		case move_bottom:
-			if (y < ENVIRONMENT_SIZE_Y - 1)
+			if (y < ENVIRONMENT_SIZE_Y)
 			{
 				if (terrain[y + 1][x]->IsWalkable())
 				{
@@ -189,7 +195,7 @@ private:
 			const auto& ration = terrain[y][x]->GetEntity()->GetRation();
 			if (ration.fotosintesis > ration.entities && ration.entities < 10)
 			{
-				terrain[y][x]->GetEntity()->Fotosintesis(Fotosintesis(y));
+				terrain[y][x]->GetEntity()->Fotosintesis(Fotosintesis(terrain[y][x]->GetLightLevel()));
 			}
 		}
 			break;
@@ -202,7 +208,7 @@ private:
 					Position new_position{ x, y };
 					if (i == 0)
 					{
-						if (y < ENVIRONMENT_SIZE_Y - 1)
+						if (y < ENVIRONMENT_SIZE_Y)
 						{
 							new_position.y++;
 						}
@@ -223,7 +229,7 @@ private:
 					}
 					else if (i == 3)
 					{
-						if (x < ENVIRONMENT_SIZE_X - 1)
+						if (x < ENVIRONMENT_SIZE_X)
 						{
 							new_position.x++;
 						}

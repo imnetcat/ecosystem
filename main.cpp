@@ -12,7 +12,7 @@
 using namespace std;
 using namespace sf;
 
-const int SPEED = 5;
+const int SPEED = 1;
 
 int main()
 {
@@ -104,7 +104,7 @@ int main()
 		}
 
 		loopback++;
-		if (loopback == 10000 / SPEED)
+		if (loopback == 100000 / SPEED)
 			loopback = 0;
 
 	}

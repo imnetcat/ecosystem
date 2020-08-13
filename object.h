@@ -24,7 +24,6 @@ struct RGBColor
 	unsigned char b = 0;
 };
 
-
 struct Object
 {
 	virtual void Tic(std::vector<Command>& commands) = 0;

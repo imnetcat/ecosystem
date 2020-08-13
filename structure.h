@@ -6,6 +6,7 @@
 class Structure : public Object
 {
 protected:
+	bool ticed;
 	bool gravityOn;
 	RGBColor color;
 	const bool eatable;
@@ -19,6 +20,7 @@ protected:
 	bool contains_entity;
 public:
 	Structure(RGBColor c, bool g, bool w, bool ea, unsigned short lv, float tr) :
+		ticed(false),
 		gravityOn(g),
 		color(c),
 		eatable(ea),
@@ -28,7 +30,14 @@ public:
 		default_walkable(walkable),
 		contains_struct(false),
 		contains_entity(false)
-	{}
+	{ }
+
+	void Untick()
+	{
+		ticed = false;
+		if (contains_struct)
+			structure->Untick();
+	}
 
 	RGBColor Color() override
 	{
@@ -43,12 +52,16 @@ public:
 
 	void Tic(std::vector<Command>& commands) override
 	{
+		if (ticed)
+			return;
+
 		if (gravityOn)
 			commands.push_back(gravity);
 		if(contains_struct)
 			structure->Tic(commands);
 		if (contains_entity)
 			entity->Tic(commands);
+		ticed = true;
 	}
 
 	bool isEatable()

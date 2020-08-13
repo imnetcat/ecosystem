@@ -23,8 +23,6 @@ public:
 
 	virtual void Fotosintesis(unsigned short value) = 0;
 	virtual std::shared_ptr<Entity> Furcation() = 0;
-	virtual unsigned short Die() const = 0;
-	virtual bool Dying() const = 0;
 
 	RGBColor Color() override
 	{

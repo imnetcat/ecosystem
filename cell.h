@@ -123,20 +123,14 @@ public:
 			Gen(new_genom, newMutationChance, genom.generation + 1)
 		));
 	}
-
-	unsigned short Die() const override
-	{
-		return accumulated_energy + 100;
-	}
-	bool Dying() const override
-	{
-		return !hp;
-	}
-
+	
 	void Tic(std::vector<Command>& commands) override
 	{
-		DecreaceEnergy(1);
-		commands.push_back(genom.Read());
+		DecreaceEnergy(25);
+		if (!hp)
+			commands.push_back(die);
+		else
+			commands.push_back(genom.Read());
 	}
 
 	void Fotosintesis(unsigned short value) override

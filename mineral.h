@@ -1,25 +1,10 @@
 #pragma once
-#include "object.h"
+#include "structure.h"
 
-struct Mineral : Object
+struct Mineral : Structure
 {
-	Mineral(unsigned short e) : energy(e) {}
+	Mineral(unsigned short e) 
+		: Structure({ 0, 227, 208 }, true, true, true, 0, 1.0), energy(e)  {}
 
-	ObjectColor Color() override
-	{
-		return { 0, 227, 208 };
-	}
-
-
-	void IncreaceEnergy(unsigned short value) override
-	{
-		energy += value;
-	}
-
-	Command Tic() override
-	{
-		return move_bottom;
-	}
-
-	unsigned short energy = 100;
+	unsigned short energy;
 };

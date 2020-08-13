@@ -1,12 +1,12 @@
 #pragma once
-#include "ration.h"
-
+#include <vector>
 const short OUTLINE = 1;
 const short CELL_SIZE = 15;
 const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 
 enum Command
 {
+	die,
 	move_left,
 	move_right,
 	move_bottom,
@@ -16,7 +16,7 @@ enum Command
 	furcation,  // деление на две
 };
 
-struct ObjectColor
+struct RGBColor
 {
 	unsigned char r = 0;
 	unsigned char g = 0;
@@ -26,7 +26,6 @@ struct ObjectColor
 
 struct Object
 {
-	virtual void IncreaceEnergy(unsigned short value) = 0;
-	virtual Command Tic() = 0;
-	virtual ObjectColor Color() = 0;
+	virtual void Tic(std::vector<Command>& commands) = 0;
+	virtual RGBColor Color() = 0;
 };

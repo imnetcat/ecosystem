@@ -1,17 +1,20 @@
 #pragma once
 #include "mineral.h"
-#include "object.h"
+#include "structure.h"
 #include "ration.h"
 #include "cell.h"
+#include "glass.h"
+#include "water.h"
 #include <vector>
 #include <map>
 #include <memory>
 #include <algorithm>
 #include <ctime>
+#include <array>
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = CELL_OUTLINE * 8;
-const int ENVIRONMENT_SIZE_Y = CELL_OUTLINE * 6;
+const int ENVIRONMENT_SIZE_X = 16;
+const int ENVIRONMENT_SIZE_Y = 12;
 
 struct Position
 {
@@ -24,251 +27,206 @@ bool operator == (const Position& lhs, const Position& rhs)
 	return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
+
+#define NAC shared_ptr<Cell>(nullptr) // Not A Cell
+#define NAM shared_ptr<Resource>(nullptr) // Not A Material
 using CellId = size_t;
 using ObjectId = size_t;
 using PositionId = size_t;
 
-struct CellState
+struct Stat
 {
 	Position position;
-	ObjectColor color;
+	RGBColor color;
 };
 
-class Environment
+struct LightSource
+{
+	Position position;
+	size_t power;
+};
+class Light
 {
 public:
 	enum light_level
 	{
 		//surface = CELL_OUTLINE * 4,
-		//shallow = CELL_OUTLINE * 4 + CELL_OUTLINE * 8,
-		//depth	= CELL_OUTLINE * 4 + CELL_OUTLINE * 8,
-		//abyss	= CELL_OUTLINE * 4 + CELL_OUTLINE * 8 + CELL_OUTLINE * 12,
+		//shallow = CELL_OUTLINE * 4 +  1 * 8,
+		//depth	= CELL_OUTLINE * 4 +  1 * 8,
+		//abyss	= CELL_OUTLINE * 4 +  1 * 8 +  1 * 12,
 		surface = CELL_OUTLINE,
 		shallow = CELL_OUTLINE * 2,
-		depth	= CELL_OUTLINE,
-		abyss	= CELL_OUTLINE,
+		depth = CELL_OUTLINE,
+		abyss = CELL_OUTLINE,
 	};
+};
 
+
+class Environment
+{
+public:
+	vector<LightSource> light_sources = {
+		//{{ 0, 0 }, CELL_OUTLINE * 4},
+		//{{ 0, 0 }, CELL_OUTLINE * 5},
+	};
 	explicit Environment(size_t x, size_t y, shared_ptr<Cell> e)
 	{
-		entities.push_back(e);
-		positions.push_back({ x, y });
-		entities_front_position[positions.size() - 1] = entities.size() - 1;
-		entities_back_position[entities.size() - 1] = positions.size() - 1;
-	}
-
-	vector<CellState> UpdateEntities()
-	{
-		vector<CellState> result;
-		auto it = entities.begin();
-		for (size_t i = 0; i < entities.size(); i++)
+		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
-			//auto& entity = entities[i];
-			Command command = entities[i]->Tic();
-			Event(command, entities_back_position[i]);
-						
-			if (entities[i]->Dying())
+			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
-				unsigned short residue = entities[i]->Die();
-				if (residue)
+				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
+					(y == ENVIRONMENT_SIZE_Y - 1))
 				{
-					materials.push_back(shared_ptr<Object>(new Mineral(residue)));
-					materials_front_position[entities_back_position[i]] = materials.size() - 1;
-					materials_back_position[materials.size() - 1] = entities_back_position[i];
+					terrain[y][x] = shared_ptr<Structure>(new Glass(5));
 				}
-				entities_front_position.erase(entities_back_position[i]);
-				entities_back_position.erase(i);
-				it = entities.erase(it);
-				if(it != entities.end())
-					it++;
-				continue;
+				else
+				{
+					terrain[y][x] = shared_ptr<Structure>(new Water(5));
+				}
 			}
-
-			CellState stat; 
-			stat.color = entities[i]->Color();
-			stat.position = positions[entities_back_position[i]];
-			result.push_back(stat);
 		}
-		return result;
-	}
 
-	vector<CellState> UpdateMaterials()
+		terrain[y][x]->SetEntity(e);
+	}
+	
+	vector<Stat> Update()
 	{
-		vector<CellState> result;
-		auto it = materials.begin();
-		for (size_t i = 0; i < materials.size(); i++)
+		vector<Stat> result;
+		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
-			auto& material = *it;
-			Command command = material->Tic();
-			Event(command, materials_back_position[i]);
-			
-			CellState stat;
-			stat.color = material->Color();
-			stat.position = positions[materials_back_position[i]];
-			result.push_back(stat);
-			it++;
+			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
+			{
+				vector<Command> commands;
+				terrain[y][x]->Tic(commands);
+				for (auto command : commands)
+				{
+					Event(command, x, y);
+				}
+
+				Stat stat;
+				stat.color = terrain[y][x]->Color();
+				stat.position = { x * CELL_OUTLINE, y * CELL_OUTLINE };
+				result.push_back(stat);
+			}
 		}
 		return result;
 	}
 private:
 
-	void Event(Command command, PositionId entity)
+	void Event(Command command, size_t x, size_t y)
 	{
 		switch (command)
 		{
 		case skip:
 			break;
+		case die:
+			terrain[y][x]->SetStruct(shared_ptr<Structure>(new Mineral(100)));
+			terrain[y][x]->DelEntity();
+			break;
 		case move_left:
-			if (positions[entity].x > 0)
+			if (x > 0)
 			{
-				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x - CELL_OUTLINE, positions[entity].y});
-				if (it == positions.end())
+				if (terrain[y][x - 1]->IsWalkable())
 				{
-					entities[entities_front_position[entity]]->SetViewPoint(view_point::left);
-					positions[entity].x -= CELL_OUTLINE;
+					terrain[y][x - 1]->SetEntity(terrain[y][x]->GetEntity());
+					terrain[y][x]->DelEntity();
 				}
 			}
 			break;
 		case move_right:
-			if (positions[entity].x < ENVIRONMENT_SIZE_X - CELL_OUTLINE)
+			if (x < ENVIRONMENT_SIZE_X - 1)
 			{
-				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x + CELL_OUTLINE, positions[entity].y });
-				if (it == positions.end())
+				if (terrain[y][x + 1]->IsWalkable())
 				{
-					entities[entities_front_position[entity]]->SetViewPoint(view_point::right);
-					positions[entity].x += CELL_OUTLINE;
+					terrain[y][x + 1]->SetEntity(terrain[y][x]->GetEntity());
+					terrain[y][x]->DelEntity();
 				}
 			}
 			break;
 		case move_bottom:
-			if (positions[entity].y < ENVIRONMENT_SIZE_Y - CELL_OUTLINE)
+			if (y < ENVIRONMENT_SIZE_Y - 1)
 			{
-				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x, CELL_OUTLINE + positions[entity].y });
-				if (it == positions.end())
+				if (terrain[y + 1][x]->IsWalkable())
 				{
-					entities[entities_front_position[entity]]->SetViewPoint(view_point::bottom);
-					positions[entity].y += CELL_OUTLINE;
+					terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
+					terrain[y][x]->DelEntity();
 				}
 			}
 			break;
 		case move_top:
-			if (positions[entity].y > 0)
+			if (y > 0)
 			{
-				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x, positions[entity].y - CELL_OUTLINE });
-				if (it == positions.end())
+				if (terrain[y - 1][x]->IsWalkable())
 				{
-					entities[entities_front_position[entity]]->SetViewPoint(view_point::top);
-					positions[entity].y -= CELL_OUTLINE;
+					terrain[y - 1][x]->SetEntity(terrain[y][x]->GetEntity());
+					terrain[y][x]->DelEntity();
 				}
 			}
 			break;
 		case fotosintesis:
 		{
-			auto& ration = entities[entities_front_position[entity]]->GetRation();
+			const auto& ration = terrain[y][x]->GetEntity()->GetRation();
 			if (ration.fotosintesis > ration.entities && ration.entities < 10)
 			{
-				entities[entities_front_position[entity]]->Fotosintesis(Fotosintesis(positions[entity].y));
+				terrain[y][x]->GetEntity()->Fotosintesis(Fotosintesis(y));
 			}
 		}
 			break;
 		case furcation:
-			if (entities[entities_front_position[entity]]->AccEnergy() >= 200)
+			if (terrain[y][x]->GetEntity()->AccEnergy() >= 200)
 			{
-				view_point vpoint = entities[entities_front_position[entity]]->GetViewPoint();
-				view_point new_vpoint = vpoint;
 				bool isSuccess = false;
-				for (int i = -1; i < 4; i++)
+				for (int i = 0; i < 5; i++)
 				{
-					if (i != -1)
-						vpoint = static_cast<view_point>(i);
+					Position new_position{ x, y };
+					if (i == 0)
+					{
+						if (y < ENVIRONMENT_SIZE_Y - 1)
+						{
+							new_position.y++;
+						}
+					}
+					else if (i == 1)
+					{
+						if (new_position.y > 0)
+						{
+							new_position.y--;
+						}
+					}
+					else if (i == 2)
+					{
+						if (x > 0)
+						{
+							new_position.x--;
+						}
+					}
+					else if (i == 3)
+					{
+						if (x < ENVIRONMENT_SIZE_X - 1)
+						{
+							new_position.x++;
+						}
+					}
 
-					Position position{ positions[entity].x, positions[entity].y };
-					if (vpoint == view_point::bottom)
+					if (terrain[new_position.y][new_position.x]->IsWalkable())
 					{
-						if (positions[entity].y < ENVIRONMENT_SIZE_Y - CELL_OUTLINE)
-						{
-							new_vpoint = view_point::bottom;
-							position.y += CELL_OUTLINE;
-						}
-					}
-					if (vpoint == view_point::top)
-					{
-						if (position.y > 0)
-						{
-							new_vpoint = view_point::top;
-							position.y -= CELL_OUTLINE;
-						}
-					}
-					if (vpoint == view_point::left)
-					{
-						if (positions[entity].x > 0)
-						{
-							new_vpoint = view_point::left;
-							position.x -= CELL_OUTLINE;
-						}
-					}
-					if (vpoint == view_point::right)
-					{
-						if (positions[entity].x < ENVIRONMENT_SIZE_X - CELL_OUTLINE)
-						{
-							new_vpoint = view_point::right;
-							position.x += CELL_OUTLINE;
-						}
-					}
-					auto it = find(positions.begin(), positions.end(), position);
-					if (positions.end() == it)
-					{
-						auto new_cell = entities[entities_front_position[entity]]->Furcation();
-						entities.push_back(new_cell);
-						positions.push_back(position);
-						entities_front_position[positions.size() - 1] = entities.size() - 1;
-						entities_back_position[entities.size() - 1] = positions.size() - 1;
-						isSuccess = true;
-						entities[entities_front_position[positions.size() - 1]]->SetViewPoint(new_vpoint);
-						entities[entities_front_position[entity]]->SetViewPoint(new_vpoint);
+						terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Furcation());
 						break;
 					}
-				}
-				if (isSuccess)
-				{
-					entities[entities_front_position[entity]]->DecreaceAccEnergy(200);
 				}
 			}
 			break;
 		}
 	}
 
-	unsigned short Fotosintesis(size_t y)
+	unsigned short Fotosintesis(unsigned short light_level)
 	{
-		if (y < light_level::surface)
-		{
-			return 20;
-		}
-		else if (y < light_level::shallow)
-		{
-			return 15;
-		}
-		else if (y < light_level::depth)
-		{
-			return 10;
-		}
-		else if (y < light_level::abyss)
-		{
-			return 5;
-		}
-		else
-		{
-			return 0;
-		}
+		const short koef = 20;
+		return koef * light_level;
 	}
-
-	vector<Position> positions;
-	
-	vector<shared_ptr<Cell>> entities;
-	map<PositionId, CellId> entities_front_position;
-	map<CellId, PositionId> entities_back_position;
-
-	vector<shared_ptr<Object>> materials;
-	map<ObjectId, PositionId> materials_front_position;
-	map<PositionId, ObjectId> materials_back_position;
+	std::array<std::array<shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> terrain;
+	//std::array<std::array<shared_ptr<Entity>,ENVIRONMENT_SIZE_Y>, ENVIRONMENT_SIZE_X> environmet_entities;
+	//std::array<std::array<shared_ptr<Resource>, ENVIRONMENT_SIZE_Y>, ENVIRONMENT_SIZE_X> environmet_resources;
+	//std::array<std::array<shared_ptr<Structure>, ENVIRONMENT_SIZE_Y>, ENVIRONMENT_SIZE_X> terrain;
 };

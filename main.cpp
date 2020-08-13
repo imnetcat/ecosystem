@@ -18,28 +18,28 @@ int main()
 {
 	int loopback = 0;
 	// Объект, который, собственно, является главным окном приложения
-	RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X, ENVIRONMENT_SIZE_Y), "Ecosystem");
+	RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X * CELL_OUTLINE, ENVIRONMENT_SIZE_Y * CELL_OUTLINE), "Ecosystem");
 
 	Environment environment(
 		ENVIRONMENT_SIZE_X / 2, 
 		ENVIRONMENT_SIZE_Y / 2,
 		shared_ptr<Cell>(new Cell(Ration{ 2,1,2 }, Gen({
-			move_top,
-			move_top,
-			furcation,
-			move_top,
-			furcation,
-			move_top,
+			move_left,
+			fotosintesis,
+			fotosintesis,
+			move_bottom,
+			fotosintesis,
+			move_right,
 			furcation,
 			fotosintesis,
-			furcation,
-			move_top,
 			fotosintesis,
 			move_top,
 			fotosintesis,
 			fotosintesis,
-			move_top,
-			move_top,
+			fotosintesis,
+			fotosintesis,
+			furcation,
+			fotosintesis,
 		}, 100)))
 	);
 
@@ -61,6 +61,7 @@ int main()
 			// clear the window and draw background with background color
 			window.clear(sf::Color(0, 61, 156));
 
+			/*
 			// set up background light levels
 			sf::RectangleShape background_light_level(sf::Vector2f(ENVIRONMENT_SIZE_X, Environment::light_level::surface));
 			background_light_level.setPosition(0, 0);
@@ -76,9 +77,9 @@ int main()
 			background_light_level.setPosition(0, CELL_SIZE * 4 + CELL_SIZE * 8);
 			background_light_level.setFillColor({ 0, 100, 255 });
 			window.draw(background_light_level);
-			
-			// update entities in environment
-			vector<CellState> envdata = environment.UpdateEntities();
+			*/
+			// update environment
+			auto envdata = environment.Update();
 			// draw all entities
 			for (const auto& entity : envdata)
 			{
@@ -88,17 +89,6 @@ int main()
 				entity_sprite.setOutlineThickness(OUTLINE);
 				entity_sprite.setOutlineColor(sf::Color(0,0,0));
 
-				window.draw(entity_sprite);
-			}
-
-			// update materials and resources in environment
-			envdata = environment.UpdateMaterials();
-			// draw all entities
-			for (const auto& entity : envdata)
-			{
-				sf::RectangleShape entity_sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-				entity_sprite.setPosition(entity.position.x, entity.position.y);
-				entity_sprite.setFillColor({ entity.color.r, entity.color.g, entity.color.b });
 				window.draw(entity_sprite);
 			}
 

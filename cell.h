@@ -1,32 +1,19 @@
 #pragma once
 
 #include "ration.h"
-#include "object.h"
+#include "entity.h"
 #include "gen.h"
 
 #include <iostream>
 #include <memory>
 
-enum view_point
-{
-	left,
-	top,
-	right,
-	bottom
-};
-
-class Cell : public Object
+class Cell : public Entity
 {
 private:
-	Ration ration;
 	Gen genom;
-	unsigned short hp = 100;
-	unsigned short energy = 100;
-	unsigned short accumulated_energy = 0;
-	view_point vpoint = top;
 public:
 	explicit Cell(Ration ph, Gen g)
-		: ration(ph), genom(g)
+		: Entity(ph, 100, 100), genom(g)
 	{
 		std::cout << "\t\tGeneration: " << g.generation << std::endl;
 		std::cout << "\t\tGenome: " << std::endl
@@ -39,39 +26,12 @@ public:
 			<< "\t" << g.data[6] << std::endl
 			<< "\t" << g.data[7] << std::endl;
 	}
-	ObjectColor Color() override
+	
+	std::shared_ptr<Entity> Furcation() override
 	{
-		unsigned char r = 0;
-		unsigned char g = 0;
-		unsigned char b = 0;
-		for (unsigned short i = ration.entities; i > 1; i--)
-		{
-			if (r != 250)
-				r += 50;
+		// Стоимость деления клетки
+		DecreaceAccEnergy(200);
 
-			g = 0;
-			b = 0;
-		}
-		for (unsigned short i = ration.fotosintesis; i > 1; i--)
-		{
-			if (g == 250 && r != 0)
-				r -= 50;
-			if (g != 250)
-				g += 50;
-			b = 0;
-		}
-		for (unsigned short i = ration.minerals; i > 1; i--)
-		{
-			if (r != 250)
-				r += 50;
-			if (g != 250)
-				g += 50;
-			b = 0;
-		}
-		return ObjectColor{ r, g, b };
-	}
-	std::shared_ptr<Cell> Furcation()
-	{
 		srand(time(0));  // рандомизация генератора случайных чисел
 		size_t newMutationChance = 1 + rand() % 100;
 		srand(time(0));  // рандомизация генератора случайных чисел
@@ -158,122 +118,32 @@ public:
 				break;
 			}
 		}
-		return std::shared_ptr<Cell>(new Cell(
+		return std::shared_ptr<Entity>(new Cell(
 			ration,
 			Gen(new_genom, newMutationChance, genom.generation + 1)
 		));
 	}
-	view_point GetViewPoint() const
-	{
-		return vpoint;
-	}
-	void SetViewPoint(view_point new_val)
-	{
-		vpoint = new_val;
-	}
 
-	Ration GetRation() const
-	{
-		return ration;
-	}
-
-	unsigned short Die() const
+	unsigned short Die() const override
 	{
 		return accumulated_energy + 100;
 	}
-	bool Dying() const
+	bool Dying() const override
 	{
 		return !hp;
 	}
 
-	Command Tic()
+	void Tic(std::vector<Command>& commands) override
 	{
 		DecreaceEnergy(1);
-		return genom.Read();
+		commands.push_back(genom.Read());
 	}
 
-	void Fotosintesis(unsigned short value)
+	void Fotosintesis(unsigned short value) override
 	{
 		if(ration.fotosintesis < 32000)
 			ration.fotosintesis++;
 
 		IncreaceEnergy(value);
 	}
-
-	void IncreaceAccEnergy(unsigned short value)
-	{
-		if(accumulated_energy < 32000)
-			accumulated_energy += value;
-	}
-	void DecreaceAccEnergy(unsigned short value)
-	{
-		if (accumulated_energy > value)
-			accumulated_energy -= value;
-	}
-
-	unsigned short AccEnergy()
-	{
-		return accumulated_energy;
-	}
-
-	void IncreaceEnergy(unsigned short value)
-	{
-		if (hp < 100)
-		{
-			IncreaceHp(value);
-		}
-		else
-		{
-			if (energy + value > 100)
-			{
-				accumulated_energy += value + energy - 100;
-				energy = 100;
-			}
-			else
-				energy += value;
-		}
-	}
-	void DecreaceEnergy(unsigned short value)
-	{
-		if (energy > value)
-		{
-			energy -= value;
-		}
-		else if (energy > 0)
-		{
-			DecreaceHp(value - energy);
-			energy = 0;
-		}
-		else
-		{
-			DecreaceHp(value);
-		}
-	}
-	void IncreaceHp(unsigned short value)
-	{
-		if (hp + value > 100)
-			hp = 100;
-		else
-			hp += value;
-	}
-	void DecreaceHp(unsigned short value)
-	{
-		if (hp > value)
-		{
-			hp -= value;
-		}
-		else
-		{
-			hp = 0;
-		}
-	}
-	unsigned short Energy()
-	{
-		return energy;
-	}
-	unsigned short Hp()
-	{
-		return hp;
-	}
-
 };

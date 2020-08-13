@@ -38,5 +38,17 @@
     <ClInclude Include="ration.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="structure.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="water.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glass.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

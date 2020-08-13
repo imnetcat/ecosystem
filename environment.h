@@ -10,8 +10,8 @@
 #include <ctime>
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = CELL_SIZE * 80;
-const int ENVIRONMENT_SIZE_Y = CELL_SIZE * 50;
+const int ENVIRONMENT_SIZE_X = CELL_OUTLINE * 8;
+const int ENVIRONMENT_SIZE_Y = CELL_OUTLINE * 6;
 
 struct Position
 {
@@ -39,10 +39,14 @@ class Environment
 public:
 	enum light_level
 	{
-		surface = CELL_SIZE * 4,
-		shallow = CELL_SIZE * 4 + CELL_SIZE * 8,
-		depth	= CELL_SIZE * 4 + CELL_SIZE * 8,
-		abyss	= CELL_SIZE * 4 + CELL_SIZE * 8 + CELL_SIZE * 12,
+		//surface = CELL_OUTLINE * 4,
+		//shallow = CELL_OUTLINE * 4 + CELL_OUTLINE * 8,
+		//depth	= CELL_OUTLINE * 4 + CELL_OUTLINE * 8,
+		//abyss	= CELL_OUTLINE * 4 + CELL_OUTLINE * 8 + CELL_OUTLINE * 12,
+		surface = CELL_OUTLINE,
+		shallow = CELL_OUTLINE * 2,
+		depth	= CELL_OUTLINE,
+		abyss	= CELL_OUTLINE,
 	};
 
 	explicit Environment(size_t x, size_t y, shared_ptr<Cell> e)
@@ -117,44 +121,44 @@ private:
 		case move_left:
 			if (positions[entity].x > 0)
 			{
-				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x - CELL_SIZE, positions[entity].y});
+				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x - CELL_OUTLINE, positions[entity].y});
 				if (it == positions.end())
 				{
 					entities[entities_front_position[entity]]->SetViewPoint(view_point::left);
-					positions[entity].x -= CELL_SIZE;
+					positions[entity].x -= CELL_OUTLINE;
 				}
 			}
 			break;
 		case move_right:
-			if (positions[entity].x < ENVIRONMENT_SIZE_X - CELL_SIZE)
+			if (positions[entity].x < ENVIRONMENT_SIZE_X - CELL_OUTLINE)
 			{
-				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x + CELL_SIZE, positions[entity].y });
+				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x + CELL_OUTLINE, positions[entity].y });
 				if (it == positions.end())
 				{
 					entities[entities_front_position[entity]]->SetViewPoint(view_point::right);
-					positions[entity].x += CELL_SIZE;
+					positions[entity].x += CELL_OUTLINE;
 				}
 			}
 			break;
 		case move_bottom:
-			if (positions[entity].y < ENVIRONMENT_SIZE_Y - CELL_SIZE)
+			if (positions[entity].y < ENVIRONMENT_SIZE_Y - CELL_OUTLINE)
 			{
-				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x, CELL_SIZE + positions[entity].y });
+				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x, CELL_OUTLINE + positions[entity].y });
 				if (it == positions.end())
 				{
 					entities[entities_front_position[entity]]->SetViewPoint(view_point::bottom);
-					positions[entity].y += CELL_SIZE;
+					positions[entity].y += CELL_OUTLINE;
 				}
 			}
 			break;
 		case move_top:
 			if (positions[entity].y > 0)
 			{
-				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x, positions[entity].y - CELL_SIZE });
+				auto it = find(positions.begin(), positions.end(), Position{ positions[entity].x, positions[entity].y - CELL_OUTLINE });
 				if (it == positions.end())
 				{
 					entities[entities_front_position[entity]]->SetViewPoint(view_point::top);
-					positions[entity].y -= CELL_SIZE;
+					positions[entity].y -= CELL_OUTLINE;
 				}
 			}
 			break;
@@ -181,10 +185,10 @@ private:
 					Position position{ positions[entity].x, positions[entity].y };
 					if (vpoint == view_point::bottom)
 					{
-						if (positions[entity].y < ENVIRONMENT_SIZE_Y - CELL_SIZE)
+						if (positions[entity].y < ENVIRONMENT_SIZE_Y - CELL_OUTLINE)
 						{
 							new_vpoint = view_point::bottom;
-							position.y += CELL_SIZE;
+							position.y += CELL_OUTLINE;
 						}
 					}
 					if (vpoint == view_point::top)
@@ -192,7 +196,7 @@ private:
 						if (position.y > 0)
 						{
 							new_vpoint = view_point::top;
-							position.y -= CELL_SIZE;
+							position.y -= CELL_OUTLINE;
 						}
 					}
 					if (vpoint == view_point::left)
@@ -200,15 +204,15 @@ private:
 						if (positions[entity].x > 0)
 						{
 							new_vpoint = view_point::left;
-							position.x -= CELL_SIZE;
+							position.x -= CELL_OUTLINE;
 						}
 					}
 					if (vpoint == view_point::right)
 					{
-						if (positions[entity].x < ENVIRONMENT_SIZE_X - CELL_SIZE)
+						if (positions[entity].x < ENVIRONMENT_SIZE_X - CELL_OUTLINE)
 						{
 							new_vpoint = view_point::right;
-							position.x += CELL_SIZE;
+							position.x += CELL_OUTLINE;
 						}
 					}
 					auto it = find(positions.begin(), positions.end(), position);

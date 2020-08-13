@@ -85,6 +85,8 @@ int main()
 				sf::RectangleShape entity_sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
 				entity_sprite.setPosition(entity.position.x, entity.position.y);
 				entity_sprite.setFillColor({ entity.color.r, entity.color.g, entity.color.b });
+				entity_sprite.setOutlineThickness(OUTLINE);
+				entity_sprite.setOutlineColor(sf::Color(0,0,0));
 
 				window.draw(entity_sprite);
 			}

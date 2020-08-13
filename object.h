@@ -1,7 +1,9 @@
 #pragma once
 #include "ration.h"
 
+const short OUTLINE = 1;
 const short CELL_SIZE = 15;
+const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 
 enum Command
 {

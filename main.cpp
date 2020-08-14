@@ -61,48 +61,31 @@ int main()
 			// clear the window and draw background with background color
 			window.clear(sf::Color(0, 61, 156));
 
-			/*
-			// set up background light levels
-			sf::RectangleShape background_light_level(sf::Vector2f(ENVIRONMENT_SIZE_X, Environment::light_level::surface));
-			background_light_level.setPosition(0, 0);
-			background_light_level.setFillColor({ 176, 207, 255 });
-			window.draw(background_light_level);
-
-			background_light_level = sf::RectangleShape(sf::Vector2f(ENVIRONMENT_SIZE_X, Environment::light_level::depth));
-			background_light_level.setPosition(0, CELL_SIZE * 4);
-			background_light_level.setFillColor({ 92, 156, 255 });
-			window.draw(background_light_level);
-
-			background_light_level = sf::RectangleShape((sf::Vector2f(ENVIRONMENT_SIZE_X, Environment::light_level::shallow)));
-			background_light_level.setPosition(0, CELL_SIZE * 4 + CELL_SIZE * 8);
-			background_light_level.setFillColor({ 0, 100, 255 });
-			window.draw(background_light_level);
-			*/
 			// update environment
 			auto envdata = environment.Update();
 			// draw all entities
 			for (const auto& object : envdata)
 			{
 				sf::RectangleShape sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+
+				// object
 				sprite.setPosition(object.position.x, object.position.y);
-				sprite.setFillColor({ object.color.r, object.color.g, object.color.b });
+
+				sprite.setFillColor({ object.color.r, object.color.g, object.color.b, 
+					(unsigned char)((unsigned char)255 - object.shadow) });
+				
 				sprite.setOutlineThickness(OUTLINE);
 				if (object.outline)
 				{
-					sprite.setOutlineColor(sf::Color(0,0,0));
+					sprite.setOutlineColor(sf::Color(0, 0, 0));
 				}
 				else
 				{
-					sprite.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b));
+					sprite.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b, (unsigned char)((unsigned char)255 - object.shadow)));
 				}
+				
 
 				window.draw(sprite);
-
-				// shadow
-				//sprite.setFillColor({ 0, 0, 0, object.shadow });
-				//sprite.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b, 0));
-
-				//window.draw(sprite);
 			}
 
 			// Отрисовка окна	
@@ -110,7 +93,7 @@ int main()
 		}
 
 		loopback++;
-		if (loopback == 10000 / SPEED)
+		if (loopback == 1 / SPEED)
 			loopback = 0;
 
 	}

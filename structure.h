@@ -10,7 +10,7 @@ protected:
 	bool gravityOn;
 	RGBColor color;
 	const bool eatable;
-	const float transparency;
+	const double transparency;
 	unsigned short light_level;
 	bool walkable;
 	bool default_walkable;
@@ -19,7 +19,7 @@ protected:
 	bool contains_struct;
 	bool contains_entity;
 public:
-	Structure(RGBColor c, bool g, bool w, bool ea, unsigned short lv, float tr) :
+	Structure(RGBColor c, bool g, bool w, bool ea, unsigned short lv, double tr) :
 		ticed(false),
 		gravityOn(g),
 		color(c),
@@ -31,6 +31,11 @@ public:
 		contains_struct(false),
 		contains_entity(false)
 	{ }
+
+	double Transparency()
+	{
+		return transparency;
+	}
 
 	void Untick()
 	{

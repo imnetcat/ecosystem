@@ -50,19 +50,13 @@
     <ClInclude Include="glass.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="cell_photosynthetic.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cell_predator.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="item.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ration.h">
+    <ClInclude Include="cell.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="food.h">
+    <ClInclude Include="minerals.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

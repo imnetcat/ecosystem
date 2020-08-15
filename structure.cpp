@@ -1,11 +1,11 @@
 #include "structure.h"
 
-Structure::Structure(RGBColor c, bool w, unsigned short lv, double tr) :
+Structure::Structure(RGBColor c, bool w, double tr) :
 	ticed(false),
 	color(c),
 	walkable(w),
 	transparency(tr),
-	light_level(lv),
+	light_level(0),
 	default_walkable(walkable),
 	contains_entity(false)
 { }
@@ -71,29 +71,25 @@ bool Structure::Outline()
 	return false;
 }
 
-void Structure::SetFood(Food obj)
+void Structure::SetFood(Minerals obj)
 {
 	food.Ticed(true);
-	auto& obj_energy = obj.Get();
-	for (auto&[r, energy] : obj_energy)
-	{
-		food.Put(r, energy);
-	}
+	food.Put(obj.Get());
 }
-void Structure::SetFood(ration r, unsigned short energy)
+void Structure::SetFood(unsigned short energy)
 {
-	food.Put(r, energy);
+	food.Put(energy);
 }
 void Structure::DelFood()
 {
-	food.Get().clear();
+	food.Clear();
 	walkable = default_walkable;
 }
-Food& Structure::GetFood()
+Minerals& Structure::GetFood()
 {
 	return food;
 }
-const Food& Structure::GetFood() const
+const Minerals& Structure::GetFood() const
 {
 	return food;
 }

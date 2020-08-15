@@ -4,6 +4,6 @@
 class Water : public Structure
 {
 public:
-	Water(unsigned short lv) 
-		: Structure({ 105, 170, 255 }, true, lv, 0.95) {}
+	Water() 
+		: Structure({ 105, 170, 255 }, true, 0.92) {}
 };

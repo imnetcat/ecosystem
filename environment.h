@@ -1,7 +1,6 @@
 #pragma once
 
-#include "cell_photosynthetic.h"
-#include "cell_predator.h"
+#include "cell.h"
 #include "glass.h"
 #include "water.h"
 
@@ -15,8 +14,8 @@
 
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = 20;
-const int ENVIRONMENT_SIZE_Y = 60;
+const int ENVIRONMENT_SIZE_X = 50;
+const int ENVIRONMENT_SIZE_Y = 50;
 
 struct Position
 {
@@ -79,41 +78,40 @@ public:
 				//	light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 60 });
 				if (x == ENVIRONMENT_SIZE_X/2 &&
 					y == 0)
-					light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 35 });
+					light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 30 });
 
 				// set up structures
 				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
 					(y == ENVIRONMENT_SIZE_Y - 1))
 				{
-					terrain[y][x] = shared_ptr<Structure>(new Glass(1));
+					terrain[y][x] = shared_ptr<Structure>(new Glass());
 				}
 				else
 				{
-					terrain[y][x] = shared_ptr<Structure>(new Water(5));
+					terrain[y][x] = shared_ptr<Structure>(new Water());
 				}
 			}
 		}
 
-
 		auto x = ENVIRONMENT_SIZE_X / 2;
 		auto y = ENVIRONMENT_SIZE_Y / 2;
-		shared_ptr<Entity> e(new CellPhotosynthetic(Gen({
-			move_left,
-			eat,
-			eat,
-			move_bottom,
-			eat,
-			move_right,
-			furcation,
-			eat,
-			eat,
-			move_top,
-			eat,
-			eat,
-			eat,
-			eat,
-			furcation,
-			eat,
+		shared_ptr<Entity> e(new Cell(Gen({
+			reproduction,
+			fotosintesis,
+			fotosintesis,
+			fotosintesis,
+			reproduction,
+			fotosintesis,
+			fotosintesis,
+			fotosintesis,
+			stay,
+			fotosintesis,
+			stay,
+			fotosintesis,
+			fotosintesis,
+			stay,
+			reproduction,
+			fotosintesis,
 			}, 100)));
 
 		// put first cells
@@ -124,8 +122,16 @@ public:
 	{
 		vector<Stat> result;
 
+		struct TicStat
+		{
+			Position position;
+			size_t acc_energy = 0;
+			std::array<Command, Gen::length> genom;
+			size_t generation;
+		};
+
 		// gravitation effect
-		size_t y = ENVIRONMENT_SIZE_Y - 1;
+		size_t y = ENVIRONMENT_SIZE_Y - 2;
 		while (true)
 		{
 			size_t x = ENVIRONMENT_SIZE_X - 1;
@@ -154,6 +160,9 @@ public:
 			y--;
 		}
 
+
+		TicStat tic_statistic;
+
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
@@ -164,6 +173,17 @@ public:
 				for (auto command : commands)
 				{
 					Event(command, x, y);
+				}
+
+				if (terrain[y][x]->IsContainsEntity())
+				{
+					if (terrain[y][x]->GetEntity()->AccEnergy() > tic_statistic.acc_energy)
+					{
+						tic_statistic.acc_energy = terrain[y][x]->GetEntity()->AccEnergy();
+						tic_statistic.position = { x, y };
+						tic_statistic.genom = terrain[y][x]->GetEntity()->GetGen().data;
+						tic_statistic.generation = terrain[y][x]->GetEntity()->GetGen().generation;
+					}
 				}
 			}
 		}
@@ -180,6 +200,21 @@ public:
 				result.push_back(stat);
 			}
 		}
+
+		if (tic_statistic.acc_energy)
+		{
+			cout << endl;
+			cout << "\tGeneration:\t" << tic_statistic.generation << endl;
+			cout << "\tPosition:\t" << tic_statistic.position.x << "  " << tic_statistic.position.y << endl;
+			cout << "\tEnergy:\t" << tic_statistic.acc_energy << endl;
+			cout << "\tGenom:\t";
+			for (auto& g : tic_statistic.genom)
+			{
+				cout << g << ' ';
+			}
+			cout << endl;
+		}
+
 		return result;
 	}
 private:
@@ -319,11 +354,14 @@ private:
 	{
 		switch (command)
 		{
+		case stay:
+			terrain[y][x]->GetEntity()->DecreaceEnergy(5);
+			break;
 		case die:
 			if (terrain[y][x]->IsContainsFood())
-				terrain[y][x]->GetFood().Put(minerals, terrain[y][x]->GetEntity()->AccEnergy() + 100);
+				terrain[y][x]->GetFood().Put(terrain[y][x]->GetEntity()->AccEnergy() + 100);
 			else
-				terrain[y][x]->SetFood(minerals, terrain[y][x]->GetEntity()->AccEnergy() + 100);
+				terrain[y][x]->SetFood(terrain[y][x]->GetEntity()->AccEnergy() + 100);
 
 			terrain[y][x]->DelEntity();
 			break;
@@ -333,6 +371,7 @@ private:
 				if (terrain[y][x - 1]->IsWalkable())
 				{
 					terrain[y][x - 1]->SetEntity(terrain[y][x]->GetEntity());
+					terrain[y][x - 1]->GetEntity()->DecreaceEnergy(10);
 					terrain[y][x]->DelEntity();
 				}
 			}
@@ -343,6 +382,7 @@ private:
 				if (terrain[y][x + 1]->IsWalkable())
 				{
 					terrain[y][x + 1]->SetEntity(terrain[y][x]->GetEntity());
+					terrain[y][x + 1]->GetEntity()->DecreaceEnergy(10);
 					terrain[y][x]->DelEntity();
 				}
 			}
@@ -353,6 +393,7 @@ private:
 				if (terrain[y + 1][x]->IsWalkable())
 				{
 					terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
+					terrain[y + 1][x]->GetEntity()->DecreaceEnergy(10);
 					terrain[y][x]->DelEntity();
 				}
 			}
@@ -363,24 +404,18 @@ private:
 				if (terrain[y - 1][x]->IsWalkable())
 				{
 					terrain[y - 1][x]->SetEntity(terrain[y][x]->GetEntity());
+					terrain[y - 1][x]->GetEntity()->DecreaceEnergy(10);
 					terrain[y][x]->DelEntity();
 				}
 			}
 			break;
-		case eat:
+		case fotosintesis:
 		{
-			auto food = terrain[y][x]->GetEntity()->Ration();
-			if(food == light)
-			{
-				terrain[y][x]->GetEntity()->Eat(terrain[y][x]->GetLightPower());
-			}
-			else
-			{
-				terrain[y][x]->GetEntity()->Eat(terrain[y][x]->GetFood().Eat(food));
-			}
+			terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[y][x]->GetLightPower());
+			//terrain[y][x]->GetEntity()->Eat(terrain[y][x]->GetFood().Eat(food));
 		}
 			break;
-		case furcation:
+		case reproduction:
 			if (terrain[y][x]->GetEntity()->AccEnergy() >= 200)
 			{
 				bool isSuccess = false;
@@ -418,6 +453,7 @@ private:
 
 					if (terrain[new_position.y][new_position.x]->IsWalkable())
 					{
+						terrain[y][x]->GetEntity()->DecreaceEnergy(200);
 						terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Reproduction());
 						break;
 					}

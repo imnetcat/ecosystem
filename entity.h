@@ -1,7 +1,7 @@
 #pragma once
 #include "object.h"
-#include "ration.h"
 #include "item.h"
+#include "gen.h"
 #include <memory>
 
 class Entity : public Object
@@ -13,12 +13,10 @@ protected:
 	unsigned int accumulated_energy;
 public:
 	Entity(unsigned short h, unsigned short e);
-
+	virtual Gen GetGen() = 0;
 	virtual void Tic(std::vector<Command>& commands) = 0;
-	virtual void Eat(unsigned short) = 0;
 	virtual std::shared_ptr<Entity> Reproduction() = 0;
 	virtual RGBColor Color() = 0;
-	virtual ration Ration() = 0;
 
 	void IncreaceAccEnergy(unsigned short value);
 	void DecreaceAccEnergy(unsigned short value);

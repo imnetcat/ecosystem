@@ -4,7 +4,7 @@
 class Glass : public Structure
 {
 public:
-	Glass(unsigned short lv) 
-		: Structure({ 245, 245, 245 }, false, lv, 1.0) {}
+	Glass() 
+		: Structure({ 245, 245, 245 }, false, 1.0) {}
 
 };

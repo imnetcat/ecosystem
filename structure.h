@@ -1,6 +1,6 @@
 #pragma once
 #include "object.h"
-#include "food.h"
+#include "minerals.h"
 #include "entity.h"
 #include <memory>
 #include <map>
@@ -15,11 +15,11 @@ protected:
 	unsigned short light_power;
 	bool walkable;
 	bool default_walkable;
-	Food food;
+	Minerals food;
 	std::shared_ptr<Entity> entity;
 	bool contains_entity;
 public:
-	Structure(RGBColor c, bool w, unsigned short lv, double tr);
+	Structure(RGBColor c, bool w, double tr);
 
 	double Transparency();
 
@@ -36,11 +36,11 @@ public:
 
 	bool Outline() override;
 	
-	void SetFood(Food f);
-	void SetFood(ration r, unsigned short energy);
+	void SetFood(Minerals f);
+	void SetFood(unsigned short energy);
 	void DelFood();
-	Food& GetFood();
-	const Food& GetFood() const;
+	Minerals& GetFood();
+	const Minerals& GetFood() const;
 
 	void SetEntity(std::shared_ptr<Entity> e);
 	void DelEntity();

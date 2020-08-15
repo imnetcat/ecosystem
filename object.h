@@ -17,7 +17,7 @@ enum Command
 	move_bottom,
 	move_top,
 	skip,
-	fotosintesis,
+	eat,
 	furcation,  // деление на две
 };
 

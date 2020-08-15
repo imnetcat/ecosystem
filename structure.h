@@ -1,147 +1,54 @@
 #pragma once
 #include "object.h"
+#include "food.h"
 #include "entity.h"
 #include <memory>
+#include <map>
 
 class Structure : public Object
 {
 protected:
 	bool ticed;
-	bool gravityOn;
 	RGBColor color;
-	const bool eatable;
 	const double transparency;
-	unsigned short light_level;
+	unsigned char light_level;
+	unsigned short light_power;
 	bool walkable;
 	bool default_walkable;
-	std::shared_ptr<Structure> structure;
+	Food food;
 	std::shared_ptr<Entity> entity;
-	bool contains_struct;
 	bool contains_entity;
 public:
-	Structure(RGBColor c, bool g, bool w, bool ea, unsigned short lv, double tr) :
-		ticed(false),
-		gravityOn(g),
-		color(c),
-		eatable(ea),
-		walkable(w),
-		transparency(tr),
-		light_level(lv),
-		default_walkable(walkable),
-		contains_struct(false),
-		contains_entity(false)
-	{ }
+	Structure(RGBColor c, bool w, unsigned short lv, double tr);
 
-	double Transparency()
-	{
-		return transparency;
-	}
+	double Transparency();
 
-	void Untick()
-	{
-		ticed = false;
-		if (contains_struct)
-			structure->Untick();
-	}
+	void Untick();
 
-	RGBColor Color() override
-	{
-		if (contains_entity)
-			return entity->Color();
+	RGBColor Color() override;
 
-		if (contains_struct)
-			return structure->Color();
+	void Tic(std::vector<Command>& commands) override;
 
-		return color;
-	}
+	unsigned short GetLightLevel();
+	void SetLightLevel(unsigned short lv);
+	unsigned short GetLightPower();
+	void SetLightPower(unsigned short lp);
 
-	void Tic(std::vector<Command>& commands) override
-	{
-		if (ticed)
-			return;
-
-		if (gravityOn)
-			commands.push_back(gravity);
-		if(contains_struct)
-			structure->Tic(commands);
-		if (contains_entity)
-			entity->Tic(commands);
-		ticed = true;
-	}
-
-	bool isEatable()
-	{
-		return eatable;
-	}
-	unsigned short GetLightLevel()
-	{
-		return light_level;
-	}
-	void SetLightLevel(unsigned short lv)
-	{
-		light_level = lv;
-	}
-
-	bool Outline() override
-	{
-		if (contains_entity)
-			return entity->Outline();
-		if (contains_struct)
-			return structure->Outline();
-
-		return false;
-	}
+	bool Outline() override;
 	
-	void SetStruct(std::shared_ptr<Structure> obj)
-	{
-		structure = obj;
-		structure->SetLightLevel(light_level);
-		contains_struct = true;
-		walkable = structure->IsWalkable();
-	}
-	void DelStruct()
-	{
-		structure = nullptr;
-		contains_struct = false;
-		walkable = default_walkable;
-	}
-	std::shared_ptr<Structure>& GetStruct()
-	{
-		return structure;
-	}
+	void SetFood(Food f);
+	void SetFood(ration r, unsigned short energy);
+	void DelFood();
+	Food& GetFood();
+	const Food& GetFood() const;
 
-	void SetEntity(std::shared_ptr<Entity> e)
-	{
-		entity = e;
-		contains_entity = true;
-		walkable = false;
-	}
-	void DelEntity()
-	{
-		entity = nullptr;
-		contains_entity = false;
-		walkable = default_walkable;
-	}
-	std::shared_ptr<Entity>& GetEntity()
-	{
-		return entity;
-	}
+	void SetEntity(std::shared_ptr<Entity> e);
+	void DelEntity();
+	std::shared_ptr<Entity>& GetEntity();
 	
-	void Walkable(bool val) 
-	{
-		walkable = val;
-	}
-	bool IsWalkable()
-	{
-		return walkable;
-	}
+	void Walkable(bool val);
+	bool IsWalkable();
 
-	bool IsContainsStruct()
-	{
-		return contains_struct;
-	}
-	bool IsContainsEntity()
-	{
-		return contains_entity;
-	}
+	bool IsContainsFood();
+	bool IsContainsEntity();
 };

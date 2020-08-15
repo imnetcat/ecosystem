@@ -20,28 +20,7 @@ int main()
 	// Объект, который, собственно, является главным окном приложения
 	RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X * CELL_OUTLINE, ENVIRONMENT_SIZE_Y * CELL_OUTLINE), "Ecosystem");
 
-	Environment environment(
-		ENVIRONMENT_SIZE_X / 2, 
-		ENVIRONMENT_SIZE_Y / 2,
-		shared_ptr<Cell>(new Cell(Ration{ 2,1,2 }, Gen({
-			move_left,
-			fotosintesis,
-			fotosintesis,
-			move_bottom,
-			fotosintesis,
-			move_right,
-			furcation,
-			fotosintesis,
-			fotosintesis,
-			move_top,
-			fotosintesis,
-			fotosintesis,
-			fotosintesis,
-			fotosintesis,
-			furcation,
-			fotosintesis,
-		}, 100)))
-	);
+	Environment environment;
 
 	// Главный цикл приложения. Выполняется, пока открыто окно
 	while (window.isOpen())

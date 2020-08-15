@@ -1,19 +1,18 @@
 #pragma once
-
-#include "ration.h"
 #include "entity.h"
 #include "gen.h"
 
 #include <iostream>
 #include <memory>
+#include <ctime>
 
-class Cell : public Entity
+class CellPhotosynthetic : public Entity
 {
 private:
 	Gen genom;
 public:
-	explicit Cell(Ration ph, Gen g)
-		: Entity(ph, 100, 100), genom(g)
+	explicit CellPhotosynthetic(Gen g)
+		: Entity(100, 100), genom(g)
 	{
 		std::cout << "\t\tGeneration: " << g.generation << std::endl;
 		std::cout << "\t\tGenome: " << std::endl
@@ -71,55 +70,9 @@ public:
 				new_genom[index] = static_cast<Command>(rand() % Gen::commands);
 				srand(time(0));
 				index = rand() % 3;
-				// рандомизируем рацион
-				srand(time(0));
-				switch (index)
-				{
-				case 0:
-					ration.entities = ration.entities + rand() % 100;
-					break;
-				case 1:
-					ration.fotosintesis = ration.fotosintesis + rand() % 100;
-					break;
-				case 2:
-					ration.minerals = ration.minerals + rand() % 100;
-					break;
-				}
-			}
-			// рандомизируем выбор изменяемой ветви рациона
-			srand(time(0));
-			index = rand() % 3;
-			// рандомизируем рацион
-			srand(time(0));
-			switch (index)
-			{
-			case 0:
-				ration.entities = ration.entities + rand() % 100;
-				break;
-			case 1:
-				ration.fotosintesis = ration.fotosintesis + rand() % 100;
-				break;
-			case 2:
-				ration.minerals = ration.minerals + rand() % 100;
-				break;
-			}
-			// рандомизируем рацион
-			srand(time(0));
-			switch (index)
-			{
-			case 0:
-				ration.entities = ration.entities - rand() % 100;
-				break;
-			case 1:
-				ration.fotosintesis = ration.fotosintesis - rand() % 100;
-				break;
-			case 2:
-				ration.minerals = ration.minerals - rand() % 100;
-				break;
 			}
 		}
-		return std::shared_ptr<Entity>(new Cell(
-			ration,
+		return std::shared_ptr<Entity>(new CellPhotosynthetic(
 			Gen(new_genom, newMutationChance, genom.generation + 1)
 		));
 	}
@@ -134,12 +87,19 @@ public:
 			commands.push_back(genom.Read());
 	}
 
-	void Fotosintesis(unsigned short value) override
+	RGBColor Color() override
 	{
-		if(ration.fotosintesis < 32000)
-			ration.fotosintesis++;
+		return { 0, 255, 0 };
+	}
 
-		IncreaceEnergy(value);
+	ration Ration() override
+	{
+		return light;
+	}
+
+	void Eat(unsigned short energy) override
+	{
+		IncreaceEnergy(energy);
 	}
 
 	bool Outline() override

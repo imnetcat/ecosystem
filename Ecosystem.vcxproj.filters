@@ -18,24 +18,24 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="structure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cell.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="environment.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="gen.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="mineral.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="object.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ration.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="entity.h">
@@ -48,6 +48,21 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="glass.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cell_photosynthetic.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cell_predator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="item.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ration.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="food.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

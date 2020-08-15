@@ -1,10 +1,10 @@
 #pragma once
-#include "mineral.h"
-#include "structure.h"
-#include "ration.h"
-#include "cell.h"
+
+#include "cell_photosynthetic.h"
+#include "cell_predator.h"
 #include "glass.h"
 #include "water.h"
+
 #include <vector>
 #include <map>
 #include <memory>
@@ -12,6 +12,7 @@
 #include <ctime>
 #include <array>
 #include <cmath>
+
 using namespace std;
 
 const int ENVIRONMENT_SIZE_X = 20;
@@ -66,7 +67,7 @@ class Environment
 {
 public:
 	vector<LightSource> light_sources;
-	explicit Environment(size_t x, size_t y, shared_ptr<Cell> e)
+	explicit Environment()
 	{
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
@@ -93,6 +94,28 @@ public:
 			}
 		}
 
+
+		auto x = ENVIRONMENT_SIZE_X / 2;
+		auto y = ENVIRONMENT_SIZE_Y / 2;
+		shared_ptr<Entity> e(new CellPhotosynthetic(Gen({
+			move_left,
+			eat,
+			eat,
+			move_bottom,
+			eat,
+			move_right,
+			furcation,
+			eat,
+			eat,
+			move_top,
+			eat,
+			eat,
+			eat,
+			eat,
+			furcation,
+			eat,
+			}, 100)));
+
 		// put first cells
 		terrain[y][x]->SetEntity(e);
 	}
@@ -104,6 +127,7 @@ public:
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
+				Shadow(y, x);
 				vector<Command> commands;
 				terrain[y][x]->Tic(commands);
 				for (auto command : commands)
@@ -120,7 +144,7 @@ public:
 				Stat stat;
 				stat.color = terrain[y][x]->Color();
 				stat.outline = terrain[y][x]->Outline();
-				stat.shadow = Shadow(y, x);
+				stat.shadow = terrain[y][x]->GetLightLevel();
 				stat.position = { x * CELL_OUTLINE, y * CELL_OUTLINE };
 				result.push_back(stat);
 			}
@@ -251,10 +275,13 @@ private:
 		return power_sum;
 	}
 
-	unsigned char Shadow(size_t y, size_t x)
+	void Shadow(size_t y, size_t x)
 	{
-		float power = (float)LightPower(y, x) / MaxLightPower(y, x);
-		return 128 - power * 128;
+		auto lp = LightPower(y, x);
+		float power = (float)lp / MaxLightPower(y, x);
+		auto lv = 128 - power * 128;
+		terrain[y][x]->SetLightPower(lp);
+		terrain[y][x]->SetLightLevel(lv);
 	}
 
 	void Event(const Command& command, const size_t& x, const size_t& y)
@@ -268,16 +295,20 @@ private:
 			{
 				if (terrain[y + 1][x]->IsWalkable())
 				{
-					if (terrain[y][x]->IsContainsStruct())
+					if (terrain[y][x]->IsContainsFood() && !terrain[y + 1][x]->IsContainsFood())
 					{
-						terrain[y + 1][x]->SetStruct(terrain[y][x]->GetStruct());
-						terrain[y][x]->DelStruct();
+						terrain[y + 1][x]->SetFood(terrain[y][x]->GetFood());
+						terrain[y][x]->DelFood();
 					}
 				}
 			}
 			break;
 		case die:
-			terrain[y][x]->SetStruct(shared_ptr<Structure>(new Mineral(100)));
+			if (terrain[y][x]->IsContainsFood())
+				terrain[y][x]->GetFood().Put(minerals, terrain[y][x]->GetEntity()->AccEnergy() + 100);
+			else
+				terrain[y][x]->SetFood(minerals, terrain[y][x]->GetEntity()->AccEnergy() + 100);
+
 			terrain[y][x]->DelEntity();
 			break;
 		case move_left:
@@ -320,12 +351,16 @@ private:
 				}
 			}
 			break;
-		case fotosintesis:
+		case eat:
 		{
-			const auto& ration = terrain[y][x]->GetEntity()->GetRation();
-			if (ration.fotosintesis > ration.entities && ration.entities < 10)
+			auto food = terrain[y][x]->GetEntity()->Ration();
+			if(food == light)
 			{
-				terrain[y][x]->GetEntity()->Fotosintesis(Fotosintesis(y, x));
+				terrain[y][x]->GetEntity()->Eat(terrain[y][x]->GetLightPower());
+			}
+			else
+			{
+				terrain[y][x]->GetEntity()->Eat(terrain[y][x]->GetFood().Eat(food));
 			}
 		}
 			break;
@@ -376,9 +411,5 @@ private:
 		}
 	}
 
-	unsigned short Fotosintesis(size_t y, size_t x)
-	{
-		return LightPower(y, x);
-	}
 	std::array<std::array<shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> terrain;
 };

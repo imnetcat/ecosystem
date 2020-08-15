@@ -1,8 +1,7 @@
 #pragma once
 
-struct Ration
+enum ration
 {
-	unsigned short minerals = 1;
-	unsigned short entities = 1;
-	unsigned short fotosintesis = 1;
+	minerals,
+	light
 };

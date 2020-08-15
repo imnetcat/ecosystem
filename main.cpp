@@ -22,6 +22,8 @@ int main()
 
 	Environment environment;
 
+	bool pause = false;
+
 	// Главный цикл приложения. Выполняется, пока открыто окно
 	while (window.isOpen())
 	{
@@ -33,9 +35,19 @@ int main()
 			if (event.type == Event::Closed)
 				// Тогда закрываем его
 				window.close();
+			
+			// Пользователь нажал и отпустил какую-то из кнопок
+			if (event.type == sf::Event::KeyReleased)
+			{
+				// turn on\off pause
+				if (event.key.code == sf::Keyboard::P)
+				{
+					pause = !pause;
+				}
+			}
 		}
 
-		if (!loopback)
+		if (!loopback && !pause)
 		{
 			// clear the window and draw background with background color
 			window.clear(sf::Color(0, 61, 156));
@@ -72,6 +84,7 @@ int main()
 		}
 
 		loopback++;
+		
 		if (loopback == 1 / SPEED)
 			loopback = 0;
 

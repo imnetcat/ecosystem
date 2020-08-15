@@ -112,7 +112,7 @@ public:
 			stay,
 			reproduction,
 			fotosintesis,
-			}, 100), 0));
+			}, 0.2), 0));
 
 		// put first cells
 		terrain[y][x]->SetEntity(e);

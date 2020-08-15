@@ -6,11 +6,11 @@ class Gen
 public:
 	static const size_t length = 16;
 	static const size_t commands = 6;
-	explicit Gen(std::array<Command, length> d, size_t mh, size_t g = 1)
+	explicit Gen(std::array<Command, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d) {};
 
 	size_t generation;
-	size_t mutationChance;
+	double mutationChance;
 	std::array<Command, length> data;
 
 	Command Read()

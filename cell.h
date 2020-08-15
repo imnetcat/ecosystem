@@ -21,11 +21,9 @@ public:
 	std::shared_ptr<Entity> Reproduction() override
 	{
 		srand(time(0));  // рандомизация генератора случайных чисел
-		size_t newMutationChance = 1 + rand() % 100;
-		srand(time(0));  // рандомизация генератора случайных чисел
 		auto new_genom = genom.data;
-		size_t mutationIndex = rand() % genom.mutationChance;
-		if (!mutationIndex)
+		double mt = (rand() % 100) / 100;
+		if (mt <= genom.mutationChance)
 		{
 			// рандомизируем выбор изменяемой комманды гена
 			srand(time(0));
@@ -33,38 +31,11 @@ public:
 			// рандомизируем комманду гена
 			srand(time(0)); 
 			new_genom[index] = static_cast<Command>(rand() % Gen::commands);
-			if (mutationIndex < 25)
-			{
-				srand(time(0));
-				index = rand() % Gen::length;
-				srand(time(0));
-				new_genom[index] = static_cast<Command>(rand() % Gen::commands);
-			}
-			else if (mutationIndex < 50)
-			{
-				srand(time(0));
-				index = rand() % Gen::length;
-				srand(time(0));
-				new_genom[index] = static_cast<Command>(rand() % Gen::commands);
-			}
-			else
-			{
-				srand(time(0));
-				index = rand() % Gen::length;
-				srand(time(0));
-				new_genom[index] = static_cast<Command>(rand() % Gen::commands);
-				srand(time(0));
-				index = rand() % Gen::length;
-				srand(time(0));
-				new_genom[index] = static_cast<Command>(rand() % Gen::commands);
-				srand(time(0));
-				index = rand() % 3;
-			}
 		}
 		unsigned short hlph = accumulated_energy / 2;
 		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			Gen(new_genom, newMutationChance, genom.generation + 1), hlph
+			Gen(new_genom, 0.2, genom.generation + 1), hlph
 		));
 	}
 	

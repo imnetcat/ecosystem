@@ -5,7 +5,7 @@ const short CELL_SIZE = 15;
 const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 
 const unsigned short LIGHT_LEVEL_POWER = 10;
-const unsigned int MAX_CELL_AGE = 100; // в тиках
+const unsigned int MAX_CELL_AGE = 50; // в тиках
 
 enum Command
 {

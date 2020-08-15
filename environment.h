@@ -14,8 +14,8 @@
 
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = 50;
-const int ENVIRONMENT_SIZE_Y = 50;
+const int ENVIRONMENT_SIZE_X = 30;
+const int ENVIRONMENT_SIZE_Y = 60;
 
 struct Position
 {
@@ -78,7 +78,7 @@ public:
 				//	light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 60 });
 				if (x == ENVIRONMENT_SIZE_X/2 &&
 					y == 0)
-					light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 30 });
+					light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 40 });
 
 				// set up structures
 				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
@@ -112,7 +112,7 @@ public:
 			stay,
 			reproduction,
 			fotosintesis,
-			}, 100)));
+			}, 100), 0));
 
 		// put first cells
 		terrain[y][x]->SetEntity(e);
@@ -408,6 +408,7 @@ private:
 			break;
 		case fotosintesis:
 		{
+			terrain[y][x]->GetEntity()->DecreaceEnergy(LIGHT_LEVEL_POWER);
 			terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[y][x]->GetLightPower());
 			//terrain[y][x]->GetEntity()->Eat(terrain[y][x]->GetFood().Eat(food));
 		}
@@ -421,16 +422,16 @@ private:
 					Position new_position{ x, y };
 					if (i == 0)
 					{
-						if (y < ENVIRONMENT_SIZE_Y)
+						if (new_position.y > 0)
 						{
-							new_position.y++;
+							new_position.y--;
 						}
 					}
 					else if (i == 1)
 					{
-						if (new_position.y > 0)
+						if (y < ENVIRONMENT_SIZE_Y)
 						{
-							new_position.y--;
+							new_position.y++;
 						}
 					}
 					else if (i == 2)
@@ -450,7 +451,7 @@ private:
 
 					if (terrain[new_position.y][new_position.x]->IsWalkable())
 					{
-						terrain[y][x]->GetEntity()->DecreaceEnergy(200);
+						terrain[y][x]->GetEntity()->DecreaceAccEnergy(200);
 						terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Reproduction());
 						break;
 					}

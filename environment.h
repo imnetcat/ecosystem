@@ -418,7 +418,7 @@ private:
 
 					if (terrain[new_position.y][new_position.x]->IsWalkable())
 					{
-						terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Furcation());
+						terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Reproduction());
 						break;
 					}
 				}

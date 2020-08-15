@@ -26,7 +26,7 @@ public:
 			<< "\t" << g.data[7] << std::endl;
 	}
 	
-	std::shared_ptr<Entity> Furcation() override
+	std::shared_ptr<Entity> Reproduction() override
 	{
 		// Стоимость деления клетки
 		DecreaceAccEnergy(200);

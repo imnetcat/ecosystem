@@ -16,7 +16,7 @@ public:
 
 	virtual void Tic(std::vector<Command>& commands) = 0;
 	virtual void Eat(unsigned short) = 0;
-	virtual std::shared_ptr<Entity> Furcation() = 0;
+	virtual std::shared_ptr<Entity> Reproduction() = 0;
 	virtual RGBColor Color() = 0;
 	virtual ration Ration() = 0;
 

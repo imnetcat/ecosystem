@@ -139,15 +139,12 @@ public:
 			{
 				if (terrain[y][x]->IsContainsFood())
 				{
-					if (y < ENVIRONMENT_SIZE_Y)
+					if (terrain[y + 1][x]->IsWalkable())
 					{
-						if (terrain[y + 1][x]->IsWalkable())
+						if (!terrain[y + 1][x]->IsContainsFood())
 						{
-							if (!terrain[y + 1][x]->IsContainsFood())
-							{
-								terrain[y + 1][x]->SetFood(terrain[y][x]->GetFood());
-								terrain[y][x]->DelFood();
-							}
+							terrain[y + 1][x]->SetFood(terrain[y][x]->GetFood());
+							terrain[y][x]->DelFood();
 						}
 					}
 				}
@@ -368,7 +365,7 @@ private:
 		case move_left:
 			if (x > 0)
 			{
-				if (terrain[y][x - 1]->IsWalkable())
+				if (terrain[y][x - 1]->IsWalkable() && !terrain[y][x - 1]->IsContainsEntity())
 				{
 					terrain[y][x - 1]->SetEntity(terrain[y][x]->GetEntity());
 					terrain[y][x - 1]->GetEntity()->DecreaceEnergy(10);
@@ -379,7 +376,7 @@ private:
 		case move_right:
 			if (x < ENVIRONMENT_SIZE_X)
 			{
-				if (terrain[y][x + 1]->IsWalkable())
+				if (terrain[y][x + 1]->IsWalkable() && !terrain[y][x + 1]->IsContainsEntity())
 				{
 					terrain[y][x + 1]->SetEntity(terrain[y][x]->GetEntity());
 					terrain[y][x + 1]->GetEntity()->DecreaceEnergy(10);
@@ -390,7 +387,7 @@ private:
 		case move_bottom:
 			if (y < ENVIRONMENT_SIZE_Y)
 			{
-				if (terrain[y + 1][x]->IsWalkable())
+				if (terrain[y + 1][x]->IsWalkable() && !terrain[y + 1][x]->IsContainsEntity())
 				{
 					terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
 					terrain[y + 1][x]->GetEntity()->DecreaceEnergy(10);
@@ -401,7 +398,7 @@ private:
 		case move_top:
 			if (y > 0)
 			{
-				if (terrain[y - 1][x]->IsWalkable())
+				if (terrain[y - 1][x]->IsWalkable() && !terrain[y - 1][x]->IsContainsEntity())
 				{
 					terrain[y - 1][x]->SetEntity(terrain[y][x]->GetEntity());
 					terrain[y - 1][x]->GetEntity()->DecreaceEnergy(10);

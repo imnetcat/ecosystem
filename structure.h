@@ -14,7 +14,6 @@ protected:
 	unsigned char light_level;
 	unsigned short light_power;
 	bool walkable;
-	bool default_walkable;
 	Minerals food;
 	std::shared_ptr<Entity> entity;
 	bool contains_entity;

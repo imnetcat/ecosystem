@@ -6,7 +6,6 @@ Structure::Structure(RGBColor c, bool w, double tr) :
 	walkable(w),
 	transparency(tr),
 	light_level(0),
-	default_walkable(walkable),
 	contains_entity(false)
 { }
 
@@ -83,7 +82,6 @@ void Structure::SetFood(unsigned short energy)
 void Structure::DelFood()
 {
 	food.Clear();
-	walkable = default_walkable;
 }
 Minerals& Structure::GetFood()
 {
@@ -98,13 +96,11 @@ void Structure::SetEntity(std::shared_ptr<Entity> e)
 {
 	entity = e;
 	contains_entity = true;
-	walkable = false;
 }
 void Structure::DelEntity()
 {
 	entity = nullptr;
 	contains_entity = false;
-	walkable = default_walkable;
 }
 std::shared_ptr<Entity>& Structure::GetEntity()
 {
@@ -117,9 +113,6 @@ void Structure::Walkable(bool val)
 }
 bool Structure::IsWalkable()
 {
-	if (!food.Empty())
-		return (walkable || food.IsWalkable());
-
 	return walkable;
 }
 

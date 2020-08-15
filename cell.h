@@ -10,8 +10,8 @@ class Cell : public Entity
 private:
 	Gen genom;
 public:
-	explicit Cell(Gen g)
-		: Entity(100, 100), genom(g) {}
+	explicit Cell(Gen g, unsigned short e)
+		: Entity(100, 100, e), genom(g) {}
 	
 	Gen GetGen()
 	{
@@ -61,8 +61,10 @@ public:
 				index = rand() % 3;
 			}
 		}
+		unsigned short hlph = accumulated_energy / 2;
+		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			Gen(new_genom, newMutationChance, genom.generation + 1)
+			Gen(new_genom, newMutationChance, genom.generation + 1), hlph
 		));
 	}
 	

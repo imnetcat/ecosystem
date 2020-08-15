@@ -12,7 +12,7 @@ protected:
 	unsigned short energy;
 	unsigned int accumulated_energy;
 public:
-	Entity(unsigned short h, unsigned short e);
+	Entity(unsigned short h, unsigned short e, unsigned short ae);
 	virtual Gen GetGen() = 0;
 	virtual void Tic(std::vector<Command>& commands) = 0;
 	virtual std::shared_ptr<Entity> Reproduction() = 0;

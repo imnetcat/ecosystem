@@ -1,10 +1,10 @@
 #include "entity.h"
 
-Entity::Entity(unsigned short h, unsigned short e) :
+Entity::Entity(unsigned short h, unsigned short e, unsigned short ae) :
 		age(0),
 		hp(h),
 		energy(e),
-		accumulated_energy(0) {}
+		accumulated_energy(ae) {}
 
 void Entity::IncreaceAccEnergy(unsigned short value)
 {

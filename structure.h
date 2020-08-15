@@ -27,7 +27,7 @@ public:
 
 	RGBColor Color() override;
 
-	void Tic(std::vector<Command>& commands) override;
+	void Tic(std::vector<Command>& commands);
 
 	unsigned short GetLightLevel();
 	void SetLightLevel(unsigned short lv);

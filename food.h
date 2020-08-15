@@ -65,15 +65,12 @@ public:
 	{
 		return false;
 	}
-	void Tic(std::vector<Command>& commands) override
+	void Ticed(bool val)
 	{
-		if (ticed)
-			return;
-		commands.push_back(gravity);
-		ticed = true;
+		ticed = val;
 	}
-	void Untick()
+	bool Ticed()
 	{
-		ticed = false;
+		return ticed;
 	}
 };

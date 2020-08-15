@@ -18,7 +18,7 @@ double Structure::Transparency()
 void Structure::Untick()
 {
 	ticed = false;
-	food.Untick();
+	food.Ticed(false);
 }
 
 RGBColor Structure::Color()
@@ -38,7 +38,7 @@ void Structure::Tic(std::vector<Command>& commands)
 		return;
 
 	if (!food.Empty())
-		food.Tic(commands);
+		food.Ticed(true);
 	if (contains_entity)
 		entity->Tic(commands);
 	ticed = true;
@@ -73,6 +73,7 @@ bool Structure::Outline()
 
 void Structure::SetFood(Food obj)
 {
+	food.Ticed(true);
 	auto& obj_energy = obj.Get();
 	for (auto&[r, energy] : obj_energy)
 	{

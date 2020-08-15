@@ -123,6 +123,37 @@ public:
 	vector<Stat> Update()
 	{
 		vector<Stat> result;
+
+		// gravitation effect
+		size_t y = ENVIRONMENT_SIZE_Y - 1;
+		while (true)
+		{
+			size_t x = ENVIRONMENT_SIZE_X - 1;
+			while (true)
+			{
+				if (terrain[y][x]->IsContainsFood())
+				{
+					if (y < ENVIRONMENT_SIZE_Y)
+					{
+						if (terrain[y + 1][x]->IsWalkable())
+						{
+							if (!terrain[y + 1][x]->IsContainsFood())
+							{
+								terrain[y + 1][x]->SetFood(terrain[y][x]->GetFood());
+								terrain[y][x]->DelFood();
+							}
+						}
+					}
+				}
+				if (x == 0)
+					break;
+				x--;
+			}
+			if (y == 0)
+				break;
+			y--;
+		}
+
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
@@ -288,21 +319,6 @@ private:
 	{
 		switch (command)
 		{
-		case skip:
-			break;
-		case gravity:
-			if (y < ENVIRONMENT_SIZE_Y)
-			{
-				if (terrain[y + 1][x]->IsWalkable())
-				{
-					if (terrain[y][x]->IsContainsFood() && !terrain[y + 1][x]->IsContainsFood())
-					{
-						terrain[y + 1][x]->SetFood(terrain[y][x]->GetFood());
-						terrain[y][x]->DelFood();
-					}
-				}
-			}
-			break;
 		case die:
 			if (terrain[y][x]->IsContainsFood())
 				terrain[y][x]->GetFood().Put(minerals, terrain[y][x]->GetEntity()->AccEnergy() + 100);

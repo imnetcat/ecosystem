@@ -10,6 +10,8 @@ enum Command
 	turn_right,
 	fotosintesis,
 	minerals,
+	attack_non_friendly, // атака клетки если её геном отличается более чем на 2 комманды
+	attack,
 	reproduction,  // деление на две
 };
 

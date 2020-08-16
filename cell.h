@@ -17,6 +17,18 @@ public:
 	{
 		return genom;
 	}
+	
+	bool IsFriendly(Gen genom1)
+	{
+		size_t counter = 0;
+		for (size_t i = 0; i < Gen::length; i++)
+		{
+			if (genom1.data[i] != genom.data[i])
+				counter++;
+		}
+
+		return counter < 2;
+	}
 
 	std::shared_ptr<Entity> Reproduction() override
 	{

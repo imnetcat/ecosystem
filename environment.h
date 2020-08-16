@@ -379,96 +379,16 @@ private:
 			terrain[y][x]->DelEntity();
 			break;
 		case Command::move:
-			switch (terrain[y][x]->GetEntity()->GetView())
+			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
+
+			if (new_position == Position{ x, y })
+				break;
+
+			if (terrain[new_position.y][new_position.x]->IsWalkable() && !terrain[new_position.y][new_position.x]->IsContainsEntity())
 			{
-			case view_side::left:
-				if (x > 0)
-				{
-					if (terrain[y][x - 1]->IsWalkable() && !terrain[y][x - 1]->IsContainsEntity())
-					{
-						terrain[y][x - 1]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y][x - 1]->GetEntity()->DecreaceEnergy(10);
-						terrain[y][x]->DelEntity();
-					}
-				}
-				break;
-			case view_side::right:
-				if (x < ENVIRONMENT_SIZE_X)
-				{
-					if (terrain[y][x + 1]->IsWalkable() && !terrain[y][x + 1]->IsContainsEntity())
-					{
-						terrain[y][x + 1]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y][x + 1]->GetEntity()->DecreaceEnergy(10);
-						terrain[y][x]->DelEntity();
-					}
-				}
-				break;
-			case view_side::bottom:
-				if (y < ENVIRONMENT_SIZE_Y)
-				{
-					if (terrain[y + 1][x]->IsWalkable() && !terrain[y + 1][x]->IsContainsEntity())
-					{
-						terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y + 1][x]->GetEntity()->DecreaceEnergy(10);
-						terrain[y][x]->DelEntity();
-					}
-				}
-				break;
-			case view_side::top:
-				if (y > 0)
-				{
-					if (terrain[y - 1][x]->IsWalkable() && !terrain[y - 1][x]->IsContainsEntity())
-					{
-						terrain[y - 1][x]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y - 1][x]->GetEntity()->DecreaceEnergy(10);
-						terrain[y][x]->DelEntity();
-					}
-				}
-				break;
-			case view_side::left_bottom:
-				if (x > 0 && y < ENVIRONMENT_SIZE_Y)
-				{
-					if (terrain[y + 1][x - 1]->IsWalkable() && !terrain[y + 1][x - 1]->IsContainsEntity())
-					{
-						terrain[y + 1][x - 1]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y + 1][x - 1]->GetEntity()->DecreaceEnergy(10);
-						terrain[y][x]->DelEntity();
-					}
-				}
-				break;
-			case view_side::left_top:
-				if (x > 0 && y > 0)
-				{
-					if (terrain[y - 1][x - 1]->IsWalkable() && !terrain[y - 1][x - 1]->IsContainsEntity())
-					{
-						terrain[y - 1][x - 1]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y - 1][x - 1]->GetEntity()->DecreaceEnergy(10);
-						terrain[y][x]->DelEntity();
-					}
-				}
-				break;
-			case view_side::right_bottom:
-				if (y < ENVIRONMENT_SIZE_Y)
-				{
-					if (terrain[y + 1][x + 1]->IsWalkable() && !terrain[y + 1][x + 1]->IsContainsEntity())
-					{
-						terrain[y + 1][x + 1]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y + 1][x + 1]->GetEntity()->DecreaceEnergy(10);
-						terrain[y][x]->DelEntity();
-					}
-				}
-				break;
-			case view_side::right_top:
-				if (y > 0)
-				{
-					if (terrain[y - 1][x + 1]->IsWalkable() && !terrain[y - 1][x + 1]->IsContainsEntity())
-					{
-						terrain[y - 1][x + 1]->SetEntity(terrain[y][x]->GetEntity());
-						terrain[y - 1][x + 1]->GetEntity()->DecreaceEnergy(10);
-						terrain[y][x]->DelEntity();
-					}
-				}
-				break;
+				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity());
+				terrain[new_position.y][new_position.x]->GetEntity()->DecreaceEnergy(10);
+				terrain[y][x]->DelEntity();
 			}
 			break;
 		case turn_left:
@@ -499,67 +419,46 @@ private:
 			terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[y][x]->GetLightPower());
 		}
 			break;
+		case attack_non_friendly:
+		{
+			Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
+
+			if (enemy_position == Position{ x, y })
+				break;
+
+			if (terrain[enemy_position.y][enemy_position.x]->IsContainsEntity())
+			{
+				if (terrain[enemy_position.y][enemy_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()->GetGen()))
+				{
+					Event(die, enemy_position.x, enemy_position.y);
+					terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
+				}
+			}
+		}
+			break;
+		case attack:
+		{
+			Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
+
+			if (enemy_position == Position{ x, y })
+				break;
+
+			if (terrain[enemy_position.y][enemy_position.x]->IsContainsEntity())
+			{
+				Event(die, enemy_position.x, enemy_position.y);
+				terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
+			}
+		}
+			break;
 		case reproduction:
 		{
 			if (terrain[y][x]->GetEntity()->AccEnergy() < 200)
 				break;
 
-			Position new_position{ x, y };
-			switch (terrain[y][x]->GetEntity()->GetView())
-			{
-			case view_side::left:
-				if (x > 0)
-				{
-					new_position.x--;
-				}
+			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
+
+			if (new_position == Position{ x, y })
 				break;
-			case view_side::right:
-				if (x < ENVIRONMENT_SIZE_X)
-				{
-					new_position.x++;
-				}
-				break;
-			case view_side::bottom:
-				if (y > 0)
-				{
-					new_position.y--;
-				}
-				break;
-			case view_side::top:
-				if (y < ENVIRONMENT_SIZE_Y)
-				{
-					new_position.y++;
-				}
-				break;
-			case view_side::left_bottom:
-				if (x > 0 && y > 0)
-				{
-					new_position.x--;
-					new_position.y++;
-				}
-				break;
-			case view_side::left_top:
-				if (x > 0 && y > 0)
-				{
-					new_position.x--;
-					new_position.y--;
-				}
-				break;
-			case view_side::right_bottom:
-				if (y < ENVIRONMENT_SIZE_Y && x < ENVIRONMENT_SIZE_X)
-				{
-					new_position.y++;
-					new_position.x++;
-				}
-				break;
-			case view_side::right_top:
-				if (y > 0 && x < ENVIRONMENT_SIZE_X)
-				{
-					new_position.y--;
-					new_position.x++;
-				}
-				break;
-			}
 
 			if (terrain[new_position.y][new_position.x]->IsWalkable())
 			{
@@ -570,6 +469,67 @@ private:
 		}
 			break;
 		}
+	}
+
+	Position GetViewedPosition(view_side view, Position init)
+	{
+		Position viewed_position = init;
+		switch (view)
+		{
+		case view_side::left:
+			if (init.x > 0)
+			{
+				viewed_position.x--;
+			}
+			break;
+		case view_side::right:
+			if (init.x < ENVIRONMENT_SIZE_X)
+			{
+				viewed_position.x++;
+			}
+			break;
+		case view_side::bottom:
+			if (init.y > 0)
+			{
+				viewed_position.y--;
+			}
+			break;
+		case view_side::top:
+			if (init.y < ENVIRONMENT_SIZE_Y)
+			{
+				viewed_position.y++;
+			}
+			break;
+		case view_side::left_bottom:
+			if (init.x > 0 && init.y > 0)
+			{
+				viewed_position.x--;
+				viewed_position.y++;
+			}
+			break;
+		case view_side::left_top:
+			if (init.x > 0 && init.y > 0)
+			{
+				viewed_position.x--;
+				viewed_position.y--;
+			}
+			break;
+		case view_side::right_bottom:
+			if (init.y < ENVIRONMENT_SIZE_Y && init.x < ENVIRONMENT_SIZE_X)
+			{
+				viewed_position.y++;
+				viewed_position.x++;
+			}
+			break;
+		case view_side::right_top:
+			if (init.y > 0 && init.x < ENVIRONMENT_SIZE_X)
+			{
+				viewed_position.y--;
+				viewed_position.x++;
+			}
+			break;
+		}
+		return viewed_position;
 	}
 
 	std::array<std::array<shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> terrain;

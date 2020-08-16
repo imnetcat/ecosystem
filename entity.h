@@ -30,6 +30,7 @@ public:
 	virtual void Tic(std::vector<Command>& commands) = 0;
 	virtual std::shared_ptr<Entity> Reproduction() = 0;
 	virtual RGBColor Color() = 0;
+	virtual bool IsFriendly(Gen) = 0;
 
 	view_side Entity::GetView();
 	void Entity::SetView(view_side val);

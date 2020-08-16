@@ -128,7 +128,7 @@ public:
 			turn_right,
 			reproduction,
 			fotosintesis
-			}, 0.2), 0));
+			}, 0.2), ration(), 0));
 
 		// put first cells
 		terrain[y][x]->SetEntity(e);
@@ -410,13 +410,23 @@ private:
 		case minerals:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-			terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[y][x]->GetFood().Eat());
+			auto energy = terrain[y][x]->GetFood().Eat();
+			if (energy)
+			{
+				terrain[y][x]->GetEntity()->Ration().IncreaceMinerals();
+				terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
+			}
 		}
 			break;
 		case fotosintesis:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(LIGHT_LEVEL_POWER);
-			terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[y][x]->GetLightPower());
+			auto energy = terrain[y][x]->GetLightPower();
+			if (energy)
+			{
+				terrain[y][x]->GetEntity()->Ration().IncreaceLight();
+				terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
+			}
 		}
 			break;
 		case attack_non_friendly:
@@ -432,6 +442,7 @@ private:
 				{
 					Event(die, enemy_position.x, enemy_position.y);
 					terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
+					terrain[y][x]->GetEntity()->Ration().IncreaceMeat();
 				}
 			}
 		}
@@ -447,6 +458,7 @@ private:
 			{
 				Event(die, enemy_position.x, enemy_position.y);
 				terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
+				terrain[y][x]->GetEntity()->Ration().IncreaceMeat();
 			}
 		}
 			break;

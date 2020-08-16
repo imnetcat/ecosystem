@@ -10,8 +10,8 @@ class Cell : public Entity
 private:
 	Gen genom;
 public:
-	explicit Cell(Gen g, unsigned short e)
-		: Entity(100, 100, e), genom(g) {}
+	explicit Cell(Gen g, ration r, unsigned short e)
+		: Entity(100, 100, e, r), genom(g) {}
 	
 	Gen GetGen()
 	{
@@ -33,6 +33,7 @@ public:
 	std::shared_ptr<Entity> Reproduction() override
 	{
 		srand(time(0));  // рандомизация генератора случайных чисел
+		// вычисляем произойдёт ли мутация
 		auto new_genom = genom.data;
 		double mt = (rand() % 100) / 100;
 		if (mt <= genom.mutationChance)
@@ -47,7 +48,7 @@ public:
 		unsigned short hlph = accumulated_energy / 2;
 		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			Gen(new_genom, 0.2, genom.generation + 1), hlph
+			Gen(new_genom, 0.2, genom.generation + 1), ration_, hlph
 		));
 	}
 	
@@ -62,7 +63,7 @@ public:
 
 	RGBColor Color() override
 	{
-		return { 0, 255, 0 };
+		return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
 	}
 		
 	bool Outline() override

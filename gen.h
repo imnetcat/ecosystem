@@ -19,7 +19,7 @@ class Gen
 {
 public:
 	static const size_t length = 32;
-	static const size_t commands = 7;
+	static const size_t commands = 9;
 	explicit Gen(std::array<Command, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d) {};
 

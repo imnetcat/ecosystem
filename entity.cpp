@@ -1,11 +1,21 @@
 #include "entity.h"
 
-Entity::Entity(unsigned short h, unsigned short e, unsigned short ae) :
+Entity::Entity(unsigned short h, unsigned short e, unsigned short ae, ration r) :
 		view(top),
 		age(0),
 		hp(h),
 		energy(e),
+		ration_(r),
 		accumulated_energy(ae) {}
+
+ration& Entity::Ration()
+{
+	return ration_;
+}
+const ration& Entity::Ration() const
+{
+	return ration_;
+}
 
 void Entity::IncreaceAccEnergy(unsigned short value)
 {

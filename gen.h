@@ -9,6 +9,7 @@ enum Command
 	turn_left,
 	turn_right,
 	fotosintesis,
+	minerals,
 	reproduction,  // деление на две
 };
 
@@ -16,7 +17,7 @@ class Gen
 {
 public:
 	static const size_t length = 32;
-	static const size_t commands = 6;
+	static const size_t commands = 7;
 	explicit Gen(std::array<Command, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d) {};
 

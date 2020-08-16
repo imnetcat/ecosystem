@@ -487,11 +487,16 @@ private:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
 		}
 			break;
+		case minerals:
+		{
+			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
+			terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[y][x]->GetFood().Eat());
+		}
+			break;
 		case fotosintesis:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(LIGHT_LEVEL_POWER);
 			terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[y][x]->GetLightPower());
-			//terrain[y][x]->GetEntity()->Eat(terrain[y][x]->GetFood().Eat(food));
 		}
 			break;
 		case reproduction:

@@ -48,7 +48,7 @@ public:
 		unsigned short hlph = accumulated_energy / 2;
 		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			Gen(new_genom, 0.2, genom.generation + 1), ration_, hlph
+			Gen(new_genom, 0.25, genom.generation + 1), ration_, hlph
 		));
 	}
 	
@@ -61,9 +61,20 @@ public:
 			commands.push_back(genom.Read());
 	}
 
-	RGBColor Color() override
+	RGBColor Color(view_settings vs) override
 	{
-		return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
+		switch (vs)
+		{
+		case view_settings::default:
+			return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
+			break;
+		case view_settings::energy:
+			break;
+		case view_settings::species:
+			break;
+		default:
+			break;
+		}
 	}
 		
 	bool Outline() override

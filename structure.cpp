@@ -20,15 +20,28 @@ void Structure::Untick()
 	food.Ticed(false);
 }
 
-RGBColor Structure::Color()
+RGBColor Structure::Color(view_settings vs)
 {
 	if (contains_entity)
-		return entity->Color();
+		return entity->Color(vs);
 
 	if (!food.Empty())
-		return food.Color();
+		return food.Color(vs);
 
-	return color;
+	switch (vs)
+	{
+	case default:
+		return color;
+		break;
+	case energy:
+		return { 209, 209, 209 };
+		break;
+	case species:
+		return { 209, 209, 209 };
+		break;
+	default:
+		break;
+	}
 }
 
 void Structure::Tic(std::vector<Command>& commands)

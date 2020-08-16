@@ -41,32 +41,29 @@ public:
 		return minerals;
 	}
 
+	void Symbiosis()
+	{
+		meat += meat < 225 ? 30 : (255 - meat);
+		light += light < 225 ? 30 : (255 - light);
+		minerals += minerals < 225 ? 30 : (255 - minerals);
+	}
 	void IncreaceMeat()
 	{
-		if (meat != 255)
-			meat += 5;
-		if (light > 5)
-			light -= 5;
-		if (minerals > 5)
-			minerals -= 5;
+		meat += meat < 180 ? 75 : (255 - meat);
+		light -= light > 15 ? 15 : light;
+		minerals -= minerals > 15 ? 15 : minerals;
 	}
 	void IncreaceLight()
 	{
-		if(meat > 5)
-			meat -= 5;
-		if(light != 255)
-			light += 5;
-		if(minerals > 5)
-			minerals -= 5;
+		meat -= meat > 30 ? 30 : meat;
+		light += light < 240 ? 15 : (255 - light);
+		minerals -= minerals > 15 ? 15 : minerals;
 	}
 	void IncreaceMinerals()
 	{
-		if (meat > 5)
-			meat -= 5;
-		if (light > 5)
-			light -= 5;
-		if (minerals != 255)
-			minerals += 5;
+		meat -= meat > 30 ? 30 : meat;
+		light -= light > 15 ? 15 : light;
+		minerals += minerals < 240 ? 15 : (255 - minerals);
 	}
 };
 
@@ -84,9 +81,9 @@ public:
 	virtual Gen GetGen() = 0;
 	virtual void Tic(std::vector<Command>& commands) = 0;
 	virtual std::shared_ptr<Entity> Reproduction() = 0;
-	virtual RGBColor Color() = 0;
 	virtual bool IsFriendly(Gen) = 0;
 
+	unsigned short Age();
 	ration& Ration();
 	const ration& Ration() const;
 	view_side Entity::GetView();

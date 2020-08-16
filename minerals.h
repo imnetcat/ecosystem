@@ -55,9 +55,9 @@ public:
 		}
 		return val;
 	}
-	RGBColor Color() override
+	RGBColor Color(view_settings) override
 	{
-		return	{ 0, 227, 208 };
+		return	{ 209, 209, 209 };
 	}
 	bool Outline() override
 	{

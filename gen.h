@@ -10,9 +10,9 @@ enum Command
 	turn_right,
 	fotosintesis,
 	minerals,
-	attack_non_friendly, // атака клетки если её геном отличается более чем на 2 комманды
-	attack,
+	attack, // атака клетки если её геном отличается более чем на 2 комманды
 	reproduction,  // деление на две
+	symbiosis
 };
 
 class Gen

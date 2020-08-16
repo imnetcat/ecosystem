@@ -15,7 +15,7 @@
 using namespace std;
 
 const int ENVIRONMENT_SIZE_X = 30;
-const int ENVIRONMENT_SIZE_Y = 60;
+const int ENVIRONMENT_SIZE_Y = 80;
 
 struct Position
 {
@@ -32,7 +32,7 @@ using CellId = size_t;
 using ObjectId = size_t;
 using PositionId = size_t;
 
-struct Stat
+struct DrawData
 {
 	Position position;
 	RGBColor color;
@@ -40,32 +40,32 @@ struct Stat
 	unsigned char shadow;
 };
 
+struct Info
+{
+	RGBColor color;
+	struct Age
+	{
+		size_t curr = 0;
+		size_t max = 0;
+	} age;
+	vector<Command> genom;
+	unsigned short hp = 0;
+	size_t energy = 0;
+	size_t acc_energy = 0;
+	size_t generation = 0;
+	size_t light_power = 0;
+	size_t food_power = 0;
+};
+
 struct LightSource
 {
 	Position position;
 	size_t power;
 };
-class Light
-{
-public:
-	enum light_level
-	{
-		//surface = CELL_OUTLINE * 4,
-		//shallow = CELL_OUTLINE * 4 +  1 * 8,
-		//depth	= CELL_OUTLINE * 4 +  1 * 8,
-		//abyss	= CELL_OUTLINE * 4 +  1 * 8 +  1 * 12,
-		surface = CELL_OUTLINE,
-		shallow = CELL_OUTLINE * 2,
-		depth = CELL_OUTLINE,
-		abyss = CELL_OUTLINE,
-	};
-};
-
 
 class Environment
 {
 public:
-	vector<LightSource> light_sources;
 	explicit Environment()
 	{
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
@@ -73,12 +73,12 @@ public:
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
 				// set up light
-				//if ((x != 0 || x != ENVIRONMENT_SIZE_X - 1) &&
-				//	y == 0)
-				//	light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 60 });
-				if (x == ENVIRONMENT_SIZE_X/2 &&
+				if ((x != 0 || x != ENVIRONMENT_SIZE_X - 1) &&
 					y == 0)
-					light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 40 });
+					light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 30 });
+				//if (x == ENVIRONMENT_SIZE_X/2 &&
+				//	y == 0)
+				//	light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 40 });
 
 				// set up structures
 				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
@@ -92,39 +92,46 @@ public:
 				}
 			}
 		}
+		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
+		{
+			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
+			{
+				Shadow(y, x);
+			}
+		}
 
 		auto x = ENVIRONMENT_SIZE_X / 2;
-		auto y = ENVIRONMENT_SIZE_Y / 2;
+		auto y = ENVIRONMENT_SIZE_Y / 8;
 		shared_ptr<Entity> e(new Cell(Gen({
 			reproduction,
 			turn_right,
 			fotosintesis,
-			turn_left,
+			attack,
 			reproduction,
 			fotosintesis,
-			fotosintesis,
-			turn_left,
-			turn_right,
-			fotosintesis,
-			turn_right,
+			symbiosis,
 			fotosintesis,
 			fotosintesis,
 			fotosintesis,
-			reproduction,
 			fotosintesis,
-			reproduction,
+			symbiosis,
 			fotosintesis,
-			turn_left,
 			fotosintesis,
 			reproduction,
 			fotosintesis,
+			reproduction,
+			attack,
+			attack,
+			symbiosis,
+			reproduction,
 			fotosintesis,
 			fotosintesis,
-			turn_right,
 			fotosintesis,
-			stay,
+			minerals,
 			fotosintesis,
+			minerals,
 			fotosintesis,
+			minerals,
 			turn_right,
 			reproduction,
 			fotosintesis
@@ -134,17 +141,9 @@ public:
 		terrain[y][x]->SetEntity(e);
 	}
 	
-	vector<Stat> Update()
+	vector<DrawData> Update()
 	{
-		vector<Stat> result;
-
-		struct TicStat
-		{
-			Position position;
-			size_t acc_energy = 0;
-			std::array<Command, Gen::length> genom;
-			size_t generation;
-		};
+		vector<DrawData> result;
 
 		// gravitation effect
 		size_t y = ENVIRONMENT_SIZE_Y - 2;
@@ -173,30 +172,15 @@ public:
 			y--;
 		}
 
-
-		TicStat tic_statistic;
-
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
-				Shadow(y, x);
 				vector<Command> commands;
 				terrain[y][x]->Tic(commands);
 				for (auto command : commands)
 				{
 					Event(command, x, y);
-				}
-
-				if (terrain[y][x]->IsContainsEntity())
-				{
-					if (terrain[y][x]->GetEntity()->AccEnergy() > tic_statistic.acc_energy)
-					{
-						tic_statistic.acc_energy = terrain[y][x]->GetEntity()->AccEnergy();
-						tic_statistic.position = { x, y };
-						tic_statistic.genom = terrain[y][x]->GetEntity()->GetGen().data;
-						tic_statistic.generation = terrain[y][x]->GetEntity()->GetGen().generation;
-					}
 				}
 			}
 		}
@@ -205,7 +189,7 @@ public:
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
 				terrain[y][x]->Untick();
-				Stat stat;
+				DrawData stat;
 				stat.color = terrain[y][x]->Color();
 				stat.outline = terrain[y][x]->Outline();
 				stat.shadow = terrain[y][x]->GetLightLevel();
@@ -214,23 +198,40 @@ public:
 			}
 		}
 
-		if (tic_statistic.acc_energy)
-		{
-			cout << endl;
-			cout << "\tGeneration:\t" << tic_statistic.generation << endl;
-			cout << "\tPosition:\t" << tic_statistic.position.x << "  " << tic_statistic.position.y << endl;
-			cout << "\tEnergy:\t" << tic_statistic.acc_energy << endl;
-			cout << "\tGenom:\t";
-			for (auto& g : tic_statistic.genom)
-			{
-				cout << g << ' ';
-			}
-			cout << endl;
-		}
-
 		return result;
 	}
+
+	Info GetInfo(size_t x_px, size_t y_px)
+	{
+		size_t x = x_px / CELL_OUTLINE;
+		size_t y = y_px / CELL_OUTLINE;
+		Info info;
+		info.color = terrain[y][x]->Color();
+		info.light_power = terrain[y][x]->GetLightPower();
+		if (terrain[y][x]->IsContainsEntity())
+		{
+			info.age.curr = terrain[y][x]->GetEntity()->Age();
+			info.age.max = MAX_CELL_AGE;
+			auto& data = terrain[y][x]->GetEntity()->GetGen().data;
+			for (auto command : data)
+			{
+				info.genom.push_back(command);
+			}
+			info.generation = terrain[y][x]->GetEntity()->GetGen().generation;
+			info.hp = terrain[y][x]->GetEntity()->Hp();
+			info.energy = terrain[y][x]->GetEntity()->Energy();
+			info.acc_energy = terrain[y][x]->GetEntity()->AccEnergy();
+		}
+		if (terrain[y][x]->IsContainsFood())
+		{
+			info.food_power = terrain[y][x]->GetFood().Get();
+		}
+ 		return info;
+	}
+
 private:
+
+	vector<LightSource> light_sources;
 
 	void ShadowVector(Position source, Position node, size_t& power)
 	{
@@ -341,18 +342,16 @@ private:
 			size_t dx = max(light.position.x, x) - min(light.position.x, x);
 			size_t dy = max(light.position.y, y) - min(light.position.y, y);
 			size_t distance = sqrt(dx * dx + dy * dy);
-			//if (distance * LIGHT_LEVEL_POWER < light.power)
-				// свет источника достаёт до клетки
-			//{
-				// сила освещения в данной клетке
-				//  данного источника света не считая препятствий
-				size_t power = light.power;
+			// сила освещения в данной клетке
+			//  данного источника света не считая препятствий
+			size_t power = light.power;
 
-				power_sum += power;
-			//}
+			power_sum += power;
 		}
 		return power_sum;
 	}
+
+
 
 	void Shadow(size_t y, size_t x)
 	{
@@ -410,7 +409,7 @@ private:
 		case minerals:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-			auto energy = terrain[y][x]->GetFood().Eat();
+			auto energy = terrain[y][x]->GetFood().Eat(6000);
 			if (energy)
 			{
 				terrain[y][x]->GetEntity()->Ration().IncreaceMinerals();
@@ -429,9 +428,30 @@ private:
 			}
 		}
 			break;
-		case attack_non_friendly:
+		case symbiosis:
 		{
-			Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
+			if (terrain[y][x]->GetEntity()->AccEnergy() < 400)
+				break;
+
+			Position recipient_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
+
+			if (recipient_position == Position{ x, y })
+				break;
+
+			if (terrain[recipient_position.y][recipient_position.x]->IsContainsEntity())
+			{
+				if (terrain[recipient_position.y][recipient_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()->GetGen()))
+				{
+					terrain[y][x]->GetEntity()->DecreaceAccEnergy(400);
+					terrain[recipient_position.y][recipient_position.x]->GetEntity()->IncreaceEnergy(400);
+					terrain[recipient_position.y][recipient_position.x]->GetEntity()->Ration().Symbiosis();
+				}
+			}
+		}
+		break;
+		case attack:
+		{
+			Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
 
 			if (enemy_position == Position{ x, y })
 				break;
@@ -444,21 +464,6 @@ private:
 					terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
 					terrain[y][x]->GetEntity()->Ration().IncreaceMeat();
 				}
-			}
-		}
-			break;
-		case attack:
-		{
-			Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
-
-			if (enemy_position == Position{ x, y })
-				break;
-
-			if (terrain[enemy_position.y][enemy_position.x]->IsContainsEntity())
-			{
-				Event(die, enemy_position.x, enemy_position.y);
-				terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
-				terrain[y][x]->GetEntity()->Ration().IncreaceMeat();
 			}
 		}
 			break;

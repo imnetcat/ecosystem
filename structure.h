@@ -24,7 +24,7 @@ public:
 
 	void Untick();
 
-	RGBColor Color() override;
+	RGBColor Color(view_settings vs);
 
 	void Tic(std::vector<Command>& commands);
 

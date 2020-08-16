@@ -8,6 +8,11 @@ Entity::Entity(unsigned short h, unsigned short e, unsigned short ae, ration r) 
 		ration_(r),
 		accumulated_energy(ae) {}
 
+
+unsigned short Entity::Age()
+{
+	return age;
+}
 ration& Entity::Ration()
 {
 	return ration_;
@@ -19,13 +24,17 @@ const ration& Entity::Ration() const
 
 void Entity::IncreaceAccEnergy(unsigned short value)
 {
-	if (accumulated_energy < 32000)
+	if (accumulated_energy + value < MAX_ACC_ENERGY)
 		accumulated_energy += value;
+	else
+		accumulated_energy = MAX_ACC_ENERGY;
 }
 void Entity::DecreaceAccEnergy(unsigned short value)
 {
 	if (accumulated_energy > value)
 		accumulated_energy -= value;
+	else
+		accumulated_energy = 0;
 }
 
 view_side Entity::GetView()
@@ -52,7 +61,7 @@ void Entity::IncreaceEnergy(unsigned short value)
 	{
 		if (energy + value > 100)
 		{
-			accumulated_energy += value + energy - 100;
+			IncreaceAccEnergy(value + energy - 100);
 			energy = 100;
 		}
 		else
@@ -65,25 +74,20 @@ void Entity::DecreaceEnergy(unsigned short value)
 	if (energy > value)
 	{
 		energy -= value;
+		return;
 	}
-	else if (energy > 0)
-	{
-		DecreaceHp(value - energy);
-		energy = 0;
-	}
-	else if (accumulated_energy > value)
+
+	value -= energy;
+	energy = 0;
+	
+	if (accumulated_energy > value)
 	{
 		accumulated_energy -= value;
+		return;
 	}
-	else if (accumulated_energy > 0)
-	{
-		DecreaceHp(value - accumulated_energy);
-		accumulated_energy = 0;
-	}
-	else
-	{
-		DecreaceHp(value);
-	}
+
+	DecreaceHp(value - accumulated_energy);
+	accumulated_energy = 0;
 }
 
 void Entity::IncreaceHp(unsigned short value)

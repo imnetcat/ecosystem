@@ -39,8 +39,6 @@ RGBColor Structure::Color(view_settings vs)
 	case species:
 		return { 209, 209, 209 };
 		break;
-	default:
-		break;
 	}
 }
 

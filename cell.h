@@ -45,8 +45,13 @@ public:
 			srand(time(0)); 
 			new_genom[index] = static_cast<Command>(rand() % Gen::commands);
 		}
-		unsigned short hlph = accumulated_energy / 2;
-		DecreaceAccEnergy(hlph);
+
+		unsigned short hlph = 0;
+		if (accumulated_energy > 600)
+		{
+			hlph = 600;
+			DecreaceAccEnergy(600);
+		}
 		return std::shared_ptr<Entity>(new Cell(
 			Gen(new_genom, 0.25, genom.generation + 1), ration_, hlph
 		));
@@ -69,12 +74,23 @@ public:
 			return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
 			break;
 		case view_settings::energy:
+			return { 255, static_cast<unsigned char>(255 - 255 * (double)accumulated_energy / MAX_ACC_ENERGY), 0 };
 			break;
 		case view_settings::species:
-			break;
-		default:
+		{
+			unsigned char r = 0;
+			for (unsigned short i = 0; i < Gen::length; i++)
+			{
+				r += static_cast<unsigned char>(genom.data[i]);
+			}
+			r = 255 - r;
+			unsigned char g = 255 - r;
+			unsigned char b = 255 - r;
+			return { r, g, b };
+		}
 			break;
 		}
+		return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
 	}
 		
 	bool Outline() override

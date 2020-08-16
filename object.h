@@ -6,6 +6,9 @@ const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 
 const unsigned short LIGHT_LEVEL_POWER = 10;
 const unsigned int MAX_CELL_AGE = 50; // в тиках
+const unsigned int MAX_ACC_ENERGY = 32000;
+const unsigned int MAX_ENERGY = 100;
+const unsigned int MAX_HP = 100;
 
 enum view_settings
 {

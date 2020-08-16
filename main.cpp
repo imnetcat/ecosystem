@@ -19,6 +19,27 @@ const int WINDOW_POS_X = 600;
 const int WINDOW_POS_Y = 100;
 const char* FONT = "SourceCodePro-Black.ttf";
 
+
+const int DEFAULT_BTN_POS_X = 15;
+const int DEFAULT_BTN_POS_Y = 35;
+const int DEFAULT_BTN_SIZE_X = 75;
+const int DEFAULT_BTN_SIZE_Y = 30;
+
+const int ENERGY_BTN_POS_X = 15;
+const int ENERGY_BTN_POS_Y = 70;
+const int ENERGY_BTN_SIZE_X = 75;
+const int ENERGY_BTN_SIZE_Y = 30;
+
+const int SPECIES_BTN_POS_X = 110;
+const int SPECIES_BTN_POS_Y = 35;
+const int SPECIES_BTN_SIZE_X = 75;
+const int SPECIES_BTN_SIZE_Y = 30;
+
+const int CLEAR_INFO_POS_X = 70;
+const int CLEAR_INFO_POS_Y = 375;
+const int CLEAR_INFO_SIZE_X = 50;
+const int CLEAR_INFO_SIZE_Y = 20;
+
 int main()
 {
 	int loopback = 0;
@@ -51,8 +72,8 @@ int main()
 	view_title.setPosition(75, 3);
 	view_title.setFillColor(sf::Color::Black);
 
-	sf::RectangleShape def_view_btn(sf::Vector2f(75, 30));
-	def_view_btn.setPosition(15, 35);
+	sf::RectangleShape def_view_btn(sf::Vector2f(DEFAULT_BTN_SIZE_X, DEFAULT_BTN_SIZE_Y));
+	def_view_btn.setPosition(DEFAULT_BTN_POS_X, DEFAULT_BTN_POS_Y);
 	def_view_btn.setOutlineThickness(1);
 	def_view_btn.setFillColor({ 230, 230, 230 });
 	def_view_btn.setOutlineColor(sf::Color(0, 0, 0));
@@ -64,8 +85,8 @@ int main()
 	def_view_text.setPosition(25, 40);
 	def_view_text.setFillColor(sf::Color::Black);
 
-	sf::RectangleShape energy_view_btn(sf::Vector2f(75, 30));
-	energy_view_btn.setPosition(15, 70);
+	sf::RectangleShape energy_view_btn(sf::Vector2f(ENERGY_BTN_SIZE_X, ENERGY_BTN_SIZE_Y));
+	energy_view_btn.setPosition(ENERGY_BTN_POS_X, ENERGY_BTN_POS_Y);
 	energy_view_btn.setOutlineThickness(1);
 	energy_view_btn.setFillColor({ 255, 255, 255 });
 	energy_view_btn.setOutlineColor(sf::Color(0, 0, 0));
@@ -77,8 +98,8 @@ int main()
 	energy_view_text.setPosition(27, 75);
 	energy_view_text.setFillColor(sf::Color::Black);
 
-	sf::RectangleShape species_view_btn(sf::Vector2f(75, 30));
-	species_view_btn.setPosition(110, 35);
+	sf::RectangleShape species_view_btn(sf::Vector2f(SPECIES_BTN_SIZE_X, SPECIES_BTN_SIZE_Y));
+	species_view_btn.setPosition(SPECIES_BTN_POS_X, SPECIES_BTN_POS_Y);
 	species_view_btn.setOutlineThickness(1);
 	species_view_btn.setFillColor({ 255, 255, 255 });
 	species_view_btn.setOutlineColor(sf::Color(0, 0, 0));
@@ -163,8 +184,8 @@ int main()
 	cell_genom.setPosition(10, 310);
 	cell_genom.setFillColor(sf::Color::Black);
 
-	sf::RectangleShape info_clear_rect(sf::Vector2f(50, 20));
-	info_clear_rect.setPosition(70, 375);
+	sf::RectangleShape info_clear_rect(sf::Vector2f(CLEAR_INFO_SIZE_X, CLEAR_INFO_SIZE_Y));
+	info_clear_rect.setPosition(CLEAR_INFO_POS_X, CLEAR_INFO_POS_Y);
 	info_clear_rect.setOutlineThickness(1);
 	info_clear_rect.setFillColor({ 255, 255, 255 });
 	info_clear_rect.setOutlineColor(sf::Color(0, 0, 0));
@@ -173,7 +194,7 @@ int main()
 	info_clear_text.setFont(font);
 	info_clear_text.setString("clear");
 	info_clear_text.setCharacterSize(12);
-	info_clear_text.setPosition(82, 377);
+	info_clear_text.setPosition(80, 377);
 	info_clear_text.setFillColor(sf::Color::Black);
 
 	Environment environment;
@@ -190,6 +211,54 @@ int main()
 		Event main_event, settings_event;
 		while (setting_window.pollEvent(settings_event))
 		{
+			if (settings_event.type == sf::Event::MouseButtonPressed)
+			{
+				// Пользователь нажал и отпустил лкм
+				if (settings_event.mouseButton.button == sf::Mouse::Left)
+				{
+					// нажатие на кнопку выключения окна информации
+					if (settings_event.mouseButton.x > CLEAR_INFO_POS_X &&
+						settings_event.mouseButton.x < CLEAR_INFO_POS_X + CLEAR_INFO_SIZE_X &&
+						settings_event.mouseButton.y > CLEAR_INFO_POS_Y &&
+						settings_event.mouseButton.y < CLEAR_INFO_POS_Y + CLEAR_INFO_SIZE_Y)
+					{
+						turn_on_info_block = false;
+					}
+
+					if (settings_event.mouseButton.x > DEFAULT_BTN_POS_X &&
+						settings_event.mouseButton.x < DEFAULT_BTN_POS_X + DEFAULT_BTN_SIZE_X &&
+						settings_event.mouseButton.y > DEFAULT_BTN_POS_Y &&
+						settings_event.mouseButton.y < DEFAULT_BTN_POS_Y + DEFAULT_BTN_SIZE_Y)
+					{
+						def_view_btn.setFillColor({ 230, 230, 230 });
+						species_view_btn.setFillColor({ 255, 255, 255 });
+						energy_view_btn.setFillColor({ 255, 255, 255 });
+						environment.SetView(default);
+					}
+
+					if (settings_event.mouseButton.x > SPECIES_BTN_POS_X &&
+						settings_event.mouseButton.x < SPECIES_BTN_POS_X + SPECIES_BTN_SIZE_X &&
+						settings_event.mouseButton.y > SPECIES_BTN_POS_Y &&
+						settings_event.mouseButton.y < SPECIES_BTN_POS_Y + SPECIES_BTN_SIZE_Y)
+					{
+						def_view_btn.setFillColor({ 255, 255, 255 });
+						species_view_btn.setFillColor({ 230, 230, 230 });
+						energy_view_btn.setFillColor({ 255, 255, 255 });
+						environment.SetView(species);
+					}
+
+					if (settings_event.mouseButton.x > ENERGY_BTN_POS_X &&
+						settings_event.mouseButton.x < ENERGY_BTN_POS_X + ENERGY_BTN_SIZE_X &&
+						settings_event.mouseButton.y > ENERGY_BTN_POS_Y &&
+						settings_event.mouseButton.y < ENERGY_BTN_POS_Y + ENERGY_BTN_SIZE_Y)
+					{
+						def_view_btn.setFillColor({ 255, 255, 255 });
+						species_view_btn.setFillColor({ 255, 255, 255 });
+						energy_view_btn.setFillColor({ 230, 230, 230 });
+						environment.SetView(energy);
+					}
+				}
+			}
 		}
 		while (window.pollEvent(main_event))
 		{
@@ -211,9 +280,9 @@ int main()
 				}
 			}
 
-			// Пользователь нажал и отпустил лкм
 			if (main_event.type == sf::Event::MouseButtonPressed)
 			{
+				// Пользователь нажал и отпустил лкм
 				if (main_event.mouseButton.button == sf::Mouse::Left)
 				{
 					auto info = environment.GetInfo(main_event.mouseButton.x, main_event.mouseButton.y);
@@ -285,13 +354,18 @@ int main()
 			setting_window.draw(info_clear_text);
 		}
 
-		if (!loopback && !pause)
+
+		if (!loopback)
 		{
 			// clear the window and draw background with background color
 			window.clear(sf::Color(0, 61, 156));
 
 			// update environment
-			auto envdata = environment.Update();
+			if (!pause)
+			{
+				environment.Update();
+			}
+			auto envdata = environment.UpdateColors();
 			// draw all entities
 			for (const auto& object : envdata)
 			{

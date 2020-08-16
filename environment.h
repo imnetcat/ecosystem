@@ -141,10 +141,8 @@ public:
 		terrain[y][x]->SetEntity(e);
 	}
 	
-	vector<DrawData> Update()
+	void Update()
 	{
-		vector<DrawData> result;
-
 		// gravitation effect
 		size_t y = ENVIRONMENT_SIZE_Y - 2;
 		while (true)
@@ -184,15 +182,24 @@ public:
 				}
 			}
 		}
+	}
+
+	vector<DrawData> UpdateColors()
+	{
+		vector<DrawData> result;
+		
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
 				terrain[y][x]->Untick();
 				DrawData stat;
-				stat.color = terrain[y][x]->Color();
+				stat.color = terrain[y][x]->Color(view);
 				stat.outline = terrain[y][x]->Outline();
-				stat.shadow = terrain[y][x]->GetLightLevel();
+				if (view == default)
+					stat.shadow = terrain[y][x]->GetLightLevel();
+				else
+					stat.shadow = 0;
 				stat.position = { x * CELL_OUTLINE, y * CELL_OUTLINE };
 				result.push_back(stat);
 			}
@@ -206,7 +213,7 @@ public:
 		size_t x = x_px / CELL_OUTLINE;
 		size_t y = y_px / CELL_OUTLINE;
 		Info info;
-		info.color = terrain[y][x]->Color();
+		info.color = terrain[y][x]->Color(view);
 		info.light_power = terrain[y][x]->GetLightPower();
 		if (terrain[y][x]->IsContainsEntity())
 		{
@@ -229,7 +236,17 @@ public:
  		return info;
 	}
 
+	view_settings GetView()
+	{
+		return view;
+	}
+	void SetView(view_settings new_val)
+	{
+		view = new_val;
+	}
 private:
+
+	view_settings view = default;
 
 	vector<LightSource> light_sources;
 

@@ -1,6 +1,7 @@
 #include "entity.h"
 
 Entity::Entity(unsigned short h, unsigned short e, unsigned short ae) :
+		view(top),
 		age(0),
 		hp(h),
 		energy(e),
@@ -15,6 +16,15 @@ void Entity::DecreaceAccEnergy(unsigned short value)
 {
 	if (accumulated_energy > value)
 		accumulated_energy -= value;
+}
+
+view_side Entity::GetView()
+{
+	return view;
+}
+void Entity::SetView(view_side val)
+{
+	view = val;
 }
 
 unsigned short Entity::AccEnergy()

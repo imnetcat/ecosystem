@@ -1,10 +1,21 @@
 #pragma once
 #include <array>
 
+enum Command
+{
+	die,
+	stay,
+	move,
+	turn_left,
+	turn_right,
+	fotosintesis,
+	reproduction,  // деление на две
+};
+
 class Gen
 {
 public:
-	static const size_t length = 16;
+	static const size_t length = 32;
 	static const size_t commands = 6;
 	explicit Gen(std::array<Command, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d) {};

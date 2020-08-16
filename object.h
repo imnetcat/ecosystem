@@ -7,18 +7,6 @@ const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 const unsigned short LIGHT_LEVEL_POWER = 10;
 const unsigned int MAX_CELL_AGE = 50; // в тиках
 
-enum Command
-{
-	die,
-	stay,
-	move_left,
-	move_right,
-	move_bottom,
-	move_top,
-	fotosintesis,
-	reproduction,  // деление на две
-};
-
 struct RGBColor
 {
 	unsigned char r = 0;

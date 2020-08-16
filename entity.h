@@ -4,9 +4,22 @@
 #include "gen.h"
 #include <memory>
 
+enum view_side
+{
+	top,
+	right_top,
+	right,
+	right_bottom,
+	bottom,
+	left_bottom,
+	left,
+	left_top,
+};
+
 class Entity : public Object
 {
 protected:
+	view_side view;
 	unsigned short age;
 	unsigned short hp;
 	unsigned short energy;
@@ -18,6 +31,8 @@ public:
 	virtual std::shared_ptr<Entity> Reproduction() = 0;
 	virtual RGBColor Color() = 0;
 
+	view_side Entity::GetView();
+	void Entity::SetView(view_side val);
 	void IncreaceAccEnergy(unsigned short value);
 	void DecreaceAccEnergy(unsigned short value);
 	unsigned short AccEnergy();

@@ -97,21 +97,37 @@ public:
 		auto y = ENVIRONMENT_SIZE_Y / 2;
 		shared_ptr<Entity> e(new Cell(Gen({
 			reproduction,
+			turn_right,
+			fotosintesis,
+			turn_left,
+			reproduction,
+			fotosintesis,
+			fotosintesis,
+			turn_left,
+			turn_right,
+			fotosintesis,
+			turn_right,
 			fotosintesis,
 			fotosintesis,
 			fotosintesis,
 			reproduction,
 			fotosintesis,
-			fotosintesis,
-			fotosintesis,
-			stay,
-			fotosintesis,
-			stay,
-			fotosintesis,
-			fotosintesis,
-			stay,
 			reproduction,
 			fotosintesis,
+			turn_left,
+			fotosintesis,
+			reproduction,
+			fotosintesis,
+			fotosintesis,
+			fotosintesis,
+			turn_right,
+			fotosintesis,
+			stay,
+			fotosintesis,
+			fotosintesis,
+			turn_right,
+			reproduction,
+			fotosintesis
 			}, 0.2), 0));
 
 		// put first cells
@@ -347,7 +363,7 @@ private:
 		terrain[y][x]->SetLightLevel(lv);
 	}
 
-	void Event(const Command& command, const size_t& x, const size_t& y)
+	void Event(Command command, size_t x, size_t y)
 	{
 		switch (command)
 		{
@@ -362,49 +378,114 @@ private:
 
 			terrain[y][x]->DelEntity();
 			break;
-		case move_left:
-			if (x > 0)
+		case Command::move:
+			switch (terrain[y][x]->GetEntity()->GetView())
 			{
-				if (terrain[y][x - 1]->IsWalkable() && !terrain[y][x - 1]->IsContainsEntity())
+			case view_side::left:
+				if (x > 0)
 				{
-					terrain[y][x - 1]->SetEntity(terrain[y][x]->GetEntity());
-					terrain[y][x - 1]->GetEntity()->DecreaceEnergy(10);
-					terrain[y][x]->DelEntity();
+					if (terrain[y][x - 1]->IsWalkable() && !terrain[y][x - 1]->IsContainsEntity())
+					{
+						terrain[y][x - 1]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y][x - 1]->GetEntity()->DecreaceEnergy(10);
+						terrain[y][x]->DelEntity();
+					}
 				}
+				break;
+			case view_side::right:
+				if (x < ENVIRONMENT_SIZE_X)
+				{
+					if (terrain[y][x + 1]->IsWalkable() && !terrain[y][x + 1]->IsContainsEntity())
+					{
+						terrain[y][x + 1]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y][x + 1]->GetEntity()->DecreaceEnergy(10);
+						terrain[y][x]->DelEntity();
+					}
+				}
+				break;
+			case view_side::bottom:
+				if (y < ENVIRONMENT_SIZE_Y)
+				{
+					if (terrain[y + 1][x]->IsWalkable() && !terrain[y + 1][x]->IsContainsEntity())
+					{
+						terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y + 1][x]->GetEntity()->DecreaceEnergy(10);
+						terrain[y][x]->DelEntity();
+					}
+				}
+				break;
+			case view_side::top:
+				if (y > 0)
+				{
+					if (terrain[y - 1][x]->IsWalkable() && !terrain[y - 1][x]->IsContainsEntity())
+					{
+						terrain[y - 1][x]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y - 1][x]->GetEntity()->DecreaceEnergy(10);
+						terrain[y][x]->DelEntity();
+					}
+				}
+				break;
+			case view_side::left_bottom:
+				if (x > 0 && y < ENVIRONMENT_SIZE_Y)
+				{
+					if (terrain[y + 1][x - 1]->IsWalkable() && !terrain[y + 1][x - 1]->IsContainsEntity())
+					{
+						terrain[y + 1][x - 1]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y + 1][x - 1]->GetEntity()->DecreaceEnergy(10);
+						terrain[y][x]->DelEntity();
+					}
+				}
+				break;
+			case view_side::left_top:
+				if (x > 0 && y > 0)
+				{
+					if (terrain[y - 1][x - 1]->IsWalkable() && !terrain[y - 1][x - 1]->IsContainsEntity())
+					{
+						terrain[y - 1][x - 1]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y - 1][x - 1]->GetEntity()->DecreaceEnergy(10);
+						terrain[y][x]->DelEntity();
+					}
+				}
+				break;
+			case view_side::right_bottom:
+				if (y < ENVIRONMENT_SIZE_Y)
+				{
+					if (terrain[y + 1][x + 1]->IsWalkable() && !terrain[y + 1][x + 1]->IsContainsEntity())
+					{
+						terrain[y + 1][x + 1]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y + 1][x + 1]->GetEntity()->DecreaceEnergy(10);
+						terrain[y][x]->DelEntity();
+					}
+				}
+				break;
+			case view_side::right_top:
+				if (y > 0)
+				{
+					if (terrain[y - 1][x + 1]->IsWalkable() && !terrain[y - 1][x + 1]->IsContainsEntity())
+					{
+						terrain[y - 1][x + 1]->SetEntity(terrain[y][x]->GetEntity());
+						terrain[y - 1][x + 1]->GetEntity()->DecreaceEnergy(10);
+						terrain[y][x]->DelEntity();
+					}
+				}
+				break;
 			}
 			break;
-		case move_right:
-			if (x < ENVIRONMENT_SIZE_X)
-			{
-				if (terrain[y][x + 1]->IsWalkable() && !terrain[y][x + 1]->IsContainsEntity())
-				{
-					terrain[y][x + 1]->SetEntity(terrain[y][x]->GetEntity());
-					terrain[y][x + 1]->GetEntity()->DecreaceEnergy(10);
-					terrain[y][x]->DelEntity();
-				}
-			}
+		case turn_left:
+		{
+			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
+			view_side new_side = static_cast<view_side>(old_side == 0 ? 7 : old_side - 1);
+			terrain[y][x]->GetEntity()->SetView(new_side);
+			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
+		}
 			break;
-		case move_bottom:
-			if (y < ENVIRONMENT_SIZE_Y)
-			{
-				if (terrain[y + 1][x]->IsWalkable() && !terrain[y + 1][x]->IsContainsEntity())
-				{
-					terrain[y + 1][x]->SetEntity(terrain[y][x]->GetEntity());
-					terrain[y + 1][x]->GetEntity()->DecreaceEnergy(10);
-					terrain[y][x]->DelEntity();
-				}
-			}
-			break;
-		case move_top:
-			if (y > 0)
-			{
-				if (terrain[y - 1][x]->IsWalkable() && !terrain[y - 1][x]->IsContainsEntity())
-				{
-					terrain[y - 1][x]->SetEntity(terrain[y][x]->GetEntity());
-					terrain[y - 1][x]->GetEntity()->DecreaceEnergy(10);
-					terrain[y][x]->DelEntity();
-				}
-			}
+		case turn_right:
+		{
+			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
+			view_side new_side = static_cast<view_side>(old_side == 7 ? 0 : old_side + 1);
+			terrain[y][x]->GetEntity()->SetView(new_side);
+			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
+		}
 			break;
 		case fotosintesis:
 		{
@@ -414,49 +495,74 @@ private:
 		}
 			break;
 		case reproduction:
-			if (terrain[y][x]->GetEntity()->AccEnergy() >= 200)
-			{
-				bool isSuccess = false;
-				for (int i = 0; i < 5; i++)
-				{
-					Position new_position{ x, y };
-					if (i == 0)
-					{
-						if (new_position.y > 0)
-						{
-							new_position.y--;
-						}
-					}
-					else if (i == 1)
-					{
-						if (y < ENVIRONMENT_SIZE_Y)
-						{
-							new_position.y++;
-						}
-					}
-					else if (i == 2)
-					{
-						if (x > 0)
-						{
-							new_position.x--;
-						}
-					}
-					else if (i == 3)
-					{
-						if (x < ENVIRONMENT_SIZE_X)
-						{
-							new_position.x++;
-						}
-					}
+		{
+			if (terrain[y][x]->GetEntity()->AccEnergy() < 200)
+				break;
 
-					if (terrain[new_position.y][new_position.x]->IsWalkable())
-					{
-						terrain[y][x]->GetEntity()->DecreaceAccEnergy(200);
-						terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Reproduction());
-						break;
-					}
+			Position new_position{ x, y };
+			switch (terrain[y][x]->GetEntity()->GetView())
+			{
+			case view_side::left:
+				if (x > 0)
+				{
+					new_position.x--;
 				}
+				break;
+			case view_side::right:
+				if (x < ENVIRONMENT_SIZE_X)
+				{
+					new_position.x++;
+				}
+				break;
+			case view_side::bottom:
+				if (y > 0)
+				{
+					new_position.y--;
+				}
+				break;
+			case view_side::top:
+				if (y < ENVIRONMENT_SIZE_Y)
+				{
+					new_position.y++;
+				}
+				break;
+			case view_side::left_bottom:
+				if (x > 0 && y > 0)
+				{
+					new_position.x--;
+					new_position.y++;
+				}
+				break;
+			case view_side::left_top:
+				if (x > 0 && y > 0)
+				{
+					new_position.x--;
+					new_position.y--;
+				}
+				break;
+			case view_side::right_bottom:
+				if (y < ENVIRONMENT_SIZE_Y && x < ENVIRONMENT_SIZE_X)
+				{
+					new_position.y++;
+					new_position.x++;
+				}
+				break;
+			case view_side::right_top:
+				if (y > 0 && x < ENVIRONMENT_SIZE_X)
+				{
+					new_position.y--;
+					new_position.x++;
+				}
+				break;
 			}
+
+			if (terrain[new_position.y][new_position.x]->IsWalkable())
+			{
+				terrain[y][x]->GetEntity()->DecreaceAccEnergy(200);
+				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Reproduction());
+				break;
+			}
+		}
 			break;
 		}
 	}

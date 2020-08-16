@@ -61,6 +61,15 @@ void Entity::DecreaceEnergy(unsigned short value)
 		DecreaceHp(value - energy);
 		energy = 0;
 	}
+	else if (accumulated_energy > value)
+	{
+		accumulated_energy -= value;
+	}
+	else if (accumulated_energy > 0)
+	{
+		DecreaceHp(value - accumulated_energy);
+		accumulated_energy = 0;
+	}
 	else
 	{
 		DecreaceHp(value);

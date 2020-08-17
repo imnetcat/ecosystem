@@ -15,7 +15,7 @@ using namespace sf;
 
 const double SPEED = 1.0;
 
-const int WINDOW_POS_X = 600;
+const int WINDOW_POS_X = 300;
 const int WINDOW_POS_Y = 100;
 const char* FONT = "SourceCodePro-Black.ttf";
 
@@ -232,6 +232,9 @@ int main()
 	info_clear_text.setPosition(80, 377);
 	info_clear_text.setFillColor(sf::Color::Black);
 
+	sf::RectangleShape sprite_cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+	sf::RectangleShape sprite_struct(sf::Vector2f(CELL_OUTLINE, CELL_OUTLINE));
+
 	Environment environment;
 
 	bool turn_on_info_block = false;
@@ -440,25 +443,21 @@ int main()
 		{
 			if (object.outline)
 			{
-				sf::RectangleShape sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-				sprite.setPosition(object.position.x, object.position.y);
-				sprite.setOutlineThickness(OUTLINE);
-				sprite.setFillColor({ object.color.r, object.color.g, object.color.b,
+				sprite_cell.setPosition(object.position.x, object.position.y);
+				sprite_cell.setOutlineThickness(OUTLINE);
+				sprite_cell.setFillColor({ object.color.r, object.color.g, object.color.b,
 					(unsigned char)((unsigned char)255 - object.shadow) });
-				sprite.setOutlineColor(sf::Color(0, 0, 0,
+				sprite_cell.setOutlineColor(sf::Color(0, 0, 0,
 					(unsigned char)((unsigned char)255 - object.shadow)));
-				window.draw(sprite);
+				window.draw(sprite_cell);
 			}
 			else
 			{
-				sf::RectangleShape sprite(sf::Vector2f(CELL_OUTLINE, CELL_OUTLINE));
-				sprite.setPosition(object.position.x, object.position.y);
-				//sprite.setOutlineThickness(OUTLINE);
-				sprite.setFillColor({ object.color.r, object.color.g, object.color.b,
+				sprite_struct.setFillColor({ object.color.r, object.color.g, object.color.b,
 					(unsigned char)((unsigned char)255 - object.shadow) });
-				sprite.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b,
+				sprite_struct.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b,
 					(unsigned char)((unsigned char)255 - object.shadow)));
-				window.draw(sprite);
+				window.draw(sprite_struct);
 			}
 		}
 

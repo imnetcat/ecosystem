@@ -1,8 +1,6 @@
 #pragma once
 
 #include "cell.h"
-#include "glass.h"
-#include "water.h"
 
 #include <vector>
 #include <map>
@@ -11,11 +9,30 @@
 #include <ctime>
 #include <array>
 #include <cmath>
+#include "glass.h"
+#include "water.h"
+#include "air.h"
+#include "ceramic.h"
+#include "earth.h"
+#include "sand.h"
+
+#include <memory>
+#include <array>
 
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = 50;
+const int ENVIRONMENT_SIZE_X = 200;
 const int ENVIRONMENT_SIZE_Y = 120;
+
+using MapTerrain = std::array<std::array<std::shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y>;
+
+#define GLASS std::shared_ptr<Structure>(new Glass())
+#define WATER std::shared_ptr<Structure>(new Water())
+#define AIR std::shared_ptr<Structure>(new Air())
+#define CERAMIC std::shared_ptr<Structure>(new Ceramic())
+#define EARTH std::shared_ptr<Structure>(new Earth())
+#define SAND std::shared_ptr<Structure>(new Sand())
+
 
 struct Position
 {
@@ -72,7 +89,7 @@ public:
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
-				// set up structures
+				// set up simply aquarium
 				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
 					(y == ENVIRONMENT_SIZE_Y - 1))
 				{
@@ -94,6 +111,7 @@ public:
 
 		auto x = ENVIRONMENT_SIZE_X / 2;
 		auto y = ENVIRONMENT_SIZE_Y / 8;
+
 		shared_ptr<Entity> e(new Cell(Gen({
 			reproduction,
 			turn_right,
@@ -128,7 +146,6 @@ public:
 			reproduction,
 			fotosintesis
 			}, 0.2), Ration(), 0));
-
 		// put first cells
 		terrain[y][x]->SetEntity(e);
 	}
@@ -434,5 +451,5 @@ private:
 		return viewed_position;
 	}
 
-	std::array<std::array<shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> terrain;
+	MapTerrain terrain;
 };

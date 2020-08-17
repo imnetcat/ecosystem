@@ -114,13 +114,18 @@
     <ClCompile Include="structure.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="air.h" />
     <ClInclude Include="cell.h" />
+    <ClInclude Include="ceramic.h" />
+    <ClInclude Include="earth.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="glass.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="gen.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="map_bath.h" />
     <ClInclude Include="object.h" />
+    <ClInclude Include="sand.h" />
     <ClInclude Include="structure.h" />
     <ClInclude Include="minerals.h" />
     <ClInclude Include="water.h" />

@@ -59,5 +59,20 @@
     <ClInclude Include="minerals.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="air.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ceramic.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map_bath.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="earth.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sand.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

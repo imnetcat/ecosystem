@@ -14,8 +14,8 @@
 
 using namespace std;
 
-const int ENVIRONMENT_SIZE_X = 30;
-const int ENVIRONMENT_SIZE_Y = 80;
+const int ENVIRONMENT_SIZE_X = 50;
+const int ENVIRONMENT_SIZE_Y = 120;
 
 struct Position
 {
@@ -119,15 +119,15 @@ public:
 			fotosintesis,
 			fotosintesis,
 			fotosintesis,
-			minerals,
+			eat_minerals,
 			fotosintesis,
-			minerals,
+			eat_minerals,
 			fotosintesis,
-			minerals,
+			eat_minerals,
 			turn_right,
 			reproduction,
 			fotosintesis
-			}, 0.2), ration(), 0));
+			}, 0.2), Ration(), 0));
 
 		// put first cells
 		terrain[y][x]->SetEntity(e);
@@ -194,8 +194,8 @@ public:
 				terrain[y][x]->Untick();
 				DrawData stat;
 				stat.color = terrain[y][x]->Color(view);
-				stat.outline = terrain[y][x]->Outline();
-				if (view == default)
+				stat.outline = terrain[y][x]->Outline(view);
+				if (view == view_settings::terrain)
 					stat.shadow = terrain[y][x]->GetLightLevel();
 				else
 					stat.shadow = 0;
@@ -245,16 +245,16 @@ public:
 	}
 private:
 
-	view_settings view = default;
+	view_settings view = view_settings::terrain;
 		
 	void Event(Command command, size_t x, size_t y)
 	{
 		switch (command)
 		{
-		case stay:
+		case Command::stay:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(5);
 			break;
-		case die:
+		case Command::die:
 			if (terrain[y][x]->IsContainsFood())
 				terrain[y][x]->GetFood().Put(terrain[y][x]->GetEntity()->AccEnergy() + 100);
 			else
@@ -275,7 +275,7 @@ private:
 				terrain[y][x]->DelEntity();
 			}
 			break;
-		case turn_left:
+		case Command::turn_left:
 		{
 			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
 			view_side new_side = static_cast<view_side>(old_side == 0 ? 7 : old_side - 1);
@@ -283,7 +283,7 @@ private:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
 		}
 			break;
-		case turn_right:
+		case Command::turn_right:
 		{
 			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
 			view_side new_side = static_cast<view_side>(old_side == 7 ? 0 : old_side + 1);
@@ -291,29 +291,29 @@ private:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
 		}
 			break;
-		case minerals:
+		case Command::eat_minerals:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
 			auto energy = terrain[y][x]->GetFood().Eat(6000);
 			if (energy)
 			{
-				terrain[y][x]->GetEntity()->Ration().IncreaceMinerals();
+				terrain[y][x]->GetEntity()->GetRation().IncreaceMinerals();
 				terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
 			}
 		}
 			break;
-		case fotosintesis:
+		case Command::fotosintesis:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
 			auto energy = terrain[y][x]->GetLightPower();
 			if (energy)
 			{
-				terrain[y][x]->GetEntity()->Ration().IncreaceLight();
+				terrain[y][x]->GetEntity()->GetRation().IncreaceLight();
 				terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
 			}
 		}
 			break;
-		case symbiosis:
+		case Command::symbiosis:
 		{
 			if (terrain[y][x]->GetEntity()->AccEnergy() < 400)
 				break;
@@ -329,12 +329,12 @@ private:
 				{
 					terrain[y][x]->GetEntity()->DecreaceAccEnergy(400);
 					terrain[recipient_position.y][recipient_position.x]->GetEntity()->IncreaceEnergy(400);
-					terrain[recipient_position.y][recipient_position.x]->GetEntity()->Ration().Symbiosis();
+					terrain[recipient_position.y][recipient_position.x]->GetEntity()->GetRation().Symbiosis();
 				}
 			}
 		}
 		break;
-		case attack:
+		case Command::attack:
 		{
 			Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
 
@@ -347,12 +347,12 @@ private:
 				{
 					Event(die, enemy_position.x, enemy_position.y);
 					terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
-					terrain[y][x]->GetEntity()->Ration().IncreaceMeat();
+					terrain[y][x]->GetEntity()->GetRation().IncreaceMeat();
 				}
 			}
 		}
 			break;
-		case reproduction:
+		case Command::reproduction:
 		{
 			if (terrain[y][x]->GetEntity()->AccEnergy() < 200)
 				break;

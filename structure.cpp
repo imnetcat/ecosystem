@@ -28,7 +28,7 @@ void Structure::Untick()
 
 RGBColor Structure::Color(view_settings vs)
 {
-	if (contains_entity)
+	if (vs != view_settings::minerals && contains_entity)
 		return entity->Color(vs);
 
 	if (!food.Empty())
@@ -36,8 +36,14 @@ RGBColor Structure::Color(view_settings vs)
 
 	switch (vs)
 	{
-	case default:
+	case terrain:
 		return color;
+		break;
+	case minerals:
+		return { 209, 209, 209 };
+		break;
+	case ration:
+		return { 209, 209, 209 };
 		break;
 	case energy:
 		return { 209, 209, 209 };
@@ -79,12 +85,12 @@ void Structure::SetLightPower(unsigned short lp)
 	light_level = 128 - power * 128;
 }
 
-bool Structure::Outline()
+bool Structure::Outline(view_settings vs)
 {
-	if (contains_entity)
-		return entity->Outline();
+	if (vs != view_settings::minerals && contains_entity)
+		return entity->Outline(vs);
 	if (!food.Empty())
-		return food.Outline();
+		return food.Outline(vs);
 
 	return false;
 }

@@ -55,11 +55,14 @@ public:
 		}
 		return val;
 	}
-	RGBColor Color(view_settings) override
+	RGBColor Color(view_settings vs) override
 	{
-		return	{ 209, 209, 209 };
+		if(vs == view_settings::minerals)
+			return	{ 0, 255, 226 };
+		else
+			return	{ 209, 209, 209 };
 	}
-	bool Outline() override
+	bool Outline(view_settings) override
 	{
 		return false;
 	}

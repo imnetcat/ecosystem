@@ -5,6 +5,6 @@ class Glass : public Structure
 {
 public:
 	Glass() 
-		: Structure({ 245, 245, 245 }, false, 1.0) {}
+		: Structure({ 245, 245, 245 }, false, 0.95) {}
 
 };

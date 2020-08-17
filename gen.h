@@ -9,7 +9,7 @@ enum Command
 	turn_left,
 	turn_right,
 	fotosintesis,
-	minerals,
+	eat_minerals,
 	attack, // атака клетки если её геном отличается более чем на 2 комманды
 	reproduction,  // деление на две
 	symbiosis

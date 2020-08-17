@@ -10,7 +10,7 @@ class Cell : public Entity
 private:
 	Gen genom;
 public:
-	explicit Cell(Gen g, ration r, unsigned short e)
+	explicit Cell(Gen g, Ration r, unsigned short e)
 		: Entity(100, 100, e, r), genom(g) {}
 	
 	Gen GetGen()
@@ -70,7 +70,13 @@ public:
 	{
 		switch (vs)
 		{
-		case view_settings::default:
+		case terrain:
+			return { 0, 255, 226 };
+			break;
+		case view_settings::minerals:
+			return { 209, 209, 209 };
+			break;
+		case view_settings::ration:
 			return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
 			break;
 		case view_settings::energy:
@@ -93,7 +99,7 @@ public:
 		return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
 	}
 		
-	bool Outline() override
+	bool Outline(view_settings) override
 	{
 		return true;
 	}

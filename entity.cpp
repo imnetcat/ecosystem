@@ -1,6 +1,6 @@
 #include "entity.h"
 
-Entity::Entity(unsigned short h, unsigned short e, unsigned short ae, ration r) :
+Entity::Entity(unsigned short h, unsigned short e, unsigned short ae, Ration r) :
 		view(top),
 		age(0),
 		hp(h),
@@ -13,11 +13,11 @@ unsigned short Entity::Age()
 {
 	return age;
 }
-ration& Entity::Ration()
+Ration& Entity::GetRation()
 {
 	return ration_;
 }
-const ration& Entity::Ration() const
+const Ration& Entity::GetRation() const
 {
 	return ration_;
 }

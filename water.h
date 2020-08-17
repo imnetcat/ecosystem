@@ -5,5 +5,5 @@ class Water : public Structure
 {
 public:
 	Water() 
-		: Structure({ 105, 170, 255 }, true, 0.95) {}
+		: Structure({ 176, 226, 255 }, true, 0.9) {}
 };

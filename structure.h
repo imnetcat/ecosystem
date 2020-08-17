@@ -33,7 +33,7 @@ public:
 	unsigned short GetLightPower();
 	void SetLightPower(unsigned short lp);
 
-	bool Outline() override;
+	bool Outline(view_settings vs) override;
 	
 	void SetFood(Minerals f);
 	void SetFood(unsigned short energy);

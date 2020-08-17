@@ -35,6 +35,16 @@ const int SPECIES_BTN_POS_Y = 35;
 const int SPECIES_BTN_SIZE_X = 75;
 const int SPECIES_BTN_SIZE_Y = 30;
 
+const int RATION_BTN_POS_X = 110;
+const int RATION_BTN_POS_Y = 70;
+const int RATION_BTN_SIZE_X = 75;
+const int RATION_BTN_SIZE_Y = 30;
+
+const int MINERALS_BTN_POS_X = 15;
+const int MINERALS_BTN_POS_Y = 105;
+const int MINERALS_BTN_SIZE_X = 75;
+const int MINERALS_BTN_SIZE_Y = 30;
+
 const int CLEAR_INFO_POS_X = 70;
 const int CLEAR_INFO_POS_Y = 375;
 const int CLEAR_INFO_SIZE_X = 50;
@@ -72,18 +82,18 @@ int main()
 	view_title.setPosition(75, 3);
 	view_title.setFillColor(sf::Color::Black);
 
-	sf::RectangleShape def_view_btn(sf::Vector2f(DEFAULT_BTN_SIZE_X, DEFAULT_BTN_SIZE_Y));
-	def_view_btn.setPosition(DEFAULT_BTN_POS_X, DEFAULT_BTN_POS_Y);
-	def_view_btn.setOutlineThickness(1);
-	def_view_btn.setFillColor({ 230, 230, 230 });
-	def_view_btn.setOutlineColor(sf::Color(0, 0, 0));
+	sf::RectangleShape ter_view_btn(sf::Vector2f(DEFAULT_BTN_SIZE_X, DEFAULT_BTN_SIZE_Y));
+	ter_view_btn.setPosition(DEFAULT_BTN_POS_X, DEFAULT_BTN_POS_Y);
+	ter_view_btn.setOutlineThickness(1);
+	ter_view_btn.setFillColor({ 230, 230, 230 });
+	ter_view_btn.setOutlineColor(sf::Color(0, 0, 0));
 
-	sf::Text def_view_text;
-	def_view_text.setFont(font);
-	def_view_text.setString("default");
-	def_view_text.setCharacterSize(14);
-	def_view_text.setPosition(25, 40);
-	def_view_text.setFillColor(sf::Color::Black);
+	sf::Text ter_view_text;
+	ter_view_text.setFont(font);
+	ter_view_text.setString("terrain");
+	ter_view_text.setCharacterSize(14);
+	ter_view_text.setPosition(25, 40);
+	ter_view_text.setFillColor(sf::Color::Black);
 
 	sf::RectangleShape energy_view_btn(sf::Vector2f(ENERGY_BTN_SIZE_X, ENERGY_BTN_SIZE_Y));
 	energy_view_btn.setPosition(ENERGY_BTN_POS_X, ENERGY_BTN_POS_Y);
@@ -98,6 +108,19 @@ int main()
 	energy_view_text.setPosition(27, 75);
 	energy_view_text.setFillColor(sf::Color::Black);
 
+	sf::RectangleShape minerals_view_btn(sf::Vector2f(MINERALS_BTN_SIZE_X, MINERALS_BTN_SIZE_Y));
+	minerals_view_btn.setPosition(MINERALS_BTN_POS_X, MINERALS_BTN_POS_Y);
+	minerals_view_btn.setOutlineThickness(1);
+	minerals_view_btn.setFillColor({ 255, 255, 255 });
+	minerals_view_btn.setOutlineColor(sf::Color(0, 0, 0));
+
+	sf::Text minerals_view_text;
+	minerals_view_text.setFont(font);
+	minerals_view_text.setString("minerals");
+	minerals_view_text.setCharacterSize(14);
+	minerals_view_text.setPosition(22, 110);
+	minerals_view_text.setFillColor(sf::Color::Black);
+
 	sf::RectangleShape species_view_btn(sf::Vector2f(SPECIES_BTN_SIZE_X, SPECIES_BTN_SIZE_Y));
 	species_view_btn.setPosition(SPECIES_BTN_POS_X, SPECIES_BTN_POS_Y);
 	species_view_btn.setOutlineThickness(1);
@@ -111,6 +134,18 @@ int main()
 	species_view_text.setPosition(120, 40);
 	species_view_text.setFillColor(sf::Color::Black);
 
+	sf::RectangleShape ration_view_btn(sf::Vector2f(RATION_BTN_SIZE_X, RATION_BTN_SIZE_Y));
+	ration_view_btn.setPosition(RATION_BTN_POS_X, RATION_BTN_POS_Y);
+	ration_view_btn.setOutlineThickness(1);
+	ration_view_btn.setFillColor({ 255, 255, 255 });
+	ration_view_btn.setOutlineColor(sf::Color(0, 0, 0));
+
+	sf::Text ration_view_text;
+	ration_view_text.setFont(font);
+	ration_view_text.setString("ration");
+	ration_view_text.setCharacterSize(14);
+	ration_view_text.setPosition(124, 75);
+	ration_view_text.setFillColor(sf::Color::Black);
 
 	sf::RectangleShape info_rect(sf::Vector2f(190, 215));
 	info_rect.setPosition(5, 170);
@@ -230,10 +265,12 @@ int main()
 						settings_event.mouseButton.y > DEFAULT_BTN_POS_Y &&
 						settings_event.mouseButton.y < DEFAULT_BTN_POS_Y + DEFAULT_BTN_SIZE_Y)
 					{
-						def_view_btn.setFillColor({ 230, 230, 230 });
+						ter_view_btn.setFillColor({ 230, 230, 230 });
 						species_view_btn.setFillColor({ 255, 255, 255 });
 						energy_view_btn.setFillColor({ 255, 255, 255 });
-						environment.SetView(default);
+						minerals_view_btn.setFillColor({ 255, 255, 255 });
+						ration_view_btn.setFillColor({ 255, 255, 255 });
+						environment.SetView(terrain);
 					}
 
 					if (settings_event.mouseButton.x > SPECIES_BTN_POS_X &&
@@ -241,9 +278,11 @@ int main()
 						settings_event.mouseButton.y > SPECIES_BTN_POS_Y &&
 						settings_event.mouseButton.y < SPECIES_BTN_POS_Y + SPECIES_BTN_SIZE_Y)
 					{
-						def_view_btn.setFillColor({ 255, 255, 255 });
+						ter_view_btn.setFillColor({ 255, 255, 255 });
 						species_view_btn.setFillColor({ 230, 230, 230 });
 						energy_view_btn.setFillColor({ 255, 255, 255 });
+						minerals_view_btn.setFillColor({ 255, 255, 255 });
+						ration_view_btn.setFillColor({ 255, 255, 255 });
 						environment.SetView(species);
 					}
 
@@ -252,10 +291,38 @@ int main()
 						settings_event.mouseButton.y > ENERGY_BTN_POS_Y &&
 						settings_event.mouseButton.y < ENERGY_BTN_POS_Y + ENERGY_BTN_SIZE_Y)
 					{
-						def_view_btn.setFillColor({ 255, 255, 255 });
+						ter_view_btn.setFillColor({ 255, 255, 255 });
 						species_view_btn.setFillColor({ 255, 255, 255 });
 						energy_view_btn.setFillColor({ 230, 230, 230 });
+						minerals_view_btn.setFillColor({ 255, 255, 255 });
+						ration_view_btn.setFillColor({ 255, 255, 255 });
 						environment.SetView(energy);
+					}
+
+					if (settings_event.mouseButton.x > MINERALS_BTN_POS_X &&
+						settings_event.mouseButton.x < MINERALS_BTN_POS_X + MINERALS_BTN_SIZE_X &&
+						settings_event.mouseButton.y > MINERALS_BTN_POS_Y &&
+						settings_event.mouseButton.y < MINERALS_BTN_POS_Y + MINERALS_BTN_SIZE_Y)
+					{
+						ter_view_btn.setFillColor({ 255, 255, 255 });
+						species_view_btn.setFillColor({ 255, 255, 255 });
+						energy_view_btn.setFillColor({ 255, 255, 255 });
+						minerals_view_btn.setFillColor({ 230, 230, 230 });
+						ration_view_btn.setFillColor({ 255, 255, 255 });
+						environment.SetView(view_settings::minerals);
+					}
+
+					if (settings_event.mouseButton.x > RATION_BTN_POS_X &&
+						settings_event.mouseButton.x < RATION_BTN_POS_X + RATION_BTN_SIZE_X &&
+						settings_event.mouseButton.y > RATION_BTN_POS_Y &&
+						settings_event.mouseButton.y < RATION_BTN_POS_Y + RATION_BTN_SIZE_Y)
+					{
+						ter_view_btn.setFillColor({ 255, 255, 255 });
+						species_view_btn.setFillColor({ 255, 255, 255 });
+						energy_view_btn.setFillColor({ 255, 255, 255 });
+						minerals_view_btn.setFillColor({ 255, 255, 255 });
+						ration_view_btn.setFillColor({ 230, 230, 230 });
+						environment.SetView(view_settings::ration);
 					}
 				}
 			}
@@ -329,12 +396,16 @@ int main()
 		setting_window.draw(setting_background);
 		setting_window.draw(view_rect);
 		setting_window.draw(view_title);
-		setting_window.draw(def_view_btn);
-		setting_window.draw(def_view_text);
+		setting_window.draw(ter_view_btn);
+		setting_window.draw(ter_view_text);
 		setting_window.draw(energy_view_btn);
 		setting_window.draw(energy_view_text);
+		setting_window.draw(minerals_view_btn);
+		setting_window.draw(minerals_view_text);
 		setting_window.draw(species_view_btn);
 		setting_window.draw(species_view_text);
+		setting_window.draw(ration_view_btn);
+		setting_window.draw(ration_view_text);
 		setting_window.draw(info_rect);
 		setting_window.draw(info_title);
 

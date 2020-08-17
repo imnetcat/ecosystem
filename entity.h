@@ -16,14 +16,14 @@ enum view_side
 	left_top,
 };
 
-class ration
+class Ration
 {
 private:
 	unsigned char meat;
 	unsigned char light;
 	unsigned char minerals;
 public:
-	ration() :
+	Ration() :
 		meat(255),
 		light(255),
 		minerals(255) {}
@@ -70,22 +70,22 @@ public:
 class Entity : public Object
 {
 protected:
-	ration ration_;
+	Ration ration_;
 	view_side view;
 	unsigned short age;
 	unsigned short hp;
 	unsigned short energy;
 	unsigned int accumulated_energy;
 public:
-	Entity(unsigned short h, unsigned short e, unsigned short ae, ration r);
+	Entity(unsigned short h, unsigned short e, unsigned short ae, Ration r);
 	virtual Gen GetGen() = 0;
 	virtual void Tic(std::vector<Command>& commands) = 0;
 	virtual std::shared_ptr<Entity> Reproduction() = 0;
 	virtual bool IsFriendly(Gen) = 0;
 
 	unsigned short Age();
-	ration& Ration();
-	const ration& Ration() const;
+	Ration& GetRation();
+	const Ration& GetRation() const;
 	view_side Entity::GetView();
 	void Entity::SetView(view_side val);
 	void IncreaceAccEnergy(unsigned short value);

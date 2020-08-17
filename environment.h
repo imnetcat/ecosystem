@@ -57,10 +57,10 @@ struct Info
 	size_t food_power = 0;
 };
 
-struct LightSource
+struct LightLevel
 {
-	Position position;
 	size_t power;
+	size_t power_max;
 };
 
 class Environment
@@ -72,14 +72,6 @@ public:
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
-				// set up light
-				if ((x != 0 || x != ENVIRONMENT_SIZE_X - 1) &&
-					y == 0)
-					light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 30 });
-				//if (x == ENVIRONMENT_SIZE_X/2 &&
-				//	y == 0)
-				//	light_sources.push_back({ {x, y},  LIGHT_LEVEL_POWER * 40 });
-
 				// set up structures
 				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
 					(y == ENVIRONMENT_SIZE_Y - 1))
@@ -90,13 +82,13 @@ public:
 				{
 					terrain[y][x] = shared_ptr<Structure>(new Water());
 				}
-			}
-		}
-		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
-		{
-			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
-			{
-				Shadow(y, x);
+
+				// set up light
+				size_t power = LIGHT_POWER;
+				if (y != 0)
+					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
+
+				terrain[y][x]->SetLightPower(power);
 			}
 		}
 
@@ -180,6 +172,13 @@ public:
 				{
 					Event(command, x, y);
 				}
+
+				// set up light
+				size_t power = LIGHT_POWER;
+				if(y != 0)
+					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
+
+				terrain[y][x]->SetLightPower(power);
 			}
 		}
 	}
@@ -247,138 +246,7 @@ public:
 private:
 
 	view_settings view = default;
-
-	vector<LightSource> light_sources;
-
-	void ShadowVector(Position source, Position node, size_t& power)
-	{
-		// определяем с какой стороны от
-		//  данной точки находится источник света
 		
-		// * - источник
-		// 0 - данная точка
-
-		// *
-		//   
-		//    0
-		if (source.x < node.x && source.y < node.y)
-		{
-			ShadowVector(source, { node.x - 1, node.y - 1 }, power);
-			power *= terrain[node.y - 1][node.x - 1]->Transparency();
-		}
-		//     *
-		//   
-		// 0
-		else if (source.x > node.x && source.y < node.y)
-		{
-			ShadowVector(source, { node.x + 1, node.y - 1 }, power);
-			power *= terrain[node.y - 1][node.x + 1]->Transparency();
-		}
-		//     0
-		//   
-		// *
-		else if (source.x < node.x && source.y > node.y)
-		{
-			ShadowVector(source, { node.x - 1, node.y + 1 }, power);
-			power *= terrain[node.y + 1][node.x - 1]->Transparency();
-		}
-		// 0
-		//   
-		//     *
-		else if (source.x > node.x && source.y > node.y)
-		{
-			ShadowVector(source, { node.x + 1, node.y + 1 }, power);
-			power *= terrain[node.y + 1][node.x + 1]->Transparency();
-		}
-		// 0   *
-		else if (source.x > node.x && source.y == node.y)
-		{
-			ShadowVector(source, { node.x + 1, node.y }, power);
-			power *= terrain[node.y][node.x + 1]->Transparency();
-		}
-		// *   0
-		else if (source.x < node.x && source.y == node.y)
-		{
-			ShadowVector(source, { node.x - 1, node.y }, power);
-			power *= terrain[node.y][node.x - 1]->Transparency();
-		}
-		//   0
-		//   
-		//   *
-		else if (source.x == node.x && source.y > node.y)
-		{
-			ShadowVector(source, { node.x, node.y + 1 }, power);
-			power *= terrain[node.y + 1][node.x]->Transparency();
-		}
-		//   *
-		//   
-		//   0
-		else if (source.x == node.x && source.y < node.y)
-		{
-			ShadowVector(source, { node.x, node.y - 1 }, power);
-			power *= terrain[node.y - 1][node.x]->Transparency();
-		}
-	}
-
-	size_t LightPower(size_t y, size_t x)
-	{
-		size_t power_sum = 0;
-		for (auto& light : light_sources)
-		{
-			// определяем может ли достать
-			//  источник освещения до клетки
-			size_t dx = max(light.position.x, x) - min(light.position.x, x);
-			size_t dy = max(light.position.y, y) - min(light.position.y, y);
-			size_t distance = sqrt(dx * dx + dy * dy);
-			if (distance  * LIGHT_LEVEL_POWER < light.power)
-				// свет источника достаёт до клетки
-			{
-				// сила освещения в данной клетке
-				//  данного источника света не считая препятствий
-				size_t power = light.power;
-				if (!power)
-					continue;
-
-				// учитываем прозрачность препятствий
-				ShadowVector({ light.position.x, light.position.y } , { x, y }, power);
-				if (!power)
-					continue;
-
-				power_sum += power;
-			}
-		}
-		return power_sum;
-	}
-	size_t MaxLightPower(size_t y, size_t x)
-	{
-		size_t power_sum = 0;
-		for (auto& light : light_sources)
-		{
-			// определяем может ли достать
-			//  источник освещения до клетки
-			size_t dx = max(light.position.x, x) - min(light.position.x, x);
-			size_t dy = max(light.position.y, y) - min(light.position.y, y);
-			size_t distance = sqrt(dx * dx + dy * dy);
-			// сила освещения в данной клетке
-			//  данного источника света не считая препятствий
-			size_t power = light.power;
-
-			power_sum += power;
-		}
-		return power_sum;
-	}
-
-
-
-	void Shadow(size_t y, size_t x)
-	{
-		auto lp = LightPower(y, x);
-		float power = (float)lp / MaxLightPower(y, x);
-		auto lv = 128 - power * 128;
-		terrain[y][x]->SetLightPower(lp);
-		terrain[y][x]->SetLightLevel(lv);
-	}
-
 	void Event(Command command, size_t x, size_t y)
 	{
 		switch (command)
@@ -436,7 +304,7 @@ private:
 			break;
 		case fotosintesis:
 		{
-			terrain[y][x]->GetEntity()->DecreaceEnergy(LIGHT_LEVEL_POWER);
+			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
 			auto energy = terrain[y][x]->GetLightPower();
 			if (energy)
 			{

@@ -47,10 +47,10 @@ public:
 		}
 
 		unsigned short hlph = 0;
-		if (accumulated_energy > 600)
+		if (accumulated_energy > 1000)
 		{
-			hlph = 600;
-			DecreaceAccEnergy(600);
+			hlph = 1000;
+			DecreaceAccEnergy(hlph);
 		}
 		return std::shared_ptr<Entity>(new Cell(
 			Gen(new_genom, 0.25, genom.generation + 1), ration_, hlph

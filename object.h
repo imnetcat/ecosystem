@@ -4,7 +4,7 @@ const short OUTLINE = 1;
 const short CELL_SIZE = 10;
 const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 
-const unsigned short LIGHT_LEVEL_POWER = 10;
+const unsigned short LIGHT_POWER = 1000;
 const unsigned int MAX_CELL_AGE = 50; // в тиках
 const unsigned int MAX_ACC_ENERGY = 32000;
 const unsigned int MAX_ENERGY = 100;

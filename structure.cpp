@@ -11,6 +11,12 @@ Structure::Structure(RGBColor c, bool w, double tr) :
 
 double Structure::Transparency()
 {
+	double entity_transparency = 0.7;
+	if (contains_entity)
+	{
+		return entity_transparency;
+	}
+
 	return transparency;
 }
 
@@ -69,6 +75,8 @@ unsigned short Structure::GetLightPower()
 void Structure::SetLightPower(unsigned short lp)
 {
 	light_power = lp;
+	float power = (float)light_power / LIGHT_POWER;
+	light_level = 128 - power * 128;
 }
 
 bool Structure::Outline()

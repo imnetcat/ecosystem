@@ -307,9 +307,9 @@ int main()
 						cell_genom.setString("Genom: " + genom);
 						cell_generation.setString("Generation: " + to_string(info.generation));
 						cell_age.setString("Age: " + to_string(info.age.curr) + "/" + to_string(info.age.max));
-						cell_accenergy.setString("Accumulated: " + to_string(info.acc_energy));
-						cell_energy.setString("Energy: " + to_string(info.energy));
-						cell_hp.setString("Hp: " + to_string(info.hp));
+						cell_accenergy.setString("Accumulated: " + to_string(info.acc_energy) + "/" + to_string(MAX_ACC_ENERGY));
+						cell_energy.setString("Energy: " + to_string(info.energy) + "/" + to_string(MAX_ENERGY));
+						cell_hp.setString("Hp: " + to_string(info.hp) + "/" + to_string(MAX_HP));
 					}
 					else
 					{
@@ -355,50 +355,48 @@ int main()
 		}
 
 
-		if (!loopback)
+		// clear the window and draw background with background color
+		window.clear(sf::Color(0, 61, 156));
+		// update environment
+		if (!loopback && !pause)
 		{
-			// clear the window and draw background with background color
-			window.clear(sf::Color(0, 61, 156));
-
-			// update environment
-			if (!pause)
-			{
-				environment.Update();
-			}
-			auto envdata = environment.UpdateColors();
-			// draw all entities
-			for (const auto& object : envdata)
-			{
-				if (object.outline)
-				{
-					sf::RectangleShape sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-					sprite.setPosition(object.position.x, object.position.y);
-					sprite.setOutlineThickness(OUTLINE);
-					sprite.setFillColor({ object.color.r, object.color.g, object.color.b,
-						(unsigned char)((unsigned char)255 - object.shadow) });
-					sprite.setOutlineColor(sf::Color(0, 0, 0,
-						(unsigned char)((unsigned char)255 - object.shadow)));
-					window.draw(sprite);
-				}
-				else
-				{
-					sf::RectangleShape sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-					sprite.setPosition(object.position.x, object.position.y);
-					sprite.setOutlineThickness(OUTLINE);
-					sprite.setFillColor({ object.color.r, object.color.g, object.color.b });
-					sprite.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b,
-						(unsigned char)((unsigned char)255 - object.shadow)));
-					window.draw(sprite);
-				}
-			}
-
-			// Отрисовка окна
-			window.display();
+			environment.Update();
 		}
+
+		auto envdata = environment.UpdateColors();
+		// draw all entities
+		for (const auto& object : envdata)
+		{
+			if (object.outline)
+			{
+				sf::RectangleShape sprite(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+				sprite.setPosition(object.position.x, object.position.y);
+				sprite.setOutlineThickness(OUTLINE);
+				sprite.setFillColor({ object.color.r, object.color.g, object.color.b,
+					(unsigned char)((unsigned char)255 - object.shadow) });
+				sprite.setOutlineColor(sf::Color(0, 0, 0,
+					(unsigned char)((unsigned char)255 - object.shadow)));
+				window.draw(sprite);
+			}
+			else
+			{
+				sf::RectangleShape sprite(sf::Vector2f(CELL_OUTLINE, CELL_OUTLINE));
+				sprite.setPosition(object.position.x, object.position.y);
+				//sprite.setOutlineThickness(OUTLINE);
+				sprite.setFillColor({ object.color.r, object.color.g, object.color.b,
+					(unsigned char)((unsigned char)255 - object.shadow) });
+				sprite.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b,
+					(unsigned char)((unsigned char)255 - object.shadow)));
+				window.draw(sprite);
+			}
+		}
+
+		// Отрисовка окна
+		window.display();
 
 		loopback++;
 		
-		if (loopback == 100 * SPEED)
+		if (loopback == 1 * SPEED)
 			loopback = 0;
 
 		setting_window.display();

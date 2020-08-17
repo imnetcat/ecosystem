@@ -65,9 +65,6 @@
     <ClInclude Include="ceramic.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="map_bath.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="earth.h">
       <Filter>Source Files</Filter>
     </ClInclude>

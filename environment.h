@@ -159,6 +159,20 @@ public:
 			size_t x = ENVIRONMENT_SIZE_X - 1;
 			while (true)
 			{
+				vector<Command> commands;
+				terrain[y][x]->Tic(commands);
+				for (auto command : commands)
+				{
+					Event(command, x, y);
+				}
+
+				// set up light
+				size_t power = LIGHT_POWER;
+				if (y != 0)
+					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
+
+				terrain[y][x]->SetLightPower(power);
+
 				if (terrain[y][x]->IsContainsFood())
 				{
 					if (terrain[y + 1][x]->IsWalkable())
@@ -177,26 +191,6 @@ public:
 			if (y == 0)
 				break;
 			y--;
-		}
-
-		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
-		{
-			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
-			{
-				vector<Command> commands;
-				terrain[y][x]->Tic(commands);
-				for (auto command : commands)
-				{
-					Event(command, x, y);
-				}
-
-				// set up light
-				size_t power = LIGHT_POWER;
-				if(y != 0)
-					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
-
-				terrain[y][x]->SetLightPower(power);
-			}
 		}
 	}
 

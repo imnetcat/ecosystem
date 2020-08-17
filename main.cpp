@@ -15,7 +15,7 @@ using namespace sf;
 
 const double SPEED = 1.0;
 
-const int WINDOW_POS_X = 300;
+const int WINDOW_POS_X = 200;
 const int WINDOW_POS_Y = 100;
 const char* FONT = "SourceCodePro-Black.ttf";
 
@@ -432,6 +432,7 @@ int main()
 		// clear the window and draw background with background color
 		window.clear(sf::Color(0, 61, 156));
 		// update environment
+		//if(!loopback)
 		if (!loopback && !pause)
 		{
 			environment.Update();
@@ -453,6 +454,7 @@ int main()
 			}
 			else
 			{
+				sprite_struct.setPosition(object.position.x, object.position.y);
 				sprite_struct.setFillColor({ object.color.r, object.color.g, object.color.b,
 					(unsigned char)((unsigned char)255 - object.shadow) });
 				sprite_struct.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b,
@@ -464,10 +466,10 @@ int main()
 		// Отрисовка окна
 		window.display();
 
-		loopback++;
+		//loopback++;
 		
-		if (loopback == 1 * SPEED)
-			loopback = 0;
+		//if (loopback == 1 * SPEED)
+		//	loopback = 0;
 
 		setting_window.display();
 	}

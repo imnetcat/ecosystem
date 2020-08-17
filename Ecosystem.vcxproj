@@ -123,7 +123,6 @@
     <ClInclude Include="environment.h" />
     <ClInclude Include="gen.h" />
     <ClInclude Include="item.h" />
-    <ClInclude Include="map_bath.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="sand.h" />
     <ClInclude Include="structure.h" />

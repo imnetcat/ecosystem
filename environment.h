@@ -116,7 +116,7 @@ public:
 		auto x = ENVIRONMENT_SIZE_X / 2;
 		auto y = ENVIRONMENT_SIZE_Y / 8;
 
-		shared_ptr<Entity> e1(new Cell(0, 200, Gen::length, Gen({
+		shared_ptr<Entity> e1(new Cell(0, Gen::length, 200, Gen({
 			reproduction,
 			turn_right,
 			reproduction,
@@ -169,14 +169,7 @@ public:
 				{
 					Event(command, x, y);
 				}
-
-				// set up light
-				size_t power = LIGHT_POWER;
-				if (y != 0)
-					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
-
-				terrain[y][x]->SetLightPower(power);
-
+				
 				if (terrain[y][x]->IsContainsFood())
 				{
 					if (terrain[y + 1][x]->IsWalkable())
@@ -206,6 +199,12 @@ public:
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
+				// set up light
+				size_t power = LIGHT_POWER;
+				if (y != 0)
+					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
+
+				terrain[y][x]->SetLightPower(power);
 				terrain[y][x]->Untick();
 				DrawData stat;
 				stat.color = terrain[y][x]->Color(view);
@@ -232,7 +231,7 @@ public:
 		if (terrain[y][x]->IsContainsEntity())
 		{
 			info.age.curr = terrain[y][x]->GetEntity()->Age();
-			info.age.max = MAX_CELL_AGE;
+			info.age.max = terrain[y][x]->GetEntity()->MaxAge();
 			auto& data = terrain[y][x]->GetEntity()->GetGen().data;
 			for (auto command : data)
 			{

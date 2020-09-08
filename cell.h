@@ -61,17 +61,18 @@ public:
 		unsigned short hlph = accumulated_energy / 2;
 		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			hlph, reproduction_cost, max_age, Gen(new_genom, 0.25, genom.generation + 1), ration_
+			hlph, max_age, reproduction_cost, Gen(new_genom, 0.25, genom.generation + 1), ration_
 		));
 	}
 	
 	void Tic(std::vector<Command>& commands) override
 	{
-		age++;
-		if (!hp || age == MAX_CELL_AGE)
+		if (!hp || age == max_age)
 			commands.push_back(die);
 		else
 			commands.push_back(genom.Read());
+		
+		age++;
 	}
 
 	RGBColor Species() override

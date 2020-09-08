@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <ctime>
 
 enum Command
 {
@@ -18,8 +19,16 @@ enum Command
 class Gen
 {
 public:
-	static const size_t length = 32;
+	static const unsigned char length = 32;
 	static const size_t commands = 9;
+	Gen() : generation(0), mutationChance((rand() % 100) / (double)100) 
+	{
+		srand(time(0));
+		for (size_t i = 0; i < length; i++)
+		{
+			data[i] = static_cast<Command>(rand() % Gen::commands);
+		}
+	};
 	explicit Gen(std::array<Command, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d) {};
 

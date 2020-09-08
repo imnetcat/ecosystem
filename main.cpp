@@ -1,8 +1,13 @@
+#ifdef _DEBUG
 #pragma comment(lib, "sfml-graphics-d.lib")
-#pragma comment(lib, "sfml-window-d.lib")
-#pragma comment(lib, "sfml-audio-d.lib")
 #pragma comment(lib, "sfml-system-d.lib")
-
+#pragma comment(lib, "sfml-window-d.lib")
+#else
+#pragma comment(lib, "sfml-graphics.lib")
+#pragma comment(lib, "sfml-system.lib")
+#pragma comment(lib, "sfml-window.lib")
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
 #include <SFML/Graphics.hpp>
 
 #include "environment.h"
@@ -66,7 +71,7 @@ int main()
 	sf::Font font;
 	if (!font.loadFromFile(FONT))
 	{
-		cerr << "font doesn't loaded properly... terminating..." << endl;
+		cerr << "font doesn't loaded properly..." << endl;
 	}
 
 	sf::RectangleShape view_rect(sf::Vector2f(190, 140));

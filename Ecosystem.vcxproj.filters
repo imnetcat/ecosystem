@@ -15,61 +15,61 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="structure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="structure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="environment.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gen.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="object.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="entity.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="structure.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="water.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="glass.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="item.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="air.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cell.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="minerals.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="air.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ceramic.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="earth.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="environment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="minerals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sand.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="structure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="water.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

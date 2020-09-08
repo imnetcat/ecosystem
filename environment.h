@@ -98,6 +98,10 @@ public:
 				else
 				{
 					terrain[y][x] = shared_ptr<Structure>(new Water());
+
+					// set minerals
+					if (rand() % 100 < 50 && y > ENVIRONMENT_SIZE_Y / 2)
+						terrain[y][x]->SetFood(500);
 				}
 
 				// set up light
@@ -112,42 +116,42 @@ public:
 		auto x = ENVIRONMENT_SIZE_X / 2;
 		auto y = ENVIRONMENT_SIZE_Y / 8;
 
-		shared_ptr<Entity> e(new Cell(Gen({
+		shared_ptr<Entity> e1(new Cell(0, 200, Gen::length, Gen({
 			reproduction,
 			turn_right,
-			fotosintesis,
-			attack,
 			reproduction,
-			fotosintesis,
-			symbiosis,
-			fotosintesis,
-			fotosintesis,
-			fotosintesis,
-			fotosintesis,
-			symbiosis,
-			fotosintesis,
-			fotosintesis,
-			reproduction,
-			fotosintesis,
-			reproduction,
-			attack,
-			attack,
-			symbiosis,
-			reproduction,
-			fotosintesis,
-			fotosintesis,
-			fotosintesis,
+			turn_left,
 			eat_minerals,
+			turn_left,
+			stay,
+			reproduction,
+			turn_right,
+			stay,
+			turn_right,
+			turn_right,
+			turn_left,
+			stay,
 			fotosintesis,
-			eat_minerals,
+			stay,
 			fotosintesis,
-			eat_minerals,
+			turn_left,
 			turn_right,
 			reproduction,
-			fotosintesis
-			}, 0.2), Ration(), 0));
+			reproduction,
+			eat_minerals,
+			fotosintesis,
+			turn_left,
+			reproduction,
+			fotosintesis,
+			die,
+			turn_left,
+			attack,
+			reproduction,
+			turn_right
+			}, 0.2, 0)));
+
 		// put first cells
-		terrain[y][x]->SetEntity(e);
+		terrain[y][x]->SetEntity(e1);
 	}
 	
 	void Update()
@@ -336,7 +340,7 @@ private:
 
 			if (terrain[recipient_position.y][recipient_position.x]->IsContainsEntity())
 			{
-				if (terrain[recipient_position.y][recipient_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()->GetGen()))
+				if (terrain[recipient_position.y][recipient_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()))
 				{
 					terrain[y][x]->GetEntity()->DecreaceAccEnergy(400);
 					terrain[recipient_position.y][recipient_position.x]->GetEntity()->IncreaceEnergy(400);
@@ -354,7 +358,7 @@ private:
 
 			if (terrain[enemy_position.y][enemy_position.x]->IsContainsEntity())
 			{
-				if (terrain[enemy_position.y][enemy_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()->GetGen()))
+				if (!terrain[enemy_position.y][enemy_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()))
 				{
 					Event(die, enemy_position.x, enemy_position.y);
 					terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
@@ -365,7 +369,7 @@ private:
 			break;
 		case Command::reproduction:
 		{
-			if (terrain[y][x]->GetEntity()->AccEnergy() < 200)
+			if (terrain[y][x]->GetEntity()->AccEnergy() < terrain[y][x]->GetEntity()->ReproductionCost())
 				break;
 
 			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
@@ -375,7 +379,6 @@ private:
 
 			if (terrain[new_position.y][new_position.x]->IsWalkable())
 			{
-				terrain[y][x]->GetEntity()->DecreaceAccEnergy(200);
 				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Reproduction());
 				break;
 			}

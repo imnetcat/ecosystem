@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{C2C6DC17-64A4-4B26-B3F2-93AD34BB0395}</ProjectGuid>
+    <ProjectGuid>{918D5341-028D-42D6-BF60-4053F5162482}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -98,13 +98,20 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\My\Tools\white\SFML-2.5.1-windows-vc15-64-bit\include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>E:\My\Tools\white\SFML-2.5.1-windows-vc15-64-bit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>E:\My\Tools\white\SFML-2.5.1-windows-vc15-64-bit\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\My\Tools\white\SFML-2.5.1-windows-vc15-64-bit\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\My\Tools\white\SFML-2.5.1-windows-vc15-64-bit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>E:\My\Tools\white\SFML-2.5.1-windows-vc15-64-bit\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -119,14 +126,14 @@
     <ClInclude Include="ceramic.h" />
     <ClInclude Include="earth.h" />
     <ClInclude Include="entity.h" />
-    <ClInclude Include="glass.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="gen.h" />
+    <ClInclude Include="glass.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="minerals.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="sand.h" />
     <ClInclude Include="structure.h" />
-    <ClInclude Include="minerals.h" />
     <ClInclude Include="water.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

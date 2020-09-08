@@ -1,8 +1,9 @@
 #include "entity.h"
 
-Entity::Entity(unsigned short h, unsigned short e, unsigned short ae, Ration r) :
+Entity::Entity(unsigned short h, unsigned short e, unsigned short ae, unsigned short me, Ration r) :
 		view(top),
 		age(0),
+		max_age(max_age),
 		hp(h),
 		energy(e),
 		ration_(r),
@@ -12,6 +13,10 @@ Entity::Entity(unsigned short h, unsigned short e, unsigned short ae, Ration r) 
 unsigned short Entity::Age()
 {
 	return age;
+}
+unsigned short Entity::MaxAge()
+{
+	return max_age;
 }
 Ration& Entity::GetRation()
 {

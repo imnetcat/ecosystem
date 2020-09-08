@@ -9,25 +9,38 @@ class Cell : public Entity
 {
 private:
 	Gen genom;
+	const size_t reproduction_cost;
 public:
-	explicit Cell(Gen g, Ration r, unsigned short e)
-		: Entity(100, 100, e, r), genom(g) {}
+	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, Gen g = Gen(), Ration r = Ration())
+		: Entity(100, 100, e, max_age, r), genom(g), reproduction_cost(repr_cost) {}
 	
+	size_t ReproductionCost()
+	{
+		return reproduction_cost;
+	}
+
 	Gen GetGen()
 	{
 		return genom;
 	}
 	
-	bool IsFriendly(Gen genom1)
+	bool IsFriendly(std::shared_ptr<Entity>& cell)
 	{
-		size_t counter = 0;
-		for (size_t i = 0; i < Gen::length; i++)
+		const unsigned short BORDER = 2;
+		size_t count_of_non_equal = 0;
+		auto lhs_genom = GetGen().data;
+		auto rhs_genom = cell->GetGen().data;
+
+		for (size_t index = 0; index < lhs_genom.size(); index++)
 		{
-			if (genom1.data[i] != genom.data[i])
-				counter++;
+			if (lhs_genom[index] != rhs_genom[index])
+				count_of_non_equal++;
+
+			if (count_of_non_equal > BORDER)
+				return false;
 		}
 
-		return counter < 2;
+		return true;
 	}
 
 	std::shared_ptr<Entity> Reproduction() override
@@ -35,25 +48,20 @@ public:
 		srand(time(0));  // рандомизация генератора случайных чисел
 		// вычисляем произойдёт ли мутация
 		auto new_genom = genom.data;
-		double mt = (rand() % 100) / 100;
-		if (mt <= genom.mutationChance)
+		double mt = (rand() % 100) / (double)100;
+		if (mt < genom.mutationChance)
 		{
 			// рандомизируем выбор изменяемой комманды гена
-			srand(time(0));
 			size_t index = rand() % Gen::length;
 			// рандомизируем комманду гена
-			srand(time(0)); 
 			new_genom[index] = static_cast<Command>(rand() % Gen::commands);
 		}
 
-		unsigned short hlph = 0;
-		if (accumulated_energy > 1000)
-		{
-			hlph = 1000;
-			DecreaceAccEnergy(hlph);
-		}
+		DecreaceAccEnergy(reproduction_cost);
+		unsigned short hlph = accumulated_energy / 2;
+		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			Gen(new_genom, 0.25, genom.generation + 1), ration_, hlph
+			hlph, reproduction_cost, max_age, Gen(new_genom, 0.25, genom.generation + 1), ration_
 		));
 	}
 	
@@ -64,6 +72,50 @@ public:
 			commands.push_back(die);
 		else
 			commands.push_back(genom.Read());
+	}
+
+	RGBColor Species() override
+	{
+		unsigned char part1, part2;
+		if (Gen::length % 3 == 0)
+		{
+			part1 = part2 = Gen::length / 3;
+		}
+		else if (Gen::length % 3 == 1)
+		{
+			part1 = part2 = Gen::length / 3;
+		}
+		else
+		{
+			part1 = Gen::length / 3;
+			part2 = Gen::length / 3 + 1;
+		}
+		
+		unsigned char r = 0, g = 0, b = 0;
+		for (unsigned short i = 0; i < part1; i++)
+		{
+			unsigned char gen = static_cast<unsigned char>(genom.data[i]);
+			r += gen * ((double)255 / part1 * Gen::commands);
+		}
+		for (unsigned short i = part1; i < part1 + part2; i++)
+		{
+			int gen = static_cast<unsigned char>(genom.data[i]);
+			g += gen * ((double)255 / part1 * Gen::commands);
+		}
+		for (unsigned short i = part2 + part1; i < Gen::length; i++)
+		{
+			int gen = static_cast<unsigned char>(genom.data[i]);
+			b += gen * ((double)255 / part1 * Gen::commands);
+		}
+		
+		if (r > 255)
+			r = r % 255;
+		if (g > 255)
+			g = g % 255;
+		if (b > 255)
+			b = b % 255;
+
+		return { r, g, b };
 	}
 
 	RGBColor Color(view_settings vs) override
@@ -84,15 +136,7 @@ public:
 			break;
 		case view_settings::species:
 		{
-			unsigned char r = 0;
-			for (unsigned short i = 0; i < Gen::length; i++)
-			{
-				r += static_cast<unsigned char>(genom.data[i]);
-			}
-			r = 255 - r;
-			unsigned char g = 255 - r;
-			unsigned char b = 255 - r;
-			return { r, g, b };
+			return Species();
 		}
 			break;
 		}

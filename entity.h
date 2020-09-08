@@ -73,17 +73,21 @@ protected:
 	Ration ration_;
 	view_side view;
 	unsigned short age;
+	const unsigned short max_age;
 	unsigned short hp;
 	unsigned short energy;
 	unsigned int accumulated_energy;
 public:
-	Entity(unsigned short h, unsigned short e, unsigned short ae, Ration r);
+	Entity(unsigned short h, unsigned short e, unsigned short ae, unsigned short max_age, Ration r);
 	virtual Gen GetGen() = 0;
+	virtual size_t ReproductionCost() = 0;
 	virtual void Tic(std::vector<Command>& commands) = 0;
 	virtual std::shared_ptr<Entity> Reproduction() = 0;
-	virtual bool IsFriendly(Gen) = 0;
+	virtual bool IsFriendly(std::shared_ptr<Entity>&) = 0;
+	virtual RGBColor Species() = 0;
 
 	unsigned short Age();
+	unsigned short MaxAge();
 	Ration& GetRation();
 	const Ration& GetRation() const;
 	view_side Entity::GetView();

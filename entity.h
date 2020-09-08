@@ -43,9 +43,9 @@ public:
 
 	void Symbiosis()
 	{
-		meat += meat < 225 ? 30 : (255 - meat);
-		light += light < 225 ? 30 : (255 - light);
-		minerals += minerals < 225 ? 30 : (255 - minerals);
+		meat += meat < 225 ? 75 : (255 - meat);
+		light += light < 225 ? 75 : (255 - light);
+		minerals += minerals < 225 ? 75 : (255 - minerals);
 	}
 	void IncreaceMeat()
 	{

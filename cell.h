@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <ctime>
+#include <sstream>
 
 class Cell : public Entity
 {
@@ -57,11 +58,23 @@ public:
 			new_genom[index] = static_cast<Command>(rand() % Gen::commands);
 		}
 
+		const auto CellSuccessRule = [](size_t accumulated_energy, size_t max_age, double success, double fail) {
+			return accumulated_energy > max_age * 10 ? success :
+				(accumulated_energy > max_age / 2 * 10 ? 1 : fail);
+		};
+
+		double max_age_koef			= CellSuccessRule(accumulated_energy, max_age, 1.025, 0.0975);
+		double mutationChance_koef	= CellSuccessRule(accumulated_energy, max_age, 0.9, 1.1);
+
+		double new_max_age = max_age * max_age_koef;
+		double new_mutationChance = genom.mutationChance * mutationChance_koef;
+		if (new_mutationChance > 1) new_mutationChance = 1;
+
 		DecreaceAccEnergy(reproduction_cost);
 		unsigned short hlph = accumulated_energy / 2;
 		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			hlph, max_age, reproduction_cost, Gen(new_genom, 0.25, genom.generation + 1), ration_
+			hlph, max_age, reproduction_cost, Gen(new_genom, new_mutationChance, genom.generation + 1), ration_
 		));
 	}
 	
@@ -77,46 +90,7 @@ public:
 
 	RGBColor Species() override
 	{
-		unsigned char part1, part2;
-		if (Gen::length % 3 == 0)
-		{
-			part1 = part2 = Gen::length / 3;
-		}
-		else if (Gen::length % 3 == 1)
-		{
-			part1 = part2 = Gen::length / 3;
-		}
-		else
-		{
-			part1 = Gen::length / 3;
-			part2 = Gen::length / 3 + 1;
-		}
-		
-		unsigned char r = 0, g = 0, b = 0;
-		for (unsigned short i = 0; i < part1; i++)
-		{
-			unsigned char gen = static_cast<unsigned char>(genom.data[i]);
-			r += gen * ((double)255 / part1 * Gen::commands);
-		}
-		for (unsigned short i = part1; i < part1 + part2; i++)
-		{
-			int gen = static_cast<unsigned char>(genom.data[i]);
-			g += gen * ((double)255 / part1 * Gen::commands);
-		}
-		for (unsigned short i = part2 + part1; i < Gen::length; i++)
-		{
-			int gen = static_cast<unsigned char>(genom.data[i]);
-			b += gen * ((double)255 / part1 * Gen::commands);
-		}
-		
-		if (r > 255)
-			r = r % 255;
-		if (g > 255)
-			g = g % 255;
-		if (b > 255)
-			b = b % 255;
-
-		return { r, g, b };
+		return genom.Hash();
 	}
 
 	RGBColor Color(view_settings vs) override
@@ -125,23 +99,15 @@ public:
 		{
 		case terrain:
 			return { 0, 255, 226 };
-			break;
 		case view_settings::minerals:
 			return { 209, 209, 209 };
-			break;
 		case view_settings::ration:
 			return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
-			break;
 		case view_settings::energy:
 			return { 255, static_cast<unsigned char>(255 - 255 * (double)accumulated_energy / MAX_ACC_ENERGY), 0 };
-			break;
 		case view_settings::species:
-		{
 			return Species();
 		}
-			break;
-		}
-		return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
 	}
 		
 	bool Outline(view_settings) override

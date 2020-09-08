@@ -38,19 +38,16 @@ RGBColor Structure::Color(view_settings vs)
 	{
 	case terrain:
 		return color;
-		break;
 	case minerals:
 		return { 209, 209, 209 };
-		break;
 	case ration:
 		return { 209, 209, 209 };
-		break;
 	case energy:
 		return { 209, 209, 209 };
-		break;
 	case species:
 		return { 209, 209, 209 };
-		break;
+	default:
+		return color;
 	}
 }
 

@@ -17,9 +17,12 @@
 #include "sand.h"
 
 #include <memory>
+#include <ctime>
 #include <array>
 
 using namespace std;
+
+const int CELL_START_COUNT = 1000;
 
 const int ENVIRONMENT_SIZE_X = 200;
 const int ENVIRONMENT_SIZE_Y = 120;
@@ -85,6 +88,8 @@ class Environment
 public:
 	explicit Environment()
 	{
+		size_t count = 0;
+		srand(time(0) + rand());
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
@@ -99,9 +104,54 @@ public:
 				{
 					terrain[y][x] = shared_ptr<Structure>(new Water());
 
-					// set minerals
-					if (rand() % 100 < 50 && y > ENVIRONMENT_SIZE_Y / 2)
-						terrain[y][x]->SetFood(500);
+					// put minerals
+					if (y > (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 4))
+					{
+						terrain[y][x]->SetFood(15000 * (double(y) / ENVIRONMENT_SIZE_Y));
+					}
+
+					// put first cells
+					if (((rand() % 100) < 3) && count < CELL_START_COUNT)
+					{
+						count++;
+						/*
+						shared_ptr<Entity> e(new Cell(0, Gen::length, 200, Gen({
+							reproduction,
+							turn_right,
+							reproduction,
+							turn_left,
+							eat_minerals,
+							turn_left,
+							stay,
+							reproduction,
+							turn_right,
+							stay,
+							turn_right,
+							turn_right,
+							turn_left,
+							stay,
+							fotosintesis,
+							stay,
+							fotosintesis,
+							turn_left,
+							turn_right,
+							reproduction,
+							reproduction,
+							eat_minerals,
+							fotosintesis,
+							turn_left,
+							reproduction,
+							fotosintesis,
+							die,
+							turn_left,
+							attack,
+							reproduction,
+							turn_right
+							}, 0.2, 0)));
+						*/
+						shared_ptr<Entity> e(new Cell(0, Gen::length, 200));
+						terrain[y][x]->SetEntity(e);
+					}
 				}
 
 				// set up light
@@ -112,46 +162,6 @@ public:
 				terrain[y][x]->SetLightPower(power);
 			}
 		}
-
-		auto x = ENVIRONMENT_SIZE_X / 2;
-		auto y = ENVIRONMENT_SIZE_Y / 8;
-
-		shared_ptr<Entity> e1(new Cell(0, Gen::length, 200, Gen({
-			reproduction,
-			turn_right,
-			reproduction,
-			turn_left,
-			eat_minerals,
-			turn_left,
-			stay,
-			reproduction,
-			turn_right,
-			stay,
-			turn_right,
-			turn_right,
-			turn_left,
-			stay,
-			fotosintesis,
-			stay,
-			fotosintesis,
-			turn_left,
-			turn_right,
-			reproduction,
-			reproduction,
-			eat_minerals,
-			fotosintesis,
-			turn_left,
-			reproduction,
-			fotosintesis,
-			die,
-			turn_left,
-			attack,
-			reproduction,
-			turn_right
-			}, 0.2, 0)));
-
-		// put first cells
-		terrain[y][x]->SetEntity(e1);
 	}
 	
 	void Update()
@@ -308,7 +318,7 @@ private:
 		case Command::eat_minerals:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-			auto energy = terrain[y][x]->GetFood().Eat(6000);
+			auto energy = terrain[y][x]->GetFood().Eat();
 			if (energy)
 			{
 				terrain[y][x]->GetEntity()->GetRation().IncreaceMinerals();

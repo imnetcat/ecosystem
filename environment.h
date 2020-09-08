@@ -203,8 +203,8 @@ public:
 				size_t power = LIGHT_POWER;
 				if (y != 0)
 					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
-
 				terrain[y][x]->SetLightPower(power);
+
 				terrain[y][x]->Untick();
 				DrawData stat;
 				stat.color = terrain[y][x]->Color(view);

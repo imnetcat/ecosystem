@@ -133,6 +133,9 @@
     <ClInclude Include="minerals.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="sand.h" />
+    <ClInclude Include="sfml.h" />
+    <ClInclude Include="sfml_box.h" />
+    <ClInclude Include="sfml_button.h" />
     <ClInclude Include="structure.h" />
     <ClInclude Include="water.h" />
   </ItemGroup>

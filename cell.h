@@ -19,7 +19,7 @@ public:
 		separation_cost(std::move(obj.SeparationCost())),
 		birth_cost(std::move(obj.BirthCost())) {}
 
-	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, size_t birthcost, Ration r, Genome g = Genome())
+	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, size_t birthcost, Ration r, Genome g)
 		: Entity(100, e, max_age, r), genom(g), separation_cost(repr_cost), birth_cost(birthcost) {}
 	
 	size_t SeparationCost()
@@ -131,7 +131,7 @@ private:
 		   // вычисляем произойдёт ли мутация
 		auto new_genom = genom.data;
 		auto new_ration = ration_;
-		double mt = (rand() % 100) / (double)100;
+		float mt = (rand() % 100) / (double)100;
 		if (mt < genom.mutationChance)
 		{
 			// рандомизируем выбор изменяемой комманды гена
@@ -152,10 +152,10 @@ private:
 		}
 
 		short max_age_koef = CellSuccessRule(energy, max_age, 1, -1);
-		double mutationChance_koef = CellSuccessRule(energy, max_age, -0.01, 0.01);
+		float mutationChance_koef = CellSuccessRule(energy, max_age, -0.01, 0.01);
 
 		unsigned short new_max_age = max_age + max_age_koef;
-		double new_mutationChance = genom.mutationChance + mutationChance_koef;
+		float new_mutationChance = genom.mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
 		if (new_mutationChance < 0) new_mutationChance = 0;
 		if (new_max_age > 50 * Genome::length) new_max_age = 50 * Genome::length;
@@ -165,7 +165,7 @@ private:
 			0, new_max_age, separation_cost, birth_cost, new_ration, Genome(new_genom, new_mutationChance, genom.generation + 1)
 		);
 	}
-	double CellSuccessRule(size_t accumulated_energy, size_t max_age, double success, double fail)
+	float CellSuccessRule(size_t accumulated_energy, size_t max_age, float success, float fail)
 	{
 		return accumulated_energy > max_age * 10 ? success :
 			((accumulated_energy > (max_age / 2)* 10) ? 0 : fail);

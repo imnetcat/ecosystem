@@ -1,15 +1,5 @@
-#ifdef _DEBUG
-#pragma comment(lib, "sfml-graphics-d.lib")
-#pragma comment(lib, "sfml-system-d.lib")
-#pragma comment(lib, "sfml-window-d.lib")
-#else
-#pragma comment(lib, "sfml-graphics.lib")
-#pragma comment(lib, "sfml-system.lib")
-#pragma comment(lib, "sfml-window.lib")
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif
-#include <SFML/Graphics.hpp>
-
+#include "sfml_button.h"
+#include "sfml_box.h"
 #include "environment.h"
 
 #include <iostream>
@@ -18,10 +8,10 @@
 using namespace std;
 using namespace sf;
 
-const double SPEED = 1.0;
+const float SPEED = 1.0;
 
-const int WINDOW_POS_X = 300;
-const int WINDOW_POS_Y = 200;
+const int WINDOW_POS_X = 400;
+const int WINDOW_POS_Y = 300;
 const char* FONT = "SourceCodePro-Black.ttf";
 
 
@@ -80,115 +70,47 @@ int main()
 		cerr << "font doesn't loaded properly..." << endl;
 	}
 
-	sf::RectangleShape view_rect(sf::Vector2f(190, 140));
-	view_rect.setPosition(5, 15);
-	view_rect.setOutlineThickness(1);
-	view_rect.setFillColor({ 255, 255, 255 });
-	view_rect.setOutlineColor(sf::Color(0, 0, 0));
+	Box view_rect(font, "view", 5, 15, 190, 140, 16);
+	
+	Button ter_view_btn(font, "terrain", 
+		DEFAULT_BTN_POS_X, 
+		DEFAULT_BTN_POS_Y, 
+		DEFAULT_BTN_SIZE_X, 
+		DEFAULT_BTN_SIZE_Y, 14);
 
-	sf::Text view_title;
-	view_title.setFont(font);
-	view_title.setString("view");
-	view_title.setCharacterSize(16);
-	view_title.setPosition(75, 3);
-	view_title.setFillColor(sf::Color::Black);
+	Button energy_view_btn(font, "energy",
+		ENERGY_BTN_POS_X,
+		ENERGY_BTN_POS_Y,
+		ENERGY_BTN_SIZE_X,
+		ENERGY_BTN_SIZE_Y, 14);
 
-	sf::RectangleShape ter_view_btn(sf::Vector2f(DEFAULT_BTN_SIZE_X, DEFAULT_BTN_SIZE_Y));
-	ter_view_btn.setPosition(DEFAULT_BTN_POS_X, DEFAULT_BTN_POS_Y);
-	ter_view_btn.setOutlineThickness(1);
-	ter_view_btn.setFillColor({ 230, 230, 230 });
-	ter_view_btn.setOutlineColor(sf::Color(0, 0, 0));
+	Button minerals_view_btn(font, "minerals",
+		MINERALS_BTN_POS_X,
+		MINERALS_BTN_POS_Y,
+		MINERALS_BTN_SIZE_X,
+		MINERALS_BTN_SIZE_Y, 14);
 
-	sf::Text ter_view_text;
-	ter_view_text.setFont(font);
-	ter_view_text.setString("terrain");
-	ter_view_text.setCharacterSize(14);
-	ter_view_text.setPosition(25, 40);
-	ter_view_text.setFillColor(sf::Color::Black);
+	Button species_view_btn(font, "species",
+		SPECIES_BTN_POS_X,
+		SPECIES_BTN_POS_Y,
+		SPECIES_BTN_SIZE_X,
+		SPECIES_BTN_SIZE_Y, 14);
 
-	sf::RectangleShape energy_view_btn(sf::Vector2f(ENERGY_BTN_SIZE_X, ENERGY_BTN_SIZE_Y));
-	energy_view_btn.setPosition(ENERGY_BTN_POS_X, ENERGY_BTN_POS_Y);
-	energy_view_btn.setOutlineThickness(1);
-	energy_view_btn.setFillColor({ 255, 255, 255 });
-	energy_view_btn.setOutlineColor(sf::Color(0, 0, 0));
+	Button age_view_btn(font, "age",
+		AGE_BTN_POS_X,
+		AGE_BTN_POS_Y,
+		AGE_BTN_SIZE_X,
+		AGE_BTN_SIZE_Y, 14);
 
-	sf::Text energy_view_text;
-	energy_view_text.setFont(font);
-	energy_view_text.setString("energy");
-	energy_view_text.setCharacterSize(14);
-	energy_view_text.setPosition(27, 75);
-	energy_view_text.setFillColor(sf::Color::Black);
+	Button ration_view_btn(font, "ration",
+		RATION_BTN_POS_X,
+		RATION_BTN_POS_Y,
+		RATION_BTN_SIZE_X,
+		RATION_BTN_SIZE_Y, 14);
 
-	sf::RectangleShape minerals_view_btn(sf::Vector2f(MINERALS_BTN_SIZE_X, MINERALS_BTN_SIZE_Y));
-	minerals_view_btn.setPosition(MINERALS_BTN_POS_X, MINERALS_BTN_POS_Y);
-	minerals_view_btn.setOutlineThickness(1);
-	minerals_view_btn.setFillColor({ 255, 255, 255 });
-	minerals_view_btn.setOutlineColor(sf::Color(0, 0, 0));
-
-	sf::Text minerals_view_text;
-	minerals_view_text.setFont(font);
-	minerals_view_text.setString("minerals");
-	minerals_view_text.setCharacterSize(14);
-	minerals_view_text.setPosition(22, 110);
-	minerals_view_text.setFillColor(sf::Color::Black);
-
-	sf::RectangleShape species_view_btn(sf::Vector2f(SPECIES_BTN_SIZE_X, SPECIES_BTN_SIZE_Y));
-	species_view_btn.setPosition(SPECIES_BTN_POS_X, SPECIES_BTN_POS_Y);
-	species_view_btn.setOutlineThickness(1);
-	species_view_btn.setFillColor({ 255, 255, 255 });
-	species_view_btn.setOutlineColor(sf::Color(0, 0, 0));
-
-	sf::Text species_view_text;
-	species_view_text.setFont(font);
-	species_view_text.setString("species");
-	species_view_text.setCharacterSize(14);
-	species_view_text.setPosition(120, 40);
-	species_view_text.setFillColor(sf::Color::Black);
-
-	sf::RectangleShape age_view_btn(sf::Vector2f(AGE_BTN_SIZE_X, AGE_BTN_SIZE_Y));
-	age_view_btn.setPosition(AGE_BTN_POS_X, AGE_BTN_POS_Y);
-	age_view_btn.setOutlineThickness(1);
-	age_view_btn.setFillColor({ 255, 255, 255 });
-	age_view_btn.setOutlineColor(sf::Color(0, 0, 0));
-
-	sf::Text age_view_text;
-	age_view_text.setFont(font);
-	age_view_text.setString("age");
-	age_view_text.setCharacterSize(14);
-	age_view_text.setPosition(130, 110);
-	age_view_text.setFillColor(sf::Color::Black);
-
-	sf::RectangleShape ration_view_btn(sf::Vector2f(RATION_BTN_SIZE_X, RATION_BTN_SIZE_Y));
-	ration_view_btn.setPosition(RATION_BTN_POS_X, RATION_BTN_POS_Y);
-	ration_view_btn.setOutlineThickness(1);
-	ration_view_btn.setFillColor({ 255, 255, 255 });
-	ration_view_btn.setOutlineColor(sf::Color(0, 0, 0));
-
-	sf::Text ration_view_text;
-	ration_view_text.setFont(font);
-	ration_view_text.setString("ration");
-	ration_view_text.setCharacterSize(14);
-	ration_view_text.setPosition(124, 75);
-	ration_view_text.setFillColor(sf::Color::Black);
-
-	sf::RectangleShape info_rect(sf::Vector2f(190, 215));
-	info_rect.setPosition(5, 170);
-	info_rect.setOutlineThickness(1);
-	info_rect.setFillColor({ 255, 255, 255 });
-	info_rect.setOutlineColor(sf::Color(0, 0, 0));
-
-	sf::Text info_title;
-	info_title.setFont(font);
-	info_title.setString("info");
-	info_title.setCharacterSize(16);
-	info_title.setPosition(75, 160);
-	info_title.setFillColor(sf::Color::Black);
-
-	sf::RectangleShape cell_ico(sf::Vector2f(50, 50));
-	cell_ico.setPosition(10, 180);
-	cell_ico.setOutlineThickness(1);
-	cell_ico.setOutlineColor(sf::Color(0, 0, 0));
-
+	Box info_rect(font, "info", 5, 170, 190, 215, 16);
+	Box cell_ico(font, "", 10, 180, 50, 50, 16);
+	
 	sf::Text field_title;
 	field_title.setFont(font);
 	field_title.setCharacterSize(12);
@@ -207,11 +129,11 @@ int main()
 	cell_age.setPosition(65, 210);
 	cell_age.setFillColor(sf::Color::Black);
 
-	sf::Text cell_accenergy;
-	cell_accenergy.setFont(font);
-	cell_accenergy.setCharacterSize(12);
-	cell_accenergy.setPosition(10, 235);
-	cell_accenergy.setFillColor(sf::Color::Black);
+	sf::Text cell_mutant_chance;
+	cell_mutant_chance.setFont(font);
+	cell_mutant_chance.setCharacterSize(12);
+	cell_mutant_chance.setPosition(10, 235);
+	cell_mutant_chance.setFillColor(sf::Color::Black);
 
 	sf::Text cell_energy;
 	cell_energy.setFont(font);
@@ -243,18 +165,13 @@ int main()
 	cell_genom.setPosition(10, 310);
 	cell_genom.setFillColor(sf::Color::Black);
 
-	sf::RectangleShape info_clear_rect(sf::Vector2f(CLEAR_INFO_SIZE_X, CLEAR_INFO_SIZE_Y));
-	info_clear_rect.setPosition(CLEAR_INFO_POS_X, CLEAR_INFO_POS_Y);
-	info_clear_rect.setOutlineThickness(1);
-	info_clear_rect.setFillColor({ 255, 255, 255 });
-	info_clear_rect.setOutlineColor(sf::Color(0, 0, 0));
-
-	sf::Text info_clear_text;
-	info_clear_text.setFont(font);
-	info_clear_text.setString("clear");
-	info_clear_text.setCharacterSize(12);
-	info_clear_text.setPosition(80, 377);
-	info_clear_text.setFillColor(sf::Color::Black);
+	Button info_clear_rect_btn(font, "clear",
+		CLEAR_INFO_POS_X,
+		CLEAR_INFO_POS_Y,
+		CLEAR_INFO_SIZE_X,
+		CLEAR_INFO_SIZE_Y, 12);
+	
+	ter_view_btn.Disable(true);
 
 	sf::RectangleShape sprite_cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
 	sf::RectangleShape sprite_struct(sf::Vector2f(CELL_OUTLINE, CELL_OUTLINE));
@@ -279,95 +196,81 @@ int main()
 				if (settings_event.mouseButton.button == sf::Mouse::Left)
 				{
 					// нажатие на кнопку выключения окна информации
-					if (settings_event.mouseButton.x > CLEAR_INFO_POS_X &&
-						settings_event.mouseButton.x < CLEAR_INFO_POS_X + CLEAR_INFO_SIZE_X &&
-						settings_event.mouseButton.y > CLEAR_INFO_POS_Y &&
-						settings_event.mouseButton.y < CLEAR_INFO_POS_Y + CLEAR_INFO_SIZE_Y)
+					if (info_clear_rect_btn.IsClicked(settings_event.mouseButton.x, 
+						settings_event.mouseButton.y))
 					{
 						turn_on_info_block = false;
 					}
 
-					if (settings_event.mouseButton.x > AGE_BTN_POS_X &&
-						settings_event.mouseButton.x < AGE_BTN_POS_X + AGE_BTN_SIZE_X &&
-						settings_event.mouseButton.y > AGE_BTN_POS_Y &&
-						settings_event.mouseButton.y < AGE_BTN_POS_Y + AGE_BTN_SIZE_Y)
+					if (age_view_btn.IsClicked(settings_event.mouseButton.x,
+						settings_event.mouseButton.y))
 					{
-						ter_view_btn.setFillColor({ 255, 255, 255 });
-						species_view_btn.setFillColor({ 255, 255, 255 });
-						energy_view_btn.setFillColor({ 255, 255, 255 });
-						minerals_view_btn.setFillColor({ 255, 255, 255 });
-						ration_view_btn.setFillColor({ 255, 255, 255 });
-						age_view_btn.setFillColor({ 230, 230, 230 });
+						ter_view_btn.Disable(false);
+						species_view_btn.Disable(false);
+						energy_view_btn.Disable(false);
+						minerals_view_btn.Disable(false);
+						ration_view_btn.Disable(false);
+						age_view_btn.Disable(true);
 						environment.SetView(age);
 					}
 
-					if (settings_event.mouseButton.x > DEFAULT_BTN_POS_X &&
-						settings_event.mouseButton.x < DEFAULT_BTN_POS_X + DEFAULT_BTN_SIZE_X &&
-						settings_event.mouseButton.y > DEFAULT_BTN_POS_Y &&
-						settings_event.mouseButton.y < DEFAULT_BTN_POS_Y + DEFAULT_BTN_SIZE_Y)
+					if (ter_view_btn.IsClicked(settings_event.mouseButton.x,
+						settings_event.mouseButton.y))
 					{
-						ter_view_btn.setFillColor({ 230, 230, 230 });
-						species_view_btn.setFillColor({ 255, 255, 255 });
-						energy_view_btn.setFillColor({ 255, 255, 255 });
-						minerals_view_btn.setFillColor({ 255, 255, 255 });
-						ration_view_btn.setFillColor({ 255, 255, 255 });
-						age_view_btn.setFillColor({ 255, 255, 255 });
+						ter_view_btn.Disable(true);
+						species_view_btn.Disable(false);
+						energy_view_btn.Disable(false);
+						minerals_view_btn.Disable(false);
+						ration_view_btn.Disable(false);
+						age_view_btn.Disable(false);
 						environment.SetView(terrain);
 					}
 
-					if (settings_event.mouseButton.x > SPECIES_BTN_POS_X &&
-						settings_event.mouseButton.x < SPECIES_BTN_POS_X + SPECIES_BTN_SIZE_X &&
-						settings_event.mouseButton.y > SPECIES_BTN_POS_Y &&
-						settings_event.mouseButton.y < SPECIES_BTN_POS_Y + SPECIES_BTN_SIZE_Y)
+					if (species_view_btn.IsClicked(settings_event.mouseButton.x,
+						settings_event.mouseButton.y))
 					{
-						ter_view_btn.setFillColor({ 255, 255, 255 });
-						species_view_btn.setFillColor({ 230, 230, 230 });
-						energy_view_btn.setFillColor({ 255, 255, 255 });
-						minerals_view_btn.setFillColor({ 255, 255, 255 });
-						ration_view_btn.setFillColor({ 255, 255, 255 });
-						age_view_btn.setFillColor({ 255, 255, 255 });
+						ter_view_btn.Disable(false);
+						species_view_btn.Disable(true);
+						energy_view_btn.Disable(false);
+						minerals_view_btn.Disable(false);
+						ration_view_btn.Disable(false);
+						age_view_btn.Disable(false);
 						environment.SetView(species);
 					}
 
-					if (settings_event.mouseButton.x > ENERGY_BTN_POS_X &&
-						settings_event.mouseButton.x < ENERGY_BTN_POS_X + ENERGY_BTN_SIZE_X &&
-						settings_event.mouseButton.y > ENERGY_BTN_POS_Y &&
-						settings_event.mouseButton.y < ENERGY_BTN_POS_Y + ENERGY_BTN_SIZE_Y)
+					if (energy_view_btn.IsClicked(settings_event.mouseButton.x,
+						settings_event.mouseButton.y))
 					{
-						ter_view_btn.setFillColor({ 255, 255, 255 });
-						species_view_btn.setFillColor({ 255, 255, 255 });
-						energy_view_btn.setFillColor({ 230, 230, 230 });
-						minerals_view_btn.setFillColor({ 255, 255, 255 });
-						ration_view_btn.setFillColor({ 255, 255, 255 });
-						age_view_btn.setFillColor({ 255, 255, 255 });
+						ter_view_btn.Disable(false);
+						species_view_btn.Disable(false);
+						energy_view_btn.Disable(true);
+						minerals_view_btn.Disable(false);
+						ration_view_btn.Disable(false);
+						age_view_btn.Disable(false);
 						environment.SetView(energy);
 					}
 
-					if (settings_event.mouseButton.x > MINERALS_BTN_POS_X &&
-						settings_event.mouseButton.x < MINERALS_BTN_POS_X + MINERALS_BTN_SIZE_X &&
-						settings_event.mouseButton.y > MINERALS_BTN_POS_Y &&
-						settings_event.mouseButton.y < MINERALS_BTN_POS_Y + MINERALS_BTN_SIZE_Y)
+					if (minerals_view_btn.IsClicked(settings_event.mouseButton.x,
+						settings_event.mouseButton.y))
 					{
-						ter_view_btn.setFillColor({ 255, 255, 255 });
-						species_view_btn.setFillColor({ 255, 255, 255 });
-						energy_view_btn.setFillColor({ 255, 255, 255 });
-						minerals_view_btn.setFillColor({ 230, 230, 230 });
-						ration_view_btn.setFillColor({ 255, 255, 255 });
-						age_view_btn.setFillColor({ 255, 255, 255 });
+						ter_view_btn.Disable(false);
+						species_view_btn.Disable(false);
+						energy_view_btn.Disable(false);
+						minerals_view_btn.Disable(true);
+						ration_view_btn.Disable(false);
+						age_view_btn.Disable(false);
 						environment.SetView(view_settings::minerals);
 					}
 
-					if (settings_event.mouseButton.x > RATION_BTN_POS_X &&
-						settings_event.mouseButton.x < RATION_BTN_POS_X + RATION_BTN_SIZE_X &&
-						settings_event.mouseButton.y > RATION_BTN_POS_Y &&
-						settings_event.mouseButton.y < RATION_BTN_POS_Y + RATION_BTN_SIZE_Y)
+					if (ration_view_btn.IsClicked(settings_event.mouseButton.x,
+						settings_event.mouseButton.y))
 					{
-						ter_view_btn.setFillColor({ 255, 255, 255 });
-						species_view_btn.setFillColor({ 255, 255, 255 });
-						energy_view_btn.setFillColor({ 255, 255, 255 });
-						minerals_view_btn.setFillColor({ 255, 255, 255 });
-						ration_view_btn.setFillColor({ 230, 230, 230 });
-						age_view_btn.setFillColor({ 255, 255, 255 });
+						ter_view_btn.Disable(false);
+						species_view_btn.Disable(false);
+						energy_view_btn.Disable(false);
+						minerals_view_btn.Disable(false);
+						ration_view_btn.Disable(true);
+						age_view_btn.Disable(false);
 						environment.SetView(view_settings::ration);
 					}
 				}
@@ -400,7 +303,7 @@ int main()
 				{
 					auto info = environment.GetInfo(main_event.mouseButton.x, main_event.mouseButton.y);
 					turn_on_info_block = true;
-					cell_ico.setFillColor({ info.color.r, info.color.g, info.color.b });
+					cell_ico.Color({ info.color.r, info.color.g, info.color.b });
 					field_title.setString("Structure");
 					string genom = "\n";
 					if (info.genom.size())
@@ -420,6 +323,7 @@ int main()
 						cell_genom.setString("Genom: " + genom);
 						cell_generation.setString("Generation: " + to_string(info.generation));
 						cell_age.setString("Age: " + to_string(info.age.curr) + "/" + to_string(info.age.max));
+						cell_mutant_chance.setString("Chance of mutation: " + to_string(info.ch_of_mut).substr(0, 4));
 						cell_energy.setString("Energy: " + to_string(info.energy) + "/" + to_string(MAX_ENERGY));
 						cell_hp.setString("Hp: " + to_string(info.hp) + "/" + to_string(MAX_HP));
 					}
@@ -428,7 +332,7 @@ int main()
 						cell_genom.setString("Genom: -");
 						cell_generation.setString("Generation: -");
 						cell_age.setString("Age: -");
-						cell_accenergy.setString("Accumulated: -");
+						cell_mutant_chance.setString("Chance of mutation: -");
 						cell_energy.setString("Energy: -");
 						cell_hp.setString("Hp: -");
 					}
@@ -439,37 +343,30 @@ int main()
 		}
 
 		setting_window.draw(setting_background);
-		setting_window.draw(view_rect);
-		setting_window.draw(view_title);
-		setting_window.draw(ter_view_btn);
-		setting_window.draw(ter_view_text);
-		setting_window.draw(energy_view_btn);
-		setting_window.draw(energy_view_text);
-		setting_window.draw(minerals_view_btn);
-		setting_window.draw(minerals_view_text);
-		setting_window.draw(species_view_btn);
-		setting_window.draw(species_view_text);
-		setting_window.draw(age_view_btn);
-		setting_window.draw(age_view_text);
-		setting_window.draw(ration_view_btn);
-		setting_window.draw(ration_view_text);
-		setting_window.draw(info_rect);
-		setting_window.draw(info_title);
+
+		view_rect.Draw(setting_window);
+		ter_view_btn.Draw(setting_window);
+		energy_view_btn.Draw(setting_window);
+		minerals_view_btn.Draw(setting_window);
+		species_view_btn.Draw(setting_window);
+		age_view_btn.Draw(setting_window);
+		ration_view_btn.Draw(setting_window);
+		info_rect.Draw(setting_window);
 
 		if (turn_on_info_block)
 		{
+			cell_ico.Draw(setting_window);
+
 			setting_window.draw(field_title);
-			setting_window.draw(cell_ico);
 			setting_window.draw(cell_genom);
 			setting_window.draw(cell_generation);
 			setting_window.draw(cell_age);
 			setting_window.draw(field_food);
 			setting_window.draw(field_light);
-			setting_window.draw(cell_accenergy);
+			setting_window.draw(cell_mutant_chance);
 			setting_window.draw(cell_energy);
 			setting_window.draw(cell_hp);
-			setting_window.draw(info_clear_rect);
-			setting_window.draw(info_clear_text);
+			info_clear_rect_btn.Draw(setting_window);
 		}
 
 

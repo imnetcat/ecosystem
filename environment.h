@@ -74,6 +74,7 @@ struct Info
 	size_t generation = 0;
 	size_t light_power = 0;
 	size_t food_power = 0;
+	double ch_of_mut;
 };
 
 struct LightLevel
@@ -104,18 +105,26 @@ public:
 					terrain[y][x] = shared_ptr<Structure>(new Water());
 
 					// put minerals
-					/*
-					if (y > (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 4))
+					if (y > (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 8))
 					{
-						terrain[y][x]->SetFood(15000 * (double(y) / ENVIRONMENT_SIZE_Y));
+						terrain[y][x]->SetFood(5000 * (double(y) / ENVIRONMENT_SIZE_Y));
 					}
-					*/
 
 					// put first cells
 					if (((rand() % 1500) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
-						terrain[y][x]->SetEntity(new Cell(0, Genome::length / 2, 200, 100, fotosintesis));
+						double mutation_chance = static_cast<double>((rand() % 101) / (double)100);
+						terrain[y][x]->SetEntity(
+							new Cell(
+								0, 
+								Genome::length / 2,
+								200, 
+								100,
+								fotosintesis, 
+								{ mutation_chance }
+							)
+						);
 					}
 				}
 
@@ -214,6 +223,7 @@ public:
 			}
 			info.generation = terrain[y][x]->GetEntity()->GetGenome().generation;
 			info.hp = terrain[y][x]->GetEntity()->Hp();
+			info.ch_of_mut = terrain[y][x]->GetEntity()->GetGenome().mutationChance;
 			info.energy = terrain[y][x]->GetEntity()->Energy();
 		}
 		if (terrain[y][x]->IsContainsFood())

@@ -127,7 +127,7 @@ class Genome
 public:
 	static const unsigned char length = 32;
 	static const size_t commands = 8;
-	Genome() : generation(0), hash(Hashing()), mutationChance((rand() % 21 + 10) / (double)100), index(0) {};
+	Genome(double mh) : generation(0), hash(Hashing()), mutationChance(mh), index(0) {};
 	explicit Genome(std::array<Gen, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) {};
 

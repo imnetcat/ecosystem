@@ -71,5 +71,14 @@
     <ClInclude Include="water.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sfml_button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml_box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

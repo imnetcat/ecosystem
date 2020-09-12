@@ -1,7 +1,7 @@
 #pragma once
 #include "object.h"
 #include "minerals.h"
-#include "entity.h"
+#include "cell.h"
 #include <memory>
 #include <map>
 
@@ -15,7 +15,7 @@ protected:
 	unsigned short light_power;
 	bool walkable;
 	Minerals food;
-	std::shared_ptr<Entity> entity;
+	Cell* entity;
 	bool contains_entity;
 public:
 	Structure(RGBColor c, bool w, double tr);
@@ -41,9 +41,10 @@ public:
 	Minerals& GetFood();
 	const Minerals& GetFood() const;
 
-	void SetEntity(std::shared_ptr<Entity> e);
+	void SetEntity(Cell* e);
+	void ClearEntity();
 	void DelEntity();
-	std::shared_ptr<Entity>& GetEntity();
+	Cell* GetEntity();
 	
 	void Walkable(bool val);
 	bool IsWalkable();

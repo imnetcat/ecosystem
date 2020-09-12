@@ -6,7 +6,8 @@ Structure::Structure(RGBColor c, bool w, double tr) :
 	walkable(w),
 	transparency(tr),
 	light_level(0),
-	contains_entity(false)
+	contains_entity(false),
+	entity(nullptr)
 { }
 
 double Structure::Transparency()
@@ -116,17 +117,26 @@ const Minerals& Structure::GetFood() const
 	return food;
 }
 
-void Structure::SetEntity(std::shared_ptr<Entity> e)
-{
-	entity = e;
-	contains_entity = true;
-}
-void Structure::DelEntity()
+void Structure::ClearEntity()
 {
 	entity = nullptr;
 	contains_entity = false;
 }
-std::shared_ptr<Entity>& Structure::GetEntity()
+
+void Structure::SetEntity(Cell* cell)
+{
+	if(entity)
+		delete entity;
+	entity = std::move(cell);
+	contains_entity = true;
+}
+void Structure::DelEntity()
+{
+	if (entity)
+		delete entity;
+	ClearEntity();
+}
+Cell* Structure::GetEntity()
 {
 	return entity;
 }

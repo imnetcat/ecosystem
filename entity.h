@@ -83,9 +83,7 @@ public:
 	virtual size_t SeparationCost() = 0;
 	virtual size_t BirthCost() = 0;
 	virtual void Tic(std::vector<Gen::Command>& commands) = 0;
-	virtual std::shared_ptr<Entity> Separation() = 0;
-	virtual std::shared_ptr<Entity> Birth() = 0;
-	virtual bool IsFriendly(std::shared_ptr<Entity>&) = 0;
+
 	virtual RGBColor Species() = 0;
 
 	unsigned short Age();

@@ -114,8 +114,7 @@ public:
 					if (((rand() % 1500) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
-						shared_ptr<Entity> e(new Cell(0, Genome::length / 2, 200, 100));
-						terrain[y][x]->SetEntity(e);
+						terrain[y][x]->SetEntity(new Cell(0, Genome::length / 2, 200, 100));
 					}
 				}
 
@@ -131,7 +130,6 @@ public:
 	
 	void Update()
 	{
-		// gravitation effect
 		size_t y = ENVIRONMENT_SIZE_Y - 2;
 		while (true)
 		{
@@ -144,7 +142,8 @@ public:
 				{
 					Event(command, x, y);
 				}
-				
+
+				// gravitation effect
 				if (terrain[y][x]->IsContainsFood())
 				{
 					if (terrain[y + 1][x]->IsWalkable())
@@ -259,9 +258,9 @@ private:
 
 			if (terrain[new_position.y][new_position.x]->IsWalkable() && !terrain[new_position.y][new_position.x]->IsContainsEntity())
 			{
+				terrain[y][x]->GetEntity()->DecreaceEnergy(10);
 				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity());
-				terrain[new_position.y][new_position.x]->GetEntity()->DecreaceEnergy(10);
-				terrain[y][x]->DelEntity();
+				terrain[y][x]->ClearEntity();
 			}
 			break;
 		case Gen::Command::turn_left:
@@ -356,7 +355,7 @@ private:
 			if (new_position == Position{ x, y })
 				break;
 
-			if (terrain[new_position.y][new_position.x]->IsWalkable())
+			if (!terrain[new_position.y][new_position.x]->IsContainsEntity() && terrain[new_position.y][new_position.x]->IsWalkable())
 			{
 				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Separation());
 				break;
@@ -373,7 +372,7 @@ private:
 			if (new_position == Position{ x, y })
 				break;
 
-			if (terrain[new_position.y][new_position.x]->IsWalkable())
+			if (!terrain[new_position.y][new_position.x]->IsContainsEntity() && terrain[new_position.y][new_position.x]->IsWalkable())
 			{
 				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Birth());
 				break;

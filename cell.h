@@ -96,7 +96,7 @@ public:
 		case view_settings::minerals:
 			return { 209, 209, 209 };
 		case view_settings::ration:
-			return { ration_.Meat(), ration_.Light(), ration_.Minerals() };
+			return ration_.Color();
 		case view_settings::energy:
 		{
 			if (accumulated_energy < (MAX_ACC_ENERGY / 2))

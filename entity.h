@@ -22,11 +22,12 @@ private:
 	unsigned char meat;
 	unsigned char light;
 	unsigned char minerals;
+	static const unsigned short max = 12;
 public:
 	Ration() :
-		meat(255),
-		light(255),
-		minerals(255) {}
+		meat(0),
+		light(0),
+		minerals(0) {}
 
 	unsigned char Meat()
 	{
@@ -41,29 +42,46 @@ public:
 		return minerals;
 	}
 
-	void Symbiosis()
+	RGBColor Color()
 	{
-		meat += meat < 225 ? 75 : (255 - meat);
-		light += light < 225 ? 75 : (255 - light);
-		minerals += minerals < 225 ? 75 : (255 - minerals);
+		if (!meat && !light && !minerals)
+			return { 255, 255, 255 }; // white
+
+		if (meat > light && meat > minerals)
+			return { 199, 0, 0 }; // red
+		if (light > meat && light > minerals)
+			return { 0, 143, 31 }; // green
+		if (minerals > meat && minerals > light)
+			return { 0, 14, 140 }; // blue
+
 	}
+
 	void IncreaceMeat()
 	{
-		meat += meat < 180 ? 75 : (255 - meat);
-		light -= light > 15 ? 15 : light;
-		minerals -= minerals > 15 ? 15 : minerals;
+		if(meat < max)
+			meat++;
+		if(light)
+			light--;
+		if (minerals)
+			minerals--;
 	}
 	void IncreaceLight()
 	{
-		meat -= meat > 30 ? 30 : meat;
-		light += light < 240 ? 15 : (255 - light);
-		minerals -= minerals > 15 ? 15 : minerals;
+		if (meat)
+			meat--;
+		if (light < max)
+			light++;
+		if (minerals)
+			minerals--;
 	}
 	void IncreaceMinerals()
 	{
-		meat -= meat > 30 ? 30 : meat;
-		light -= light > 15 ? 15 : light;
-		minerals += minerals < 240 ? 15 : (255 - minerals);
+		if (meat)
+			meat--;
+		if (light)
+			light--;
+		if (minerals < max)
+			minerals++;
 	}
 };
 

@@ -23,7 +23,7 @@ class Gen
 public:
 	static const unsigned char length = 32;
 	static const size_t commands = 9;
-	Gen() : generation(0), mutationChance((rand() % 100) / (double)100), hash(Hashing()), index(0)
+	Gen() : generation(0), hash(Hashing()), mutationChance((rand() % 21 + 10) / (double)100), index(0)
 	{
 		srand(time(0) - rand());
 		for (size_t i = 0; i < length; i++)

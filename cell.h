@@ -46,7 +46,7 @@ public:
 
 	std::shared_ptr<Entity> Reproduction() override
 	{
-		srand(time(0));  // рандомизация генератора случайных чисел
+		srand(time(0) + rand());  // рандомизация генератора случайных чисел
 		// вычисляем произойдёт ли мутация
 		auto new_genom = genom.data;
 		double mt = (rand() % 100) / (double)100;
@@ -63,18 +63,20 @@ public:
 				(accumulated_energy > max_age / 2 * 10 ? 1 : fail);
 		};
 
-		double max_age_koef			= CellSuccessRule(accumulated_energy, max_age, 1.025, 0.0975);
-		double mutationChance_koef	= CellSuccessRule(accumulated_energy, max_age, 0.9, 1.1);
+		double max_age_koef			= CellSuccessRule(accumulated_energy, max_age, 1, -1);
+		double mutationChance_koef	= CellSuccessRule(accumulated_energy, max_age, -1, 1);
 
-		double new_max_age = max_age * max_age_koef;
-		double new_mutationChance = genom.mutationChance * mutationChance_koef;
+		double new_max_age = max_age + max_age_koef;
+		double new_mutationChance = genom.mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
+		if (new_max_age > 50 * Gen::length) new_max_age = 50 * Gen::length;
+		if (new_max_age < Gen::length) new_max_age = Gen::length;
 
 		DecreaceAccEnergy(reproduction_cost);
 		unsigned short hlph = accumulated_energy / 2;
 		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			hlph, max_age, reproduction_cost, Gen(new_genom, new_mutationChance, genom.generation + 1), ration_
+			hlph, new_max_age, reproduction_cost, Gen(new_genom, new_mutationChance, genom.generation + 1), ration_
 		));
 	}
 	

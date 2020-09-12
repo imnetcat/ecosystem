@@ -73,7 +73,7 @@ protected:
 	Ration ration_;
 	view_side view;
 	unsigned short age;
-	const unsigned short max_age;
+	unsigned short max_age;
 	unsigned short hp;
 	unsigned short energy;
 	unsigned int accumulated_energy;

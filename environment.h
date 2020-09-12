@@ -104,16 +104,18 @@ public:
 					terrain[y][x] = shared_ptr<Structure>(new Water());
 
 					// put minerals
+					/*
 					if (y > (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 4))
 					{
 						terrain[y][x]->SetFood(15000 * (double(y) / ENVIRONMENT_SIZE_Y));
 					}
+					*/
 
 					// put first cells
 					if (((rand() % 1500) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
-						terrain[y][x]->SetEntity(new Cell(0, Genome::length / 2, 200, 100));
+						terrain[y][x]->SetEntity(new Cell(0, Genome::length / 2, 200, 100, fotosintesis));
 					}
 				}
 
@@ -277,89 +279,55 @@ private:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
 		}
 			break;
-		case Gen::Command::eat_minerals:
+		case Gen::Command::eat:
 		{
-			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-			auto energy = terrain[y][x]->GetFood().Eat(MAX_MINERALS_TO_EAT);
-			if (energy)
+			switch (terrain[y][x]->GetEntity()->GetRation().Type())
 			{
-				terrain[y][x]->GetEntity()->GetRation().IncreaceMinerals();
-				terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
-			}
-		}
-			break;
-		case Gen::Command::fotosintesis:
-		{
-			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-			auto energy = terrain[y][x]->GetLightPower();
-			if (energy)
+			case ration_type::eat_minerals:
 			{
-				terrain[y][x]->GetEntity()->GetRation().IncreaceLight();
-				if(energy > MAX_LIGHT_TO_EAT)
-					terrain[y][x]->GetEntity()->IncreaceEnergy(MAX_LIGHT_TO_EAT);
-				else
+				terrain[y][x]->GetEntity()->DecreaceEnergy(10);
+				auto energy = terrain[y][x]->GetFood().Eat(MAX_MINERALS_TO_EAT);
+				if (energy)
+				{
 					terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
-			}
-		}
-			break;
-		/*
-		case Gen::Command::symbiosis:
-		{
-			if (terrain[y][x]->GetEntity()->AccEnergy() < 400)
-				break;
-
-			Position recipient_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
-
-			if (recipient_position == Position{ x, y })
-				break;
-
-			if (terrain[recipient_position.y][recipient_position.x]->IsContainsEntity())
-			{
-				if (terrain[recipient_position.y][recipient_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()))
-				{
-					terrain[y][x]->GetEntity()->DecreaceAccEnergy(400);
-					terrain[recipient_position.y][recipient_position.x]->GetEntity()->IncreaceEnergy(400);
-					terrain[recipient_position.y][recipient_position.x]->GetEntity()->GetRation().Symbiosis();
 				}
-			}
-		}
-		break;
-		*/
-		case Gen::Command::attack:
-		{
-			Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
-
-			if (enemy_position == Position{ x, y })
 				break;
-
-			if (terrain[enemy_position.y][enemy_position.x]->IsContainsEntity())
+			}
+			case ration_type::fotosintesis:
 			{
-				if (!terrain[enemy_position.y][enemy_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()))
+				terrain[y][x]->GetEntity()->DecreaceEnergy(10);
+				auto energy = terrain[y][x]->GetLightPower();
+				if (energy)
 				{
-					Event(Gen::Command::die, enemy_position.x, enemy_position.y);
-					terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
-					terrain[y][x]->GetEntity()->GetRation().IncreaceMeat();
+					if (energy > MAX_LIGHT_TO_EAT)
+						terrain[y][x]->GetEntity()->IncreaceEnergy(MAX_LIGHT_TO_EAT);
+					else
+						terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
 				}
+				break;
 			}
-		}
-			break;
-		case Gen::Command::separation:
-		{
-			if (terrain[y][x]->GetEntity()->Energy() < terrain[y][x]->GetEntity()->SeparationCost())
-				break;
-
-			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
-
-			if (new_position == Position{ x, y })
-				break;
-
-			if (!terrain[new_position.y][new_position.x]->IsContainsEntity() && terrain[new_position.y][new_position.x]->IsWalkable())
+			case ration_type::attack:
 			{
-				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Separation());
+				Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
+
+				if (enemy_position == Position{ x, y })
+					break;
+
+				if (terrain[enemy_position.y][enemy_position.x]->IsContainsEntity())
+				{
+					if (!terrain[enemy_position.y][enemy_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()))
+					{
+						Event(Gen::Command::die, enemy_position.x, enemy_position.y);
+						terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat(MAX_MINERALS_TO_EAT));
+					}
+				}
 				break;
 			}
-		}
+			default:
+				break;
+			}
 			break;
+		}
 		case Gen::Command::birth:
 		{
 			if (terrain[y][x]->GetEntity()->Energy() < terrain[y][x]->GetEntity()->BirthCost())
@@ -375,8 +343,8 @@ private:
 				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Birth());
 				break;
 			}
+			break;
 		}
-		break;
 		}
 	}
 

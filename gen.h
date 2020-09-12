@@ -14,9 +14,7 @@ public:
 		move,
 		turn_left,
 		turn_right,
-		fotosintesis,
-		eat_minerals,
-		attack, // атака клетки если её геном отличается более чем на 2 комманды
+		eat,
 		separation, // деление на две
 		birth, // рождение
 	};
@@ -63,24 +61,7 @@ public:
 		}
 		case CommandGroups::Food:
 		{
-			switch (static_cast<Eating>(rand() % FoodCount))
-			{
-			case Eating::Fotosintesis:
-			{
-				command = fotosintesis;
-				break;
-			}
-			case Eating::Eat_minerals:
-			{
-				command = eat_minerals;
-				break;
-			}
-			case Eating::Attack:
-			{
-				command = attack;
-				break;
-			}
-			}
+			command = eat;
 			break;
 		}
 		case CommandGroups::Reproduction:
@@ -134,12 +115,6 @@ private:
 		Left,
 		Right
 	};
-	enum Eating
-	{
-		Fotosintesis,
-		Eat_minerals,
-		Attack,
-	};
 	enum Reproductioning
 	{
 		Separation, // деление на две
@@ -151,7 +126,7 @@ class Genome
 {
 public:
 	static const unsigned char length = 32;
-	static const size_t commands = 10;
+	static const size_t commands = 8;
 	Genome() : generation(0), hash(Hashing()), mutationChance((rand() % 21 + 10) / (double)100), index(0) {};
 	explicit Genome(std::array<Gen, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) {};

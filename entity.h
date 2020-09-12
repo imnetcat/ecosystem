@@ -16,73 +16,41 @@ enum view_side
 	left_top,
 };
 
+enum ration_type
+{
+	fotosintesis,// фотосинтез
+	eat_minerals,	 // поедание минералов на своей позиции
+	attack,		 // атака клетки если её геном отличается более чем на 2 комманды
+};
+
 class Ration
 {
 private:
-	unsigned char meat;
-	unsigned char light;
-	unsigned char minerals;
-	static const unsigned short max = 12;
+	ration_type _type;
 public:
-	Ration() :
-		meat(0),
-		light(0),
-		minerals(0) {}
+	Ration(ration_type type) :
+		_type(type) {}
 
-	unsigned char Meat()
+	ration_type Type()
 	{
-		return meat;
-	}
-	unsigned char Light()
-	{
-		return light;
-	}
-	unsigned char Minerals()
-	{
-		return minerals;
+		return _type;
 	}
 
 	RGBColor Color()
 	{
-		if (!meat && !light && !minerals)
-			return { 255, 255, 255 }; // white
-
-		if (meat > light && meat > minerals)
-			return { 199, 0, 0 }; // red
-		if (light > meat && light > minerals)
-			return { 0, 143, 31 }; // green
-		if (minerals > meat && minerals > light)
+		switch (_type)
+		{
+		case minerals:
 			return { 0, 14, 140 }; // blue
-
+		case fotosintesis:
+			return { 0, 143, 31 }; // green
+		case attack:
+			return { 199, 0, 0 }; // red
+		default:
+			return { 255, 255, 255 }; // white
+		}
 	}
-
-	void IncreaceMeat()
-	{
-		if(meat < max)
-			meat++;
-		if(light)
-			light--;
-		if (minerals)
-			minerals--;
-	}
-	void IncreaceLight()
-	{
-		if (meat)
-			meat--;
-		if (light < max)
-			light++;
-		if (minerals)
-			minerals--;
-	}
-	void IncreaceMinerals()
-	{
-		if (meat)
-			meat--;
-		if (light)
-			light--;
-		if (minerals < max)
-			minerals++;
-	}
+	static const unsigned short length = 3;
 };
 
 class Entity : public Object

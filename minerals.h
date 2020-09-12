@@ -59,8 +59,10 @@ public:
 	{
 		if(vs == view_settings::minerals)
 			return	{ 0, 255, 226 };
-		else
+		else if (vs != view_settings::age)
 			return	{ 209, 209, 209 };
+		else
+			return { 143, 229, 255 };
 	}
 	bool Outline(view_settings) override
 	{

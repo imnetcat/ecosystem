@@ -9,18 +9,23 @@
 class Cell : public Entity
 {
 private:
-	Gen genom;
-	const size_t reproduction_cost;
+	Genome genom;
+	const size_t separation_cost;
+	const size_t birth_cost;
 public:
-	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, Gen g = Gen(), Ration r = Ration())
-		: Entity(100, 100, e, max_age, r), genom(g), reproduction_cost(repr_cost) {}
+	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, size_t birthcost, Genome g = Genome(), Ration r = Ration())
+		: Entity(100, 100, e, max_age, r), genom(g), separation_cost(repr_cost), birth_cost(birthcost) {}
 	
-	size_t ReproductionCost()
+	size_t SeparationCost()
 	{
-		return reproduction_cost;
+		return separation_cost;
+	}
+	size_t BirthCost()
+	{
+		return birth_cost;
 	}
 
-	Gen GetGen()
+	Genome GetGenome()
 	{
 		return genom;
 	}
@@ -29,12 +34,12 @@ public:
 	{
 		const unsigned short BORDER = 2;
 		size_t count_of_non_equal = 0;
-		auto lhs_genom = GetGen().data;
-		auto rhs_genom = cell->GetGen().data;
+		auto lhs_genom = GetGenome().data;
+		auto rhs_genom = cell->GetGenome().data;
 
 		for (size_t index = 0; index < lhs_genom.size(); index++)
 		{
-			if (lhs_genom[index] != rhs_genom[index])
+			if (lhs_genom[index].Read() != rhs_genom[index].Read())
 				count_of_non_equal++;
 
 			if (count_of_non_equal > BORDER)
@@ -44,7 +49,7 @@ public:
 		return true;
 	}
 
-	std::shared_ptr<Entity> Reproduction() override
+	std::shared_ptr<Entity> Separation() override
 	{
 		srand(time(0) + rand());  // рандомизация генератора случайных чисел
 		// вычисляем произойдёт ли мутация
@@ -53,9 +58,9 @@ public:
 		if (mt < genom.mutationChance)
 		{
 			// рандомизируем выбор изменяемой комманды гена
-			size_t index = rand() % Gen::length;
+			size_t index = rand() % Genome::length;
 			// рандомизируем комманду гена
-			new_genom[index] = static_cast<Command>(rand() % Gen::commands);
+			new_genom[index] = Gen();
 		}
 
 		const auto CellSuccessRule = [](size_t accumulated_energy, size_t max_age, double success, double fail) {
@@ -64,26 +69,59 @@ public:
 		};
 
 		double max_age_koef			= CellSuccessRule(accumulated_energy, max_age, 1, -1);
-		double mutationChance_koef	= CellSuccessRule(accumulated_energy, max_age, -1, 1);
+		double mutationChance_koef	= CellSuccessRule(accumulated_energy, max_age, -1, 5);
 
 		double new_max_age = max_age + max_age_koef;
 		double new_mutationChance = genom.mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
-		if (new_max_age > 50 * Gen::length) new_max_age = 50 * Gen::length;
-		if (new_max_age < Gen::length) new_max_age = Gen::length;
+		if (new_max_age > 50 * Genome::length) new_max_age = 50 * Genome::length;
+		if (new_max_age < Genome::length) new_max_age = Genome::length;
 
-		DecreaceAccEnergy(reproduction_cost);
+		DecreaceAccEnergy(separation_cost);
 		unsigned short hlph = accumulated_energy / 2;
 		DecreaceAccEnergy(hlph);
 		return std::shared_ptr<Entity>(new Cell(
-			hlph, new_max_age, reproduction_cost, Gen(new_genom, new_mutationChance, genom.generation + 1), ration_
+			hlph, new_max_age, separation_cost, birth_cost, Genome(new_genom, new_mutationChance, genom.generation + 1), ration_
+		));
+	}
+
+	std::shared_ptr<Entity> Birth() override
+	{
+		srand(time(0) + rand());  // рандомизация генератора случайных чисел
+		// вычисляем произойдёт ли мутация
+		auto new_genom = genom.data;
+		double mt = (rand() % 100) / (double)100;
+		if (mt < genom.mutationChance)
+		{
+			// рандомизируем выбор изменяемой комманды гена
+			size_t index = rand() % Genome::length;
+			// рандомизируем комманду гена
+			new_genom[index] = Gen();
+		}
+
+		const auto CellSuccessRule = [](size_t accumulated_energy, size_t max_age, double success, double fail) {
+			return accumulated_energy > max_age * 10 ? success :
+				(accumulated_energy > max_age / 2 * 10 ? 1 : fail);
+		};
+
+		double max_age_koef = CellSuccessRule(accumulated_energy, max_age, 1, -1);
+		double mutationChance_koef = CellSuccessRule(accumulated_energy, max_age, -1, 5);
+
+		double new_max_age = max_age + max_age_koef;
+		double new_mutationChance = genom.mutationChance + mutationChance_koef;
+		if (new_mutationChance > 1) new_mutationChance = 1;
+		if (new_max_age > 50 * Genome::length) new_max_age = 50 * Genome::length;
+		if (new_max_age < Genome::length) new_max_age = Genome::length;
+
+		return std::shared_ptr<Entity>(new Cell(
+			0, new_max_age, separation_cost, birth_cost, Genome(new_genom, new_mutationChance, genom.generation + 1), ration_
 		));
 	}
 	
-	void Tic(std::vector<Command>& commands) override
+	void Tic(std::vector<Gen::Command>& commands) override
 	{
 		if (!hp || age == max_age)
-			commands.push_back(die);
+			commands.push_back(Gen::Command::die);
 		else
 			commands.push_back(genom.Read());
 		

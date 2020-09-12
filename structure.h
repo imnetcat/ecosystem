@@ -26,7 +26,7 @@ public:
 
 	RGBColor Color(view_settings vs);
 
-	void Tic(std::vector<Command>& commands);
+	void Tic(std::vector<Gen::Command>& commands);
 
 	unsigned short GetLightLevel();
 	void SetLightLevel(unsigned short lv);

@@ -79,10 +79,12 @@ protected:
 	unsigned int accumulated_energy;
 public:
 	Entity(unsigned short h, unsigned short e, unsigned short ae, unsigned short max_age, Ration r);
-	virtual Gen GetGen() = 0;
-	virtual size_t ReproductionCost() = 0;
-	virtual void Tic(std::vector<Command>& commands) = 0;
-	virtual std::shared_ptr<Entity> Reproduction() = 0;
+	virtual Genome GetGenome() = 0;
+	virtual size_t SeparationCost() = 0;
+	virtual size_t BirthCost() = 0;
+	virtual void Tic(std::vector<Gen::Command>& commands) = 0;
+	virtual std::shared_ptr<Entity> Separation() = 0;
+	virtual std::shared_ptr<Entity> Birth() = 0;
 	virtual bool IsFriendly(std::shared_ptr<Entity>&) = 0;
 	virtual RGBColor Species() = 0;
 

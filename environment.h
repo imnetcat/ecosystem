@@ -68,7 +68,7 @@ struct Info
 		size_t curr = 0;
 		size_t max = 0;
 	} age;
-	vector<Command> genom;
+	vector<Gen::Command> genom;
 	unsigned short hp = 0;
 	size_t energy = 0;
 	size_t acc_energy = 0;
@@ -114,7 +114,7 @@ public:
 					if (((rand() % 1500) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
-						shared_ptr<Entity> e(new Cell(0, Gen::length, 200));
+						shared_ptr<Entity> e(new Cell(0, Genome::length, 200, 100));
 						terrain[y][x]->SetEntity(e);
 					}
 				}
@@ -138,7 +138,7 @@ public:
 			size_t x = ENVIRONMENT_SIZE_X - 1;
 			while (true)
 			{
-				vector<Command> commands;
+				vector<Gen::Command> commands;
 				terrain[y][x]->Tic(commands);
 				for (auto command : commands)
 				{
@@ -207,12 +207,12 @@ public:
 		{
 			info.age.curr = terrain[y][x]->GetEntity()->Age();
 			info.age.max = terrain[y][x]->GetEntity()->MaxAge();
-			auto& data = terrain[y][x]->GetEntity()->GetGen().data;
+			auto& data = terrain[y][x]->GetEntity()->GetGenome().data;
 			for (auto command : data)
 			{
-				info.genom.push_back(command);
+				info.genom.push_back(command.Read());
 			}
-			info.generation = terrain[y][x]->GetEntity()->GetGen().generation;
+			info.generation = terrain[y][x]->GetEntity()->GetGenome().generation;
 			info.hp = terrain[y][x]->GetEntity()->Hp();
 			info.energy = terrain[y][x]->GetEntity()->Energy();
 			info.acc_energy = terrain[y][x]->GetEntity()->AccEnergy();
@@ -236,14 +236,14 @@ private:
 
 	view_settings view = view_settings::terrain;
 		
-	void Event(Command command, size_t x, size_t y)
+	void Event(Gen::Command command, size_t x, size_t y)
 	{
 		switch (command)
 		{
-		case Command::stay:
+		case Gen::Command::stay:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(5);
 			break;
-		case Command::die:
+		case Gen::Command::die:
 			if (terrain[y][x]->IsContainsFood())
 				terrain[y][x]->GetFood().Put(terrain[y][x]->GetEntity()->AccEnergy() + 100);
 			else
@@ -251,7 +251,7 @@ private:
 
 			terrain[y][x]->DelEntity();
 			break;
-		case Command::move:
+		case Gen::Command::move:
 			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
 
 			if (new_position == Position{ x, y })
@@ -264,7 +264,7 @@ private:
 				terrain[y][x]->DelEntity();
 			}
 			break;
-		case Command::turn_left:
+		case Gen::Command::turn_left:
 		{
 			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
 			view_side new_side = static_cast<view_side>(old_side == 0 ? 7 : old_side - 1);
@@ -272,7 +272,7 @@ private:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
 		}
 			break;
-		case Command::turn_right:
+		case Gen::Command::turn_right:
 		{
 			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
 			view_side new_side = static_cast<view_side>(old_side == 7 ? 0 : old_side + 1);
@@ -280,7 +280,7 @@ private:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
 		}
 			break;
-		case Command::eat_minerals:
+		case Gen::Command::eat_minerals:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
 			auto energy = terrain[y][x]->GetFood().Eat(MAX_MINERALS_TO_EAT);
@@ -291,7 +291,7 @@ private:
 			}
 		}
 			break;
-		case Command::fotosintesis:
+		case Gen::Command::fotosintesis:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
 			auto energy = terrain[y][x]->GetLightPower();
@@ -305,7 +305,8 @@ private:
 			}
 		}
 			break;
-		case Command::symbiosis:
+		/*
+		case Gen::Command::symbiosis:
 		{
 			if (terrain[y][x]->GetEntity()->AccEnergy() < 400)
 				break;
@@ -326,7 +327,8 @@ private:
 			}
 		}
 		break;
-		case Command::attack:
+		*/
+		case Gen::Command::attack:
 		{
 			Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
 
@@ -337,16 +339,16 @@ private:
 			{
 				if (!terrain[enemy_position.y][enemy_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()))
 				{
-					Event(die, enemy_position.x, enemy_position.y);
+					Event(Gen::Command::die, enemy_position.x, enemy_position.y);
 					terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat());
 					terrain[y][x]->GetEntity()->GetRation().IncreaceMeat();
 				}
 			}
 		}
 			break;
-		case Command::reproduction:
+		case Gen::Command::separation:
 		{
-			if (terrain[y][x]->GetEntity()->AccEnergy() < terrain[y][x]->GetEntity()->ReproductionCost())
+			if (terrain[y][x]->GetEntity()->AccEnergy() < terrain[y][x]->GetEntity()->SeparationCost())
 				break;
 
 			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
@@ -356,11 +358,28 @@ private:
 
 			if (terrain[new_position.y][new_position.x]->IsWalkable())
 			{
-				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Reproduction());
+				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Separation());
 				break;
 			}
 		}
 			break;
+		case Gen::Command::birth:
+		{
+			if (terrain[y][x]->GetEntity()->AccEnergy() < terrain[y][x]->GetEntity()->BirthCost())
+				break;
+
+			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
+
+			if (new_position == Position{ x, y })
+				break;
+
+			if (terrain[new_position.y][new_position.x]->IsWalkable())
+			{
+				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Birth());
+				break;
+			}
+		}
+		break;
 		}
 	}
 

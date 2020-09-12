@@ -57,6 +57,7 @@ const int CLEAR_INFO_SIZE_Y = 20;
 
 int main()
 {
+	srand(time(0) - rand());
 	int loopback = 0;
 	// Объект, который, собственно, является главным окном приложения
 	RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X * CELL_OUTLINE, ENVIRONMENT_SIZE_Y * CELL_OUTLINE), "Ecosystem | Map");

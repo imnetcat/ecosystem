@@ -4,55 +4,176 @@
 #include <sstream>
 #include "object.h"
 
-enum Command
-{
-	die,
-	stay,
-	move,
-	turn_left,
-	turn_right,
-	fotosintesis,
-	eat_minerals,
-	attack, // атака клетки если её геном отличается более чем на 2 комманды
-	reproduction,  // деление на две
-	symbiosis
-};
-
 class Gen
 {
 public:
-	static const unsigned char length = 32;
-	static const size_t commands = 9;
-	Gen() : generation(0), hash(Hashing()), mutationChance((rand() % 21 + 10) / (double)100), index(0)
+	enum Command
 	{
-		srand(time(0) - rand());
-		for (size_t i = 0; i < length; i++)
-		{
-			Command cmd = static_cast<Command>(rand() % Gen::commands);
-			data[i] = cmd == die ? stay : cmd;
-		}
+		die,
+		stay,
+		move,
+		turn_left,
+		turn_right,
+		fotosintesis,
+		eat_minerals,
+		attack, // атака клетки если её геном отличается более чем на 2 комманды
+		separation, // деление на две
+		birth, // рождение
 	};
-	explicit Gen(std::array<Command, length> d, double mh, size_t g = 1)
+public:
+	Gen()
+	{
+		// выбираем к какой группе будет принадлежать ген
+		switch (static_cast<CommandGroups>(rand() % CommandGroupsCount))
+		{
+		case CommandGroups::Movei:
+		{
+			// выбираем к какой группе будет принадлежать ген
+			switch (static_cast<Moving>(rand() % MoveCount))
+			{
+			case Moving::Stay:
+			{
+				command = stay;
+				break;
+			}
+			case Moving::Move:
+			{
+				command = move;
+				break;
+			}
+			case Moving::Turn:
+			{
+				switch (static_cast<Turning>(rand() % TurnCount))
+				{
+				case Left:
+				{
+					command = turn_left;
+					break;
+				}
+				case Right:
+				{
+					command = turn_right;
+					break;
+				}
+				}
+				break;
+			}
+			}
+			break;
+		}
+		case CommandGroups::Food:
+		{
+			switch (static_cast<Eating>(rand() % FoodCount))
+			{
+			case Eating::Fotosintesis:
+			{
+				command = fotosintesis;
+				break;
+			}
+			case Eating::Eat_minerals:
+			{
+				command = eat_minerals;
+				break;
+			}
+			case Eating::Attack:
+			{
+				command = attack;
+				break;
+			}
+			}
+			break;
+		}
+		case CommandGroups::Reproduction:
+		{
+			switch (static_cast<Reproductioning>(rand() % ReproductionCount))
+			{
+			case Separation:
+			{
+				command = separation;
+				break;
+			}
+			case Birth:
+			{
+				command = birth;
+				break;
+			}
+			}
+			break;
+		}
+		}
+	}
+
+	Command Read() const
+	{
+		return command;
+	}
+
+private:
+	Command command;
+
+	static const unsigned short CommandGroupsCount = 3;
+	static const unsigned short MoveCount = 3;
+	static const unsigned short TurnCount = 2;
+	static const unsigned short FoodCount = 3;
+	static const unsigned short ReproductionCount = 2;
+
+	enum CommandGroups
+	{
+		Movei,
+		Food,
+		Reproduction
+	};
+	enum Moving
+	{
+		Stay,
+		Move,
+		Turn
+	};
+	enum Turning
+	{
+		Left,
+		Right
+	};
+	enum Eating
+	{
+		Fotosintesis,
+		Eat_minerals,
+		Attack,
+	};
+	enum Reproductioning
+	{
+		Separation, // деление на две
+		Birth, // рождение
+	};
+};
+
+class Genome
+{
+public:
+	static const unsigned char length = 32;
+	static const size_t commands = 10;
+	Genome() : generation(0), hash(Hashing()), mutationChance((rand() % 21 + 10) / (double)100), index(0) {};
+	explicit Genome(std::array<Gen, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) {};
 
 	size_t generation;
 	double mutationChance;
-	std::array<Command, length> data;
+	std::array<Gen, length> data;
 
 	RGBColor Hash()
 	{
 		return hash;
 	}
 
-	Command Read()
+	Gen::Command Read()
 	{
 		if (index + 1 == data.size())
 		{
 			index = 0;
-			return data[data.size() - 1];
+			return data[data.size() - 1].Read();
 		}
 		else
-			return data[index++];
+			return data[index++].Read();
 	}
 private:
 	RGBColor Hashing()
@@ -60,12 +181,12 @@ private:
 		std::stringstream rs;
 		unsigned char g = 0;
 		unsigned char b = 0;
-		for (unsigned short i = 0; i < Gen::length; i++)
+		for (unsigned short i = 0; i < Genome::length; i++)
 		{
-			unsigned char gen = static_cast<unsigned char>(data[i])* ((double)255 / (Gen::length * Gen::commands));
+			unsigned char gen = static_cast<unsigned char>(data[i].Read())* ((double)255 / (Genome::length * Genome::commands));
 			rs << gen;
-			g += gen * (((double)255 / Gen::length) * Gen::commands);
-			b += gen * ((double)255 / (Gen::length * Gen::commands));
+			g += gen * (((double)255 / Genome::length) * Genome::commands);
+			b += gen * ((double)255 / (Genome::length * Genome::commands));
 		}
 
 		unsigned char r = std::hash<std::string>{}(rs.str()) % 255;

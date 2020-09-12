@@ -51,7 +51,7 @@ RGBColor Structure::Color(view_settings vs)
 	}
 }
 
-void Structure::Tic(std::vector<Command>& commands)
+void Structure::Tic(std::vector<Gen::Command>& commands)
 {
 	if (ticed)
 		return;

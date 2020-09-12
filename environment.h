@@ -114,7 +114,7 @@ public:
 					if (((rand() % 1500) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
-						shared_ptr<Entity> e(new Cell(0, Genome::length, 200, 100));
+						shared_ptr<Entity> e(new Cell(0, Genome::length / 2, 200, 100));
 						terrain[y][x]->SetEntity(e);
 					}
 				}

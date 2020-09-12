@@ -46,6 +46,8 @@ RGBColor Structure::Color(view_settings vs)
 		return { 209, 209, 209 };
 	case species:
 		return { 209, 209, 209 };
+	case age:
+		return { 209, 209, 209 };
 	default:
 		return color;
 	}

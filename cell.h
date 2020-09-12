@@ -68,10 +68,10 @@ public:
 				(accumulated_energy > max_age / 2 * 10 ? 1 : fail);
 		};
 
-		double max_age_koef			= CellSuccessRule(accumulated_energy, max_age, 1, -1);
-		double mutationChance_koef	= CellSuccessRule(accumulated_energy, max_age, -1, 5);
+		double max_age_koef			= CellSuccessRule(accumulated_energy, max_age, 1, -2);
+		double mutationChance_koef	= CellSuccessRule(accumulated_energy, max_age, -2, 2);
 
-		double new_max_age = max_age + max_age_koef;
+		unsigned short new_max_age = max_age + max_age_koef;
 		double new_mutationChance = genom.mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
 		if (new_max_age > 50 * Genome::length) new_max_age = 50 * Genome::length;
@@ -147,6 +147,13 @@ public:
 			return { 255, static_cast<unsigned char>(255 - 255 * (double)accumulated_energy / MAX_ACC_ENERGY), 0 };
 		case view_settings::species:
 			return Species();
+		case view_settings::age:
+		{
+			unsigned char c = static_cast<unsigned char>(255 - 255 * (double)age / max_age);
+			return { c, c, c };
+		}
+		default:
+			return { 0, 255, 226 };
 		}
 	}
 		

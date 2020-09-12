@@ -17,7 +17,8 @@ enum view_settings
 	minerals,
 	ration,
 	energy,
-	species
+	species,
+	age
 };
 
 struct RGBColor

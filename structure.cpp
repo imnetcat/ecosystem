@@ -11,7 +11,7 @@ Structure::Structure(RGBColor c, bool w, double tr) :
 
 double Structure::Transparency()
 {
-	double entity_transparency = 0.7;
+	double entity_transparency = 0.95;
 	if (contains_entity)
 	{
 		return entity_transparency;

@@ -22,10 +22,10 @@
 
 using namespace std;
 
-const int CELL_START_COUNT = 1000;
+const int CELL_START_COUNT = 100;
 
-const int ENVIRONMENT_SIZE_X = 200;
-const int ENVIRONMENT_SIZE_Y = 120;
+const int ENVIRONMENT_SIZE_X = 80;
+const int ENVIRONMENT_SIZE_Y = 100;
 
 using MapTerrain = std::array<std::array<std::shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y>;
 
@@ -111,44 +111,9 @@ public:
 					}
 
 					// put first cells
-					if (((rand() % 100) < 3) && count < CELL_START_COUNT)
+					if (((rand() % 1500) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
-						/*
-						shared_ptr<Entity> e(new Cell(0, Gen::length, 200, Gen({
-							reproduction,
-							turn_right,
-							reproduction,
-							turn_left,
-							eat_minerals,
-							turn_left,
-							stay,
-							reproduction,
-							turn_right,
-							stay,
-							turn_right,
-							turn_right,
-							turn_left,
-							stay,
-							fotosintesis,
-							stay,
-							fotosintesis,
-							turn_left,
-							turn_right,
-							reproduction,
-							reproduction,
-							eat_minerals,
-							fotosintesis,
-							turn_left,
-							reproduction,
-							fotosintesis,
-							die,
-							turn_left,
-							attack,
-							reproduction,
-							turn_right
-							}, 0.2, 0)));
-						*/
 						shared_ptr<Entity> e(new Cell(0, Gen::length, 200));
 						terrain[y][x]->SetEntity(e);
 					}
@@ -318,7 +283,7 @@ private:
 		case Command::eat_minerals:
 		{
 			terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-			auto energy = terrain[y][x]->GetFood().Eat();
+			auto energy = terrain[y][x]->GetFood().Eat(MAX_MINERALS_TO_EAT);
 			if (energy)
 			{
 				terrain[y][x]->GetEntity()->GetRation().IncreaceMinerals();
@@ -333,7 +298,10 @@ private:
 			if (energy)
 			{
 				terrain[y][x]->GetEntity()->GetRation().IncreaceLight();
-				terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
+				if(energy > MAX_LIGHT_TO_EAT)
+					terrain[y][x]->GetEntity()->IncreaceEnergy(MAX_LIGHT_TO_EAT);
+				else
+					terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
 			}
 		}
 			break;

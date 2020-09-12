@@ -24,8 +24,8 @@ using namespace std;
 
 const int CELL_START_COUNT = 100;
 
-const int ENVIRONMENT_SIZE_X = 80;
-const int ENVIRONMENT_SIZE_Y = 100;
+const int ENVIRONMENT_SIZE_X = 180;
+const int ENVIRONMENT_SIZE_Y = 120;
 
 using MapTerrain = std::array<std::array<std::shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y>;
 
@@ -71,7 +71,6 @@ struct Info
 	vector<Gen::Command> genom;
 	unsigned short hp = 0;
 	size_t energy = 0;
-	size_t acc_energy = 0;
 	size_t generation = 0;
 	size_t light_power = 0;
 	size_t food_power = 0;
@@ -214,7 +213,6 @@ public:
 			info.generation = terrain[y][x]->GetEntity()->GetGenome().generation;
 			info.hp = terrain[y][x]->GetEntity()->Hp();
 			info.energy = terrain[y][x]->GetEntity()->Energy();
-			info.acc_energy = terrain[y][x]->GetEntity()->AccEnergy();
 		}
 		if (terrain[y][x]->IsContainsFood())
 		{
@@ -244,9 +242,9 @@ private:
 			break;
 		case Gen::Command::die:
 			if (terrain[y][x]->IsContainsFood())
-				terrain[y][x]->GetFood().Put(terrain[y][x]->GetEntity()->AccEnergy() + 100);
+				terrain[y][x]->GetFood().Put(terrain[y][x]->GetEntity()->Energy() + 100);
 			else
-				terrain[y][x]->SetFood(terrain[y][x]->GetEntity()->AccEnergy() + 100);
+				terrain[y][x]->SetFood(terrain[y][x]->GetEntity()->Energy() + 100);
 
 			terrain[y][x]->DelEntity();
 			break;
@@ -347,7 +345,7 @@ private:
 			break;
 		case Gen::Command::separation:
 		{
-			if (terrain[y][x]->GetEntity()->AccEnergy() < terrain[y][x]->GetEntity()->SeparationCost())
+			if (terrain[y][x]->GetEntity()->Energy() < terrain[y][x]->GetEntity()->SeparationCost())
 				break;
 
 			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
@@ -364,7 +362,7 @@ private:
 			break;
 		case Gen::Command::birth:
 		{
-			if (terrain[y][x]->GetEntity()->AccEnergy() < terrain[y][x]->GetEntity()->BirthCost())
+			if (terrain[y][x]->GetEntity()->Energy() < terrain[y][x]->GetEntity()->BirthCost())
 				break;
 
 			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });

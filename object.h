@@ -7,8 +7,7 @@ const short CELL_OUTLINE = CELL_SIZE + OUTLINE;
 const unsigned short LIGHT_POWER = 2000;
 const unsigned short MAX_LIGHT_TO_EAT = 2000;
 const unsigned short MAX_MINERALS_TO_EAT = 2000;
-const unsigned int MAX_ACC_ENERGY = 64000;
-const unsigned int MAX_ENERGY = 100;
+const unsigned int MAX_ENERGY = 64000;
 const unsigned int MAX_HP = 100;
 
 enum view_settings

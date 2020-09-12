@@ -20,8 +20,8 @@ using namespace sf;
 
 const double SPEED = 1.0;
 
-const int WINDOW_POS_X = 200;
-const int WINDOW_POS_Y = 100;
+const int WINDOW_POS_X = 300;
+const int WINDOW_POS_Y = 200;
 const char* FONT = "SourceCodePro-Black.ttf";
 
 
@@ -420,7 +420,6 @@ int main()
 						cell_genom.setString("Genom: " + genom);
 						cell_generation.setString("Generation: " + to_string(info.generation));
 						cell_age.setString("Age: " + to_string(info.age.curr) + "/" + to_string(info.age.max));
-						cell_accenergy.setString("Accumulated: " + to_string(info.acc_energy) + "/" + to_string(MAX_ACC_ENERGY));
 						cell_energy.setString("Energy: " + to_string(info.energy) + "/" + to_string(MAX_ENERGY));
 						cell_hp.setString("Hp: " + to_string(info.hp) + "/" + to_string(MAX_HP));
 					}

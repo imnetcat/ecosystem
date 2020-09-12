@@ -94,9 +94,8 @@ protected:
 	unsigned short max_age;
 	unsigned short hp;
 	unsigned short energy;
-	unsigned int accumulated_energy;
 public:
-	Entity(unsigned short h, unsigned short e, unsigned short ae, unsigned short max_age, Ration r);
+	Entity(unsigned short h, unsigned short e, unsigned short max_age, Ration r);
 	virtual Genome GetGenome() = 0;
 	virtual size_t SeparationCost() = 0;
 	virtual size_t BirthCost() = 0;
@@ -110,9 +109,6 @@ public:
 	const Ration& GetRation() const;
 	view_side Entity::GetView();
 	void Entity::SetView(view_side val);
-	void IncreaceAccEnergy(unsigned short value);
-	void DecreaceAccEnergy(unsigned short value);
-	unsigned short AccEnergy();
 	void IncreaceEnergy(unsigned short value);
 	void DecreaceEnergy(unsigned short value);
 	void IncreaceHp(unsigned short value);

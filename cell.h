@@ -14,13 +14,13 @@ private:
 	const size_t birth_cost;
 public:
 	Cell(Cell&& obj) :
-		Entity(100, 100, std::move(obj.AccEnergy()), std::move(obj.MaxAge()), std::move(obj.ration_)),
+		Entity(100, 100, std::move(obj.MaxAge()), std::move(obj.ration_)),
 		genom(std::move(obj.GetGenome())),
 		separation_cost(std::move(obj.SeparationCost())),
 		birth_cost(std::move(obj.BirthCost())) {}
 
 	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, size_t birthcost, Genome g = Genome(), Ration r = Ration())
-		: Entity(100, 100, e, max_age, r), genom(g), separation_cost(repr_cost), birth_cost(birthcost) {}
+		: Entity(100, e, max_age, r), genom(g), separation_cost(repr_cost), birth_cost(birthcost) {}
 	
 	size_t SeparationCost()
 	{
@@ -59,10 +59,10 @@ public:
 	{
 		Cell* new_cell = Reproduction();
 
-		DecreaceAccEnergy(separation_cost);
-		unsigned short hlph = accumulated_energy / 2;
-		DecreaceAccEnergy(hlph);
-		new_cell->IncreaceAccEnergy(hlph);
+		DecreaceEnergy(separation_cost);
+		unsigned short hlph = energy / 2;
+		DecreaceEnergy(hlph);
+		new_cell->IncreaceEnergy(hlph);
 
 		return new_cell;
 	}
@@ -99,13 +99,13 @@ public:
 			return ration_.Color();
 		case view_settings::energy:
 		{
-			if (accumulated_energy < (MAX_ACC_ENERGY / 2))
+			if (energy < (MAX_ENERGY / 2))
 			{
-				return { 255, static_cast<unsigned char>(255 * (accumulated_energy / (double)(MAX_ACC_ENERGY / 2))), 0 };
+				return { 255, static_cast<unsigned char>(255 * (energy / (double)(MAX_ENERGY / 2))), 0 };
 			}
 			else
 			{
-				return { static_cast<unsigned char>(255 - 255 * (accumulated_energy / (double)MAX_ACC_ENERGY)), 255, 0 };
+				return { static_cast<unsigned char>(255 - 255 * (energy / (double)MAX_ENERGY)), 255, 0 };
 			}
 		}
 		case view_settings::species:
@@ -139,8 +139,8 @@ private:
 			new_genom[index] = Gen();
 		}
 
-		short max_age_koef = CellSuccessRule(accumulated_energy, max_age, 1, -2);
-		double mutationChance_koef = CellSuccessRule(accumulated_energy, max_age, -0.01, 0.01);
+		short max_age_koef = CellSuccessRule(energy, max_age, 1, -2);
+		double mutationChance_koef = CellSuccessRule(energy, max_age, -0.01, 0.01);
 
 		unsigned short new_max_age = max_age + max_age_koef;
 		double new_mutationChance = genom.mutationChance + mutationChance_koef;

@@ -1,13 +1,12 @@
 #include "entity.h"
 
-Entity::Entity(unsigned short h, unsigned short e, unsigned short ae, unsigned short ma, Ration r) :
+Entity::Entity(unsigned short h, unsigned short e, unsigned short ma, Ration r) :
 		view(top),
 		age(0),
 		max_age(ma),
 		hp(h),
 		energy(e),
-		ration_(r),
-		accumulated_energy(ae) {}
+		ration_(r){}
 
 
 unsigned short Entity::Age()
@@ -27,21 +26,6 @@ const Ration& Entity::GetRation() const
 	return ration_;
 }
 
-void Entity::IncreaceAccEnergy(unsigned short value)
-{
-	if (accumulated_energy + value < MAX_ACC_ENERGY)
-		accumulated_energy += value;
-	else
-		accumulated_energy = MAX_ACC_ENERGY;
-}
-void Entity::DecreaceAccEnergy(unsigned short value)
-{
-	if (accumulated_energy > value)
-		accumulated_energy -= value;
-	else
-		accumulated_energy = 0;
-}
-
 view_side Entity::GetView()
 {
 	return view;
@@ -51,45 +35,31 @@ void Entity::SetView(view_side val)
 	view = val;
 }
 
-unsigned short Entity::AccEnergy()
-{
-	return accumulated_energy;
-}
-
 void Entity::IncreaceEnergy(unsigned short value)
 {
-	if (hp < 100)
+	unsigned short dif = MAX_HP - hp;
+	if (dif != 0)
 	{
-		IncreaceHp(value);
-	}
-	else
-	{
-		if (energy + value > 100)
+		if (value > dif)
 		{
-			IncreaceAccEnergy(value + energy - 100);
-			energy = 100;
+			IncreaceHp(dif);
+			value -= dif;
 		}
 		else
-			energy += value;
+		{
+			IncreaceHp(dif - value);
+			value = 0;
+		}
 	}
+
+	if (energy + value < MAX_ENERGY)
+		energy += value;
+	else
+		energy = MAX_ENERGY;
 }
 
 void Entity::DecreaceEnergy(unsigned short value)
 {
-	if (accumulated_energy)
-	{
-		if (accumulated_energy > value)
-		{
-			accumulated_energy -= value;
-			return;
-		}
-		else
-		{
-			value -= accumulated_energy;
-			accumulated_energy = 0;
-		}
-	}
-
 	if (energy > value)
 	{
 		energy -= value;
@@ -99,13 +69,12 @@ void Entity::DecreaceEnergy(unsigned short value)
 	value -= energy;
 	energy = 0;
 
-	DecreaceHp(value - accumulated_energy);
-	accumulated_energy = 0;
+	DecreaceHp(value);
 }
 
 void Entity::IncreaceHp(unsigned short value)
 {
-	if (hp + value > 100)
+	if (hp + value > MAX_HP)
 		hp = 100;
 	else
 		hp += value;

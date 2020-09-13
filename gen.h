@@ -12,6 +12,7 @@ public:
 		die,
 		stay,
 		move,
+		sleep,
 		turn_left,
 		turn_right,
 		eat,
@@ -37,6 +38,11 @@ public:
 			case Moving::Move:
 			{
 				command = move;
+				break;
+			}
+			case Moving::Sleep:
+			{
+				command = sleep;
 				break;
 			}
 			case Moving::Turn:
@@ -93,7 +99,7 @@ private:
 	Command command;
 
 	static const unsigned short CommandGroupsCount = 3;
-	static const unsigned short MoveCount = 3;
+	static const unsigned short MoveCount = 4;
 	static const unsigned short TurnCount = 2;
 	static const unsigned short FoodCount = 3;
 	static const unsigned short ReproductionCount = 2;
@@ -107,6 +113,7 @@ private:
 	enum Moving
 	{
 		Stay,
+		Sleep,
 		Move,
 		Turn
 	};
@@ -126,7 +133,7 @@ class Genome
 {
 public:
 	static const unsigned char length = 32;
-	static const size_t commands = 8;
+	static const size_t commands = 9;
 	Genome(double mh) : generation(0), hash(Hashing()), mutationChance(mh), index(0) {};
 	explicit Genome(std::array<Gen, length> d, double mh, size_t g = 1)
 		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) {};

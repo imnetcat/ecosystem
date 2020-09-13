@@ -14,13 +14,16 @@ private:
 	const size_t birth_cost;
 public:
 	Cell(Cell&& obj) :
-		Entity(100, 100, std::move(obj.MaxAge()), std::move(obj.ration_)),
+		Entity(100, 100, std::move(obj.MaxAge()), 
+			std::move(obj.Defence()),
+			std::move(obj.Attack()),
+			std::move(obj.ration_)),
 		genom(std::move(obj.GetGenome())),
 		separation_cost(std::move(obj.SeparationCost())),
 		birth_cost(std::move(obj.BirthCost())) {}
 
-	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, size_t birthcost, Ration r, Genome g)
-		: Entity(100, e, max_age, r), genom(g), separation_cost(repr_cost), birth_cost(birthcost) {}
+	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, size_t birthcost, double defence, unsigned short attack, Ration r, Genome g)
+		: Entity(100, e, max_age, defence, attack, r), genom(g), separation_cost(repr_cost), birth_cost(birthcost) {}
 	
 	size_t SeparationCost()
 	{
@@ -38,7 +41,7 @@ public:
 	
 	bool IsFriendly(Cell* cell)
 	{
-		const unsigned short BORDER = 2;
+		const unsigned short BORDER = 8;
 		size_t count_of_non_equal = 0;
 		auto lhs_genom = GetGenome().data;
 		auto rhs_genom = cell->GetGenome().data;
@@ -101,11 +104,11 @@ public:
 		{
 			if (hp < (MAX_HP / 2))
 			{
-				return { 255, static_cast<unsigned char>(255 * (hp / (double)(MAX_HP / 2))), 0 };
+				return { 191, static_cast<unsigned char>(191 * (hp / (double)(MAX_HP / 2))), 0 };
 			}
 			else
 			{
-				return { static_cast<unsigned char>(255 - 255 * (hp / (double)MAX_HP)), 255, 0 };
+				return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / hp)), 191, 0 };
 			}
 		}
 		case view_settings::survival:
@@ -189,12 +192,12 @@ private:
 		if (new_max_age < Genome::length) new_max_age = Genome::length;
 
 		return new Cell(
-			0, new_max_age, separation_cost, birth_cost, new_ration, Genome(new_genom, new_mutationChance, genom.generation + 1)
+			0, new_max_age, separation_cost, birth_cost, defence, attack, new_ration, Genome(new_genom, new_mutationChance, genom.generation + 1)
 		);
 	}
 	float CellSuccessRule(size_t accumulated_energy, size_t max_age, float success, float fail)
 	{
-		return accumulated_energy > max_age * 10 ? success :
-			((accumulated_energy > (max_age / 2)* 10) ? 0 : fail);
+		return (accumulated_energy > ((3 * MAX_ENERGY) / 4)) ? success :
+			(accumulated_energy > (MAX_ENERGY / 4) ? 0 : fail);
 	}
 };

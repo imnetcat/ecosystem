@@ -22,7 +22,7 @@
 
 using namespace std;
 
-const int CELL_START_COUNT = 100;
+const int CELL_START_COUNT = 2;
 
 const int ENVIRONMENT_SIZE_X = 180;
 const int ENVIRONMENT_SIZE_Y = 120;
@@ -114,15 +114,17 @@ public:
 					if (((rand() % 1500) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
-						double mutation_chance = static_cast<double>((rand() % 101) / (double)100);
+						//double mutation_chance = static_cast<double>((rand() % 101) / (double)100);
 						terrain[y][x]->SetEntity(
 							new Cell(
 								0, 
 								Genome::length / 2,
 								200, 
 								100,
+								0.3,
+								50,
 								fotosintesis, 
-								{ mutation_chance }
+								{ 0.3 }
 							)
 						);
 					}
@@ -249,6 +251,9 @@ private:
 	{
 		switch (command)
 		{
+		case Gen::Command::sleep:
+			terrain[y][x]->GetEntity()->DecreaceEnergy(1);
+			break;
 		case Gen::Command::stay:
 			terrain[y][x]->GetEntity()->DecreaceEnergy(5);
 			break;
@@ -327,13 +332,34 @@ private:
 				{
 					if (!terrain[enemy_position.y][enemy_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()))
 					{
-						Event(Gen::Command::die, enemy_position.x, enemy_position.y);
-						terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat(MAX_MINERALS_TO_EAT));
+						if (!terrain[enemy_position.y][enemy_position.x]->GetEntity()->Defenced(terrain[y][x]->GetEntity()->Attack()))
+						{
+							Event(Gen::Command::die, enemy_position.x, enemy_position.y);
+							terrain[y][x]->GetEntity()->AttackUp();
+							terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat(MAX_MEAT_TO_EAT));
+						}
 					}
 				}
 				break;
 			}
 			default:
+				break;
+			}
+			break;
+		}
+		case Gen::Command::separation:
+		{
+			if (terrain[y][x]->GetEntity()->Energy() < terrain[y][x]->GetEntity()->SeparationCost())
+				break;
+
+			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
+
+			if (new_position == Position{ x, y })
+				break;
+
+			if (!terrain[new_position.y][new_position.x]->IsContainsEntity() && terrain[new_position.y][new_position.x]->IsWalkable())
+			{
+				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Separation());
 				break;
 			}
 			break;

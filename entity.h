@@ -62,8 +62,10 @@ protected:
 	unsigned short max_age;
 	unsigned short hp;
 	unsigned short energy;
+	double defence;
+	unsigned short attack;
 public:
-	Entity(unsigned short h, unsigned short e, unsigned short max_age, Ration r);
+	Entity(unsigned short h, unsigned short e, unsigned short max_age, double def, unsigned short attck, Ration r);
 	virtual Genome GetGenome() = 0;
 	virtual size_t SeparationCost() = 0;
 	virtual size_t BirthCost() = 0;
@@ -71,6 +73,10 @@ public:
 
 	virtual RGBColor Species() = 0;
 
+	bool Defenced(unsigned short);
+	double Defence();
+	unsigned short Attack();
+	void AttackUp();
 	unsigned short Age();
 	unsigned short MaxAge();
 	Ration& GetRation();

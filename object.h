@@ -17,7 +17,9 @@ enum view_settings
 	ration,
 	energy,
 	species,
-	age
+	age,
+	hp,
+	survival
 };
 
 struct RGBColor

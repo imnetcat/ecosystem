@@ -92,11 +92,38 @@ public:
 		switch (vs)
 		{
 		case terrain:
-			return { 0, 255, 226 };
+			return { 119, 255, 110 };
 		case view_settings::minerals:
 			return { 209, 209, 209 };
 		case view_settings::ration:
 			return ration_.Color();
+		case view_settings::hp:
+		{
+			if (hp < (MAX_HP / 2))
+			{
+				return { 255, static_cast<unsigned char>(255 * (hp / (double)(MAX_HP / 2))), 0 };
+			}
+			else
+			{
+				return { static_cast<unsigned char>(255 - 255 * (hp / (double)MAX_HP)), 255, 0 };
+			}
+		}
+		case view_settings::survival:
+		{
+			double succes_survival = CellSuccessRule(energy, max_age, 1, -1);
+			if (succes_survival == 0)
+			{
+				return { 255, 225, 0 };
+			}
+			else if (succes_survival == -1)
+			{
+				return { 255, 21, 0 };
+			}
+			else
+			{
+				return { 0, 194, 0 };
+			}
+		}
 		case view_settings::energy:
 		{
 			if (energy < (MAX_ENERGY / 2))

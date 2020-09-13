@@ -30,7 +30,7 @@ public:
 		title.setOrigin(textRect.left + textRect.width / 2.0f,
 			textRect.top + font_size);
 
-		title.setPosition(posx + sizex / 2, posy);
+		title.setPosition(posx + sizex / 2, posy + font_size / 2);
 	}
 	
 	void Color(sf::Color c)

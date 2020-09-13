@@ -49,6 +49,10 @@ RGBColor Structure::Color(view_settings vs)
 		return { 209, 209, 209 };
 	case age:
 		return { 143, 229, 255 };
+	case hp:
+		return { 209, 209, 209 };
+	case survival:
+		return { 209, 209, 209 };
 	default:
 		return color;
 	}

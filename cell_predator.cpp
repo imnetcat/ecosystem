@@ -1,5 +1,6 @@
 #include "cell_predator.h"
 #include "cell_mineravorous.h"
+#include "cell_herbivorous.h"
 
 Cell* CellPredator::Mutation(NewCellStat stat)
 {
@@ -11,7 +12,7 @@ Cell* CellPredator::Mutation(NewCellStat stat)
 	}
 
 	unsigned short random = rand() % 100;
-	if (random < 30)
+	if (random < 70)
 	{
 		return new CellMineravourous(
 			stat.energy, stat.max_age, stat.separation_cost, stat.birth_cost, stat.defence, stat.attack, stat.genom
@@ -19,7 +20,7 @@ Cell* CellPredator::Mutation(NewCellStat stat)
 	}
 	else
 	{
-		return new CellPredator(
+		return new CellHerbivorous(
 			stat.energy, stat.max_age, stat.separation_cost, stat.birth_cost, stat.defence, stat.attack, stat.genom
 		);
 	}

@@ -118,7 +118,7 @@ public:
 						terrain[y][x]->SetEntity(
 							new CellHerbivorous(
 								0, 
-								Genome::length / 2,
+								Genome::length,
 								200, 
 								100,
 								0.01,

@@ -16,18 +16,16 @@ public:
 		turn_left,
 		turn_right,
 		eat,
-		separation, // деление на две
-		birth, // рождение
+		separation,
+		birth,
 	};
 public:
 	Gen()
 	{
-		// выбираем к какой группе будет принадлежать ген
 		switch (static_cast<CommandGroups>(rand() % CommandGroupsCount))
 		{
 		case CommandGroups::Movei:
 		{
-			// выбираем к какой группе будет принадлежать ген
 			switch (static_cast<Moving>(rand() % MoveCount))
 			{
 			case Moving::Stay:

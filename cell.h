@@ -173,38 +173,36 @@ protected:
 	}
 	NewCellStat Reproduction()
 	{
-		srand(time(0) + rand());  // рандомизация генератора случайных чисел
-		   // вычисляем произойдёт ли мутация
+		srand(time(0) + rand());
 		auto new_genom = genom.data;
 		float mt = (rand() % 100) / (double)100;
 		if (mt < genom.mutationChance)
 		{
-			// рандомизируем выбор изменяемой комманды гена
 			size_t index = rand() % Genome::length;
-			// рандомизируем комманду гена
 			new_genom[index] = Gen();
 		}
 
+		
 		short max_age_koef = CellSuccessRule(energy, max_age, 1, -1);
-		float mutationChance_koef = CellSuccessRule(energy, max_age, -0.01, 0.01);
-
 		unsigned short new_max_age = max_age + max_age_koef;
+		if (new_max_age > Genome::length * 4) new_max_age = Genome::length * 4;
+		if (new_max_age < Genome::length) new_max_age = Genome::length;
+		
+		float mutationChance_koef = CellSuccessRule(energy, max_age, -0.01, 0.01);
 		float new_mutationChance = genom.mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
 		if (new_mutationChance < 0.01) new_mutationChance = 0.01;
-		if (new_max_age > 1000) new_max_age = 1000;
-		if (new_max_age < Genome::length / 2) new_max_age = Genome::length / 2;
+		
 
 		NewCellStat stat(Genome(new_genom, new_mutationChance, genom.generation + 1));
 		stat.attack = attack;
 		stat.defence = defence;
 		stat.birth_cost = birth_cost;
 		stat.separation_cost = separation_cost;
-		stat.max_age = new_max_age;
+		stat.max_age = max_age;
 		stat.energy = 100;
 		stat.is_mutating = false;
 			   
-		// если мутация была
 		if (mt < genom.mutationChance)
 		{
 			stat.is_mutating = true;

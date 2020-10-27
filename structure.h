@@ -35,7 +35,7 @@ public:
 
 	void Tic(std::vector<Gen::Command>& commands);
 
-	unsigned short GetLightLevel();
+	unsigned char GetLightLevel();
 	void SetLightLevel(unsigned short lv);
 	unsigned short GetLightPower();
 	void SetLightPower(unsigned short lp);

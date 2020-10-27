@@ -20,12 +20,14 @@
 #include <ctime>
 #include <array>
 
+#include "sfml.h"
+
 using namespace std;
 
-const int CELL_START_COUNT = 4;
+const int CELL_START_COUNT = 1;
 
-const int ENVIRONMENT_SIZE_X = 15;
-const int ENVIRONMENT_SIZE_Y = 80;
+const int ENVIRONMENT_SIZE_X = 110;
+const int ENVIRONMENT_SIZE_Y = 60;
 
 using MapTerrain = std::array<std::array<std::shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y>;
 
@@ -83,11 +85,14 @@ struct LightLevel
 	size_t power_max;
 };
 
+static array<sf::RectangleShape, ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y> sprites;
+
 class Environment
 {
 public:
 	explicit Environment()
 	{
+		size_t index = 0;
 		size_t count = 0;
 		srand(time(0) + rand());
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
@@ -95,8 +100,16 @@ public:
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
 				// set up simply aquarium
+				/*
 				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
 					(y == ENVIRONMENT_SIZE_Y - 1))
+				{
+					terrain[y][x] = shared_ptr<Structure>(new Glass());
+				}
+				*/
+
+				// set up looped body of water
+				if (y == ENVIRONMENT_SIZE_Y - 1)
 				{
 					terrain[y][x] = shared_ptr<Structure>(new Glass());
 				}
@@ -117,9 +130,9 @@ public:
 						//double mutation_chance = static_cast<double>((rand() % 101) / (double)100);
 						terrain[y][x]->SetEntity(
 							new CellHerbivorous(
-								0, 
+								0,
 								Genome::length,
-								200, 
+								200,
 								100,
 								0.01,
 								50,
@@ -135,10 +148,22 @@ public:
 					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
 
 				terrain[y][x]->SetLightPower(power);
+
+				// init map sprites positions
+				sf::RectangleShape cell;
+				sf::Vector2f vec;
+				vec.x = x * CELL_OUTLINE;
+				vec.y = y * CELL_OUTLINE;
+				cell.setPosition(vec);
+				sprites[index] = cell;
+
+				index++;
 			}
 		}
 	}
 	
+	// DEPRECATED UPDATE ENVIRONMENT WITH GRAVITATION EFFECT
+	/*
 	void Update()
 	{
 		size_t y = ENVIRONMENT_SIZE_Y - 2;
@@ -175,62 +200,90 @@ public:
 			y--;
 		}
 	}
+	*/
 
-	vector<DrawData> UpdateColors()
+	void Update(sf::RenderWindow& window, bool update_env)
 	{
-		vector<DrawData> result;
-		
+		size_t index = 0;
 		for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
-				// set up light
-				size_t power = LIGHT_POWER;
-				if (y != 0)
-					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
-				terrain[y][x]->SetLightPower(power);
+				if (update_env)
+				{
+					vector<Gen::Command> commands;
+					terrain[y][x]->Tic(commands);
+					for (auto command : commands)
+					{
+						Event(command, x, y);
+					}
 
-				terrain[y][x]->Untick();
+					// set up light
+					size_t power = LIGHT_POWER;
+					if (y != 0)
+						power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
+					terrain[y][x]->SetLightPower(power);
 
-				DrawData stat;
+					terrain[y][x]->Untick();
+				}
+
+				RGBColor color;
 				switch (view)
 				{
 				case view_settings::terrain:
-					stat.color = terrain[y][x]->TerrainColor();
+					color = terrain[y][x]->TerrainColor();
 					break;
 				case minerals:
-					stat.color = terrain[y][x]->MineralsColor();
+					color = terrain[y][x]->MineralsColor();
 					break;
 				case ration:
-					stat.color = terrain[y][x]->RationColor();
+					color = terrain[y][x]->RationColor();
 					break;
 				case energy:
-					stat.color = terrain[y][x]->EnergyColor();
+					color = terrain[y][x]->EnergyColor();
 					break;
 				case species:
-					stat.color = terrain[y][x]->SpeciesColor();
+					color = terrain[y][x]->SpeciesColor();
 					break;
 				case age:
-					stat.color = terrain[y][x]->AgeColor();
+					color = terrain[y][x]->AgeColor();
 					break;
 				case hp:
-					stat.color = terrain[y][x]->HpColor();
+					color = terrain[y][x]->HpColor();
 					break;
 				case survival:
-					stat.color = terrain[y][x]->SurvivalColor();
+					color = terrain[y][x]->SurvivalColor();
 					break;
 				}
-				stat.outline = terrain[y][x]->Outline(view);
-				if (view == view_settings::terrain)
-					stat.shadow = terrain[y][x]->GetLightLevel();
+
+				if(terrain[y][x]->Outline(view))
+				{
+					sprites[index].setSize(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+					sprites[index].setOutlineThickness(OUTLINE);
+				}
 				else
-					stat.shadow = 0;
-				stat.position = { x * CELL_OUTLINE, y * CELL_OUTLINE };
-				result.push_back(stat);
+				{
+					sprites[index].setSize(sf::Vector2f(CELL_OUTLINE, CELL_OUTLINE));
+					sprites[index].setOutlineThickness(0);
+				}
+
+				if (view == view_settings::terrain)
+				{
+					sprites[index].setOutlineColor({ 0, 0, 0 });
+					sprites[index].setFillColor({ color.r, color.g, color.b,
+						(unsigned char)(255 - terrain[y][x]->GetLightLevel()) });
+				}
+				else
+				{
+					sprites[index].setOutlineColor({ 0, 0, 0 });
+					sprites[index].setFillColor({ color.r, color.g, color.b });
+				}
+
+				window.draw(sprites[index]);
+
+				index++;
 			}
 		}
-
-		return result;
 	}
 
 	Info GetInfo(size_t x_px, size_t y_px)
@@ -365,9 +418,6 @@ private:
 
 			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
 
-			if (new_position == Position{ x, y })
-				break;
-
 			if (!terrain[new_position.y][new_position.x]->IsContainsEntity() && terrain[new_position.y][new_position.x]->IsWalkable())
 			{
 				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Separation());
@@ -382,9 +432,6 @@ private:
 
 			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
 
-			if (new_position == Position{ x, y })
-				break;
-
 			if (!terrain[new_position.y][new_position.x]->IsContainsEntity() && terrain[new_position.y][new_position.x]->IsWalkable())
 			{
 				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Birth());
@@ -397,6 +444,9 @@ private:
 
 	Position GetViewedPosition(view_side view, Position init)
 	{
+		auto maxX = ENVIRONMENT_SIZE_X - 1;
+		auto maxY = ENVIRONMENT_SIZE_Y - 1;
+
 		Position viewed_position = init;
 		switch (view)
 		{
@@ -405,11 +455,19 @@ private:
 			{
 				viewed_position.x--;
 			}
+			else if (LOOPED_ENVIRONMENT)
+			{
+				viewed_position.x = maxX;
+			}
 			break;
 		case view_side::right:
-			if (init.x < ENVIRONMENT_SIZE_X)
+			if (init.x < maxX)
 			{
 				viewed_position.x++;
+			}
+			else if (LOOPED_ENVIRONMENT)
+			{
+				viewed_position.x = 0;
 			}
 			break;
 		case view_side::bottom:
@@ -419,15 +477,20 @@ private:
 			}
 			break;
 		case view_side::top:
-			if (init.y < ENVIRONMENT_SIZE_Y)
+			if (init.y < maxY)
 			{
 				viewed_position.y++;
 			}
 			break;
 		case view_side::left_bottom:
-			if (init.x > 0 && init.y > 0)
+			if (init.x > 0 && init.y < maxY)
 			{
 				viewed_position.x--;
+				viewed_position.y++;
+			}
+			else if (init.y < maxY && LOOPED_ENVIRONMENT)
+			{
+				viewed_position.x = maxX;
 				viewed_position.y++;
 			}
 			break;
@@ -437,19 +500,34 @@ private:
 				viewed_position.x--;
 				viewed_position.y--;
 			}
+			else if (init.y > 0 && LOOPED_ENVIRONMENT)
+			{
+				viewed_position.x = maxX;
+				viewed_position.y--;
+			}
 			break;
 		case view_side::right_bottom:
-			if (init.y < ENVIRONMENT_SIZE_Y && init.x < ENVIRONMENT_SIZE_X)
+			if (init.y < maxY && init.x < maxX)
 			{
-				viewed_position.y++;
 				viewed_position.x++;
+				viewed_position.y++;
+			}
+			else if (init.y < maxX && LOOPED_ENVIRONMENT)
+			{
+				viewed_position.x = 0;
+				viewed_position.y++;
 			}
 			break;
 		case view_side::right_top:
-			if (init.y > 0 && init.x < ENVIRONMENT_SIZE_X)
+			if (init.y > 0 && init.x < maxX)
 			{
-				viewed_position.y--;
 				viewed_position.x++;
+				viewed_position.y--;
+			}
+			else if (init.y > 0 && LOOPED_ENVIRONMENT)
+			{
+				viewed_position.x = 0;
+				viewed_position.y--;
 			}
 			break;
 		}

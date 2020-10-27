@@ -12,7 +12,7 @@ Structure::Structure(RGBColor c, bool w, double tr) :
 
 double Structure::Transparency()
 {
-	double entity_transparency = 0.95;
+	const double entity_transparency = 0.99;
 	if (contains_entity)
 	{
 		return entity_transparency;
@@ -29,14 +29,18 @@ void Structure::Untick()
 
 RGBColor Structure::TerrainColor()
 {
+	if (contains_entity)
+		return entity->TerrainColor();
 	if (!food.Empty())
-		return food.MineralsColor();
+		return food.TerrainColor();
 	return color;
 }
 RGBColor Structure::MineralsColor()
 {
 	if (!food.Empty())
 		return food.MineralsColor();
+	if (contains_entity)
+		return entity->MineralsColor();
 	return { 209, 209, 209 };
 }
 RGBColor Structure::RationColor()
@@ -88,7 +92,7 @@ void Structure::Tic(std::vector<Gen::Command>& commands)
 	ticed = true;
 }
 
-unsigned short Structure::GetLightLevel()
+unsigned char Structure::GetLightLevel()
 {
 	return light_level;
 }
@@ -111,6 +115,7 @@ bool Structure::Outline(view_settings vs)
 {
 	if (vs != view_settings::minerals && contains_entity)
 		return entity->Outline(vs);
+
 	if (!food.Empty())
 		return food.Outline(vs);
 

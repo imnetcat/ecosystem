@@ -1,16 +1,19 @@
 #include "entity.h"
 
-Entity::Entity(unsigned short h, unsigned short e, unsigned short ma, double def, unsigned short attck, Ration r) :
+Entity::Entity(unsigned short h, unsigned short e, unsigned short ma, double def, unsigned short attck) :
 		view(top),
 		age(0),
 		max_age(ma),
 		hp(h),
 		energy(e),
-		ration_(r),
 		defence(def),
 		attack(attck) {}
 
 
+bool Entity::Outline(view_settings)
+{
+	return true;
+}
 unsigned short Entity::Age()
 {
 	return age;
@@ -19,15 +22,6 @@ unsigned short Entity::MaxAge()
 {
 	return max_age;
 }
-Ration& Entity::GetRation()
-{
-	return ration_;
-}
-const Ration& Entity::GetRation() const
-{
-	return ration_;
-}
-
 bool Entity::Defenced(unsigned short attack_power)
 {
 	unsigned short dif = attack_power * defence;

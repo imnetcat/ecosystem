@@ -8,10 +8,10 @@
 using namespace std;
 using namespace sf;
 
-const float SPEED = 1.0;
+const int SPEED = 10;
 
-const int WINDOW_POS_X = 400;
-const int WINDOW_POS_Y = 300;
+const int WINDOW_POS_X = 500;
+const int WINDOW_POS_Y = 100;
 const char* FONT = "SourceCodePro-Black.ttf";
 
 const int VIEW_RECT_POS_X = 5;
@@ -484,10 +484,10 @@ int main()
 		// Отрисовка окна
 		window.display();
 
-		//loopback++;
+		loopback++;
 		
-		//if (loopback == 1 * SPEED)
-		//	loopback = 0;
+		if (loopback == SPEED)
+			loopback = 0;
 
 		setting_window.display();
 	}

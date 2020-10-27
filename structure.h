@@ -24,7 +24,14 @@ public:
 
 	void Untick();
 
-	RGBColor Color(view_settings vs);
+	RGBColor TerrainColor() override;
+	RGBColor MineralsColor() override;
+	RGBColor RationColor() override;
+	RGBColor EnergyColor() override;
+	RGBColor SpeciesColor() override;
+	RGBColor AgeColor() override;
+	RGBColor HpColor() override;
+	RGBColor SurvivalColor() override;
 
 	void Tic(std::vector<Gen::Command>& commands);
 

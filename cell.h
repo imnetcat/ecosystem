@@ -6,24 +6,46 @@
 #include <ctime>
 #include <sstream>
 
+struct NewCellStat
+{
+	NewCellStat(Genome g) : genom(g) {}
+	bool is_mutating;
+	unsigned short hp;
+	unsigned short energy;
+	unsigned short max_age;
+	double defence;
+	unsigned short attack;
+	Genome genom;
+	size_t separation_cost;
+	size_t birth_cost;
+};
+
 class Cell : public Entity
 {
-private:
+protected:
 	Genome genom;
 	const size_t separation_cost;
 	const size_t birth_cost;
 public:
 	Cell(Cell&& obj) :
-		Entity(100, 100, std::move(obj.MaxAge()), 
+		Entity(std::move(obj.Hp()), std::move(obj.Energy()), std::move(obj.MaxAge()),
 			std::move(obj.Defence()),
-			std::move(obj.Attack()),
-			std::move(obj.ration_)),
+			std::move(obj.Attack())),
 		genom(std::move(obj.GetGenome())),
 		separation_cost(std::move(obj.SeparationCost())),
 		birth_cost(std::move(obj.BirthCost())) {}
 
-	explicit Cell(unsigned short e, unsigned short max_age, size_t repr_cost, size_t birthcost, double defence, unsigned short attack, Ration r, Genome g)
-		: Entity(100, e, max_age, defence, attack, r), genom(g), separation_cost(repr_cost), birth_cost(birthcost) {}
+	explicit Cell(
+		unsigned short energy,
+		unsigned short max_age,
+		size_t sepr_cost,
+		size_t birthcost,
+		double defence,
+		unsigned short attack,
+		Genome g)
+		: 
+		Entity(MAX_HP, energy, max_age, defence, attack),
+		genom(g), separation_cost(sepr_cost), birth_cost(birthcost) {}
 	
 	size_t SeparationCost()
 	{
@@ -60,19 +82,19 @@ public:
 
 	Cell* Separation()
 	{
-		Cell* new_cell = Reproduction();
+		NewCellStat new_cell = Reproduction();
 
 		DecreaceEnergy(separation_cost);
 		unsigned short hlph = energy / 2;
 		DecreaceEnergy(hlph);
-		new_cell->IncreaceEnergy(hlph);
+		new_cell.energy += hlph;
 
-		return new_cell;
+		return Mutation(new_cell);
 	}
 
 	Cell* Birth()
 	{
-		return Reproduction();
+		return Mutation(Reproduction());
 	}
 	
 	void Tic(std::vector<Gen::Command>& commands) override
@@ -85,82 +107,75 @@ public:
 		age++;
 	}
 
+
+	RGBColor TerrainColor() override
+	{
+		return { 119, 255, 110 };
+	}
+	RGBColor MineralsColor() override
+	{
+		return { 209, 209, 209 };
+	}
+	RGBColor EnergyColor() override
+	{
+		if (energy < (MAX_ENERGY / 2))
+		{
+			return { 255, static_cast<unsigned char>(255 * (energy / (double)(MAX_ENERGY / 2))), 0 };
+		}
+		else
+		{
+			return { static_cast<unsigned char>(255 - 255 * (energy / (double)MAX_ENERGY)), 255, 0 };
+		}
+	}
+	RGBColor SpeciesColor() override
+	{
+		return Species();
+	}
+	RGBColor AgeColor() override
+	{
+		unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)age / max_age));
+		return { c, c, c };
+	}
+	RGBColor HpColor() override
+	{
+		if (hp < (MAX_HP / 2))
+		{
+			return { 191, static_cast<unsigned char>(191 * (hp / (double)(MAX_HP / 2))), 0 };
+		}
+		else
+		{
+			return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / hp)), 191, 0 };
+		}
+	}
+	RGBColor SurvivalColor() override
+	{
+		double succes_survival = CellSuccessRule(energy, max_age, 1, -1);
+		if (succes_survival == 0)
+		{
+			return { 255, 225, 0 };
+		}
+		else if (succes_survival == -1)
+		{
+			return { 255, 21, 0 };
+		}
+		else
+		{
+			return { 0, 194, 0 };
+		}
+	}
+
+
+protected:
+
 	RGBColor Species() override
 	{
 		return genom.Hash();
 	}
-
-	RGBColor Color(view_settings vs) override
-	{
-		switch (vs)
-		{
-		case terrain:
-			return { 119, 255, 110 };
-		case view_settings::minerals:
-			return { 209, 209, 209 };
-		case view_settings::ration:
-			return ration_.Color();
-		case view_settings::hp:
-		{
-			if (hp < (MAX_HP / 2))
-			{
-				return { 191, static_cast<unsigned char>(191 * (hp / (double)(MAX_HP / 2))), 0 };
-			}
-			else
-			{
-				return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / hp)), 191, 0 };
-			}
-		}
-		case view_settings::survival:
-		{
-			double succes_survival = CellSuccessRule(energy, max_age, 1, -1);
-			if (succes_survival == 0)
-			{
-				return { 255, 225, 0 };
-			}
-			else if (succes_survival == -1)
-			{
-				return { 255, 21, 0 };
-			}
-			else
-			{
-				return { 0, 194, 0 };
-			}
-		}
-		case view_settings::energy:
-		{
-			if (energy < (MAX_ENERGY / 2))
-			{
-				return { 255, static_cast<unsigned char>(255 * (energy / (double)(MAX_ENERGY / 2))), 0 };
-			}
-			else
-			{
-				return { static_cast<unsigned char>(255 - 255 * (energy / (double)MAX_ENERGY)), 255, 0 };
-			}
-		}
-		case view_settings::species:
-			return Species();
-		case view_settings::age:
-		{
-			unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)age / max_age));
-			return { c, c, c };
-		}
-		default:
-			return { 0, 255, 226 };
-		}
-	}
-		
-	bool Outline(view_settings) override
-	{
-		return true;
-	}
-private:
-	Cell* Reproduction()
+	NewCellStat Reproduction()
 	{
 		srand(time(0) + rand());  // рандомизация генератора случайных чисел
 		   // вычисляем произойдёт ли мутация
 		auto new_genom = genom.data;
-		auto new_ration = ration_;
 		float mt = (rand() % 100) / (double)100;
 		if (mt < genom.mutationChance)
 		{
@@ -168,17 +183,6 @@ private:
 			size_t index = rand() % Genome::length;
 			// рандомизируем комманду гена
 			new_genom[index] = Gen();
-
-			// вычисляем произойдёт ли мутация рациона
-			mt = (rand() % 100) / (double)100;
-			if (mt < genom.mutationChance)
-			{
-				auto new_ration_type = static_cast<ration_type>((unsigned short)(mt * 100) % Ration::length);
-				if (new_ration_type == attack && new_ration.Type() == fotosintesis)
-					new_ration_type = fotosintesis;
-
-				new_ration = { new_ration_type };
-			}
 		}
 
 		short max_age_koef = CellSuccessRule(energy, max_age, 1, -1);
@@ -187,14 +191,29 @@ private:
 		unsigned short new_max_age = max_age + max_age_koef;
 		float new_mutationChance = genom.mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
-		if (new_mutationChance < 0) new_mutationChance = 0;
-		if (new_max_age > 50 * Genome::length) new_max_age = 50 * Genome::length;
-		if (new_max_age < Genome::length) new_max_age = Genome::length;
+		if (new_mutationChance < 0.01) new_mutationChance = 0.01;
+		if (new_max_age > 1000) new_max_age = 1000;
+		if (new_max_age < Genome::length / 2) new_max_age = Genome::length / 2;
 
-		return new Cell(
-			0, new_max_age, separation_cost, birth_cost, defence, attack, new_ration, Genome(new_genom, new_mutationChance, genom.generation + 1)
-		);
+		NewCellStat stat(Genome(new_genom, new_mutationChance, genom.generation + 1));
+		stat.attack = attack;
+		stat.defence = defence;
+		stat.birth_cost = birth_cost;
+		stat.separation_cost = separation_cost;
+		stat.max_age = new_max_age;
+		stat.energy = 100;
+		stat.is_mutating = false;
+			   
+		// если мутация была
+		if (mt < genom.mutationChance)
+		{
+			stat.is_mutating = true;
+		}
+
+		return stat;
 	}
+	virtual Cell* Mutation(NewCellStat) = 0;
+
 	float CellSuccessRule(size_t accumulated_energy, size_t max_age, float success, float fail)
 	{
 		return (accumulated_energy > ((3 * MAX_ENERGY) / 4)) ? success :

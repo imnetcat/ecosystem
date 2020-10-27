@@ -55,15 +55,16 @@ public:
 		}
 		return val;
 	}
-	RGBColor Color(view_settings vs) override
+
+	RGBColor TerrainColor()
 	{
-		if(vs == view_settings::minerals)
-			return	{ 0, 255, 226 };
-		else if (vs != view_settings::age)
-			return	{ 209, 209, 209 };
-		else
-			return { 143, 229, 255 };
+		return	{ 0, 255, 226 };
 	}
+	RGBColor MineralsColor()
+	{
+		return	{ 15, 214, 194 };
+	}
+
 	bool Outline(view_settings) override
 	{
 		return false;

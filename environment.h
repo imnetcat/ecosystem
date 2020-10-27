@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cell.h"
+#include "cell_herbivorous.h"
 
 #include <vector>
 #include <map>
@@ -22,10 +22,10 @@
 
 using namespace std;
 
-const int CELL_START_COUNT = 2;
+const int CELL_START_COUNT = 4;
 
-const int ENVIRONMENT_SIZE_X = 180;
-const int ENVIRONMENT_SIZE_Y = 120;
+const int ENVIRONMENT_SIZE_X = 15;
+const int ENVIRONMENT_SIZE_Y = 80;
 
 using MapTerrain = std::array<std::array<std::shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y>;
 
@@ -111,19 +111,18 @@ public:
 					}
 
 					// put first cells
-					if (((rand() % 1500) == 0) && count < CELL_START_COUNT)
+					if (((rand() % 100) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
 						//double mutation_chance = static_cast<double>((rand() % 101) / (double)100);
 						terrain[y][x]->SetEntity(
-							new Cell(
+							new CellHerbivorous(
 								0, 
 								Genome::length / 2,
 								200, 
 								100,
-								0.3,
+								0.01,
 								50,
-								fotosintesis, 
 								{ 0.3 }
 							)
 						);
@@ -192,8 +191,35 @@ public:
 				terrain[y][x]->SetLightPower(power);
 
 				terrain[y][x]->Untick();
+
 				DrawData stat;
-				stat.color = terrain[y][x]->Color(view);
+				switch (view)
+				{
+				case view_settings::terrain:
+					stat.color = terrain[y][x]->TerrainColor();
+					break;
+				case minerals:
+					stat.color = terrain[y][x]->MineralsColor();
+					break;
+				case ration:
+					stat.color = terrain[y][x]->RationColor();
+					break;
+				case energy:
+					stat.color = terrain[y][x]->EnergyColor();
+					break;
+				case species:
+					stat.color = terrain[y][x]->SpeciesColor();
+					break;
+				case age:
+					stat.color = terrain[y][x]->AgeColor();
+					break;
+				case hp:
+					stat.color = terrain[y][x]->HpColor();
+					break;
+				case survival:
+					stat.color = terrain[y][x]->SurvivalColor();
+					break;
+				}
 				stat.outline = terrain[y][x]->Outline(view);
 				if (view == view_settings::terrain)
 					stat.shadow = terrain[y][x]->GetLightLevel();
@@ -212,7 +238,35 @@ public:
 		size_t x = x_px / CELL_OUTLINE;
 		size_t y = y_px / CELL_OUTLINE;
 		Info info;
-		info.color = terrain[y][x]->Color(view);
+
+		switch (view)
+		{
+		case view_settings::terrain:
+			info.color = terrain[y][x]->TerrainColor();
+			break;
+		case minerals:
+			info.color = terrain[y][x]->MineralsColor();
+			break;
+		case ration:
+			info.color = terrain[y][x]->RationColor();
+			break;
+		case energy:
+			info.color = terrain[y][x]->EnergyColor();
+			break;
+		case species:
+			info.color = terrain[y][x]->SpeciesColor();
+			break;
+		case age:
+			info.color = terrain[y][x]->AgeColor();
+			break;
+		case hp:
+			info.color = terrain[y][x]->HpColor();
+			break;
+		case survival:
+			info.color = terrain[y][x]->SurvivalColor();
+			break;
+		}
+
 		info.light_power = terrain[y][x]->GetLightPower();
 		if (terrain[y][x]->IsContainsEntity())
 		{
@@ -266,6 +320,7 @@ private:
 			terrain[y][x]->DelEntity();
 			break;
 		case Gen::Command::move:
+		{
 			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
 
 			if (new_position == Position{ x, y })
@@ -278,6 +333,7 @@ private:
 				terrain[y][x]->ClearEntity();
 			}
 			break;
+		}
 		case Gen::Command::turn_left:
 		{
 			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
@@ -296,55 +352,10 @@ private:
 			break;
 		case Gen::Command::eat:
 		{
-			switch (terrain[y][x]->GetEntity()->GetRation().Type())
-			{
-			case ration_type::eat_minerals:
-			{
-				terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-				auto energy = terrain[y][x]->GetFood().Eat(MAX_MINERALS_TO_EAT);
-				if (energy)
-				{
-					terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
-				}
-				break;
-			}
-			case ration_type::fotosintesis:
-			{
-				terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-				auto energy = terrain[y][x]->GetLightPower();
-				if (energy)
-				{
-					if (energy > MAX_LIGHT_TO_EAT)
-						terrain[y][x]->GetEntity()->IncreaceEnergy(MAX_LIGHT_TO_EAT);
-					else
-						terrain[y][x]->GetEntity()->IncreaceEnergy(energy);
-				}
-				break;
-			}
-			case ration_type::attack:
-			{
-				Position enemy_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
+			Position viewed_pos = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
 
-				if (enemy_position == Position{ x, y })
-					break;
+			terrain[y][x]->GetEntity()->Eat(&(*terrain[y][x]), &(*terrain[viewed_pos.y][viewed_pos.x]));
 
-				if (terrain[enemy_position.y][enemy_position.x]->IsContainsEntity())
-				{
-					if (!terrain[enemy_position.y][enemy_position.x]->GetEntity()->IsFriendly(terrain[y][x]->GetEntity()))
-					{
-						if (!terrain[enemy_position.y][enemy_position.x]->GetEntity()->Defenced(terrain[y][x]->GetEntity()->Attack()))
-						{
-							Event(Gen::Command::die, enemy_position.x, enemy_position.y);
-							terrain[y][x]->GetEntity()->AttackUp();
-							terrain[y][x]->GetEntity()->IncreaceEnergy(terrain[enemy_position.y][enemy_position.x]->GetFood().Eat(MAX_MEAT_TO_EAT));
-						}
-					}
-				}
-				break;
-			}
-			default:
-				break;
-			}
 			break;
 		}
 		case Gen::Command::separation:

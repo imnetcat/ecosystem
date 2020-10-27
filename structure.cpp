@@ -27,35 +27,53 @@ void Structure::Untick()
 	food.Ticed(false);
 }
 
-RGBColor Structure::Color(view_settings vs)
+RGBColor Structure::TerrainColor()
 {
-	if (vs != view_settings::minerals && contains_entity)
-		return entity->Color(vs);
-
 	if (!food.Empty())
-		return food.Color(vs);
-
-	switch (vs)
-	{
-	case terrain:
-		return color;
-	case minerals:
-		return { 209, 209, 209 };
-	case ration:
-		return { 209, 209, 209 };
-	case energy:
-		return { 209, 209, 209 };
-	case species:
-		return { 209, 209, 209 };
-	case age:
-		return { 143, 229, 255 };
-	case hp:
-		return { 209, 209, 209 };
-	case survival:
-		return { 209, 209, 209 };
-	default:
-		return color;
-	}
+		return food.MineralsColor();
+	return color;
+}
+RGBColor Structure::MineralsColor()
+{
+	if (!food.Empty())
+		return food.MineralsColor();
+	return { 209, 209, 209 };
+}
+RGBColor Structure::RationColor()
+{
+	if (contains_entity)
+		return entity->RationColor();
+	return { 209, 209, 209 };
+}
+RGBColor Structure::EnergyColor()
+{
+	if (contains_entity)
+		return entity->EnergyColor();
+	return { 209, 209, 209 };
+}
+RGBColor Structure::SpeciesColor()
+{
+	if (contains_entity)
+		return entity->SpeciesColor();
+	return { 209, 209, 209 };
+}
+RGBColor Structure::AgeColor()
+{
+	if (contains_entity)
+		return entity->AgeColor();
+	return { 143, 229, 255 };
+}
+RGBColor Structure::HpColor()
+{
+	if (contains_entity)
+		return entity->HpColor();
+	return { 209, 209, 209 };
+}
+RGBColor Structure::SurvivalColor()
+{
+	if (contains_entity)
+		return entity->SurvivalColor();
+	return { 209, 209, 209 };
 }
 
 void Structure::Tic(std::vector<Gen::Command>& commands)

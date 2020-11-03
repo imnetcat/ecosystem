@@ -149,7 +149,7 @@ public:
 	}
 	RGBColor SurvivalColor() override
 	{
-		double succes_survival = CellSuccessRule(energy, 1, -1);
+		double succes_survival = CellSuccessRule(energy, age, max_age, 1, -1);
 		if (succes_survival == 0)
 		{
 			return { 255, 225, 0 };
@@ -163,7 +163,6 @@ public:
 			return { 0, 194, 0 };
 		}
 	}
-
 
 protected:
 
@@ -182,13 +181,12 @@ protected:
 			new_genom[index] = Gen();
 		}
 
-		
-		short max_age_koef = CellSuccessRule(energy, 1, -1);
+		short max_age_koef = CellSuccessRule(energy, age, max_age, 1, -1);
 		unsigned short new_max_age = max_age + max_age_koef;
 		if (new_max_age > Genome::length * 4) new_max_age = Genome::length * 4;
 		if (new_max_age < Genome::length) new_max_age = Genome::length;
 		
-		float mutationChance_koef = CellSuccessRule(energy, -0.01, 0.01);
+		float mutationChance_koef = CellSuccessRule(energy, age, max_age, -0.01, 0.01);
 		float new_mutationChance = genom.mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
 		if (new_mutationChance < 0.01) new_mutationChance = 0.01;
@@ -212,9 +210,10 @@ protected:
 	}
 	virtual Cell* Mutation(NewCellStat) = 0;
 
-	float CellSuccessRule(size_t accumulated_energy, float success, float fail)
+	float CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age, float success, float fail)
 	{
-		return (accumulated_energy > ((3 * MAX_ENERGY) / 4)) ? success :
-			(accumulated_energy > (MAX_ENERGY / 4) ? 0 : fail);
+		unsigned int success_border = MAX_ENERGY * (age / float(max_age));
+		return (accumulated_energy > success_border) ? success :
+			(accumulated_energy > (success_border / 2) ? 0 : fail);
 	}
 };

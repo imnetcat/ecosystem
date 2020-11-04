@@ -1,23 +1,39 @@
 #pragma once
 #include "entity.h"
+#include "genome.h"
+#include "organelle.h"
+
+// organelles
+#include "separationing.h"
+#include "carnivorousing.h"
+#include "mineraling.h"
+#include "birthing.h"
+#include "photosynthesing.h"
+#include "moving.h"
+#include "sleeping.h"
+#include "staying.h"
+#include "turning.h"
 
 #include <iostream>
 #include <memory>
 #include <ctime>
+#include <unordered_map>
+#include <map>
 #include <sstream>
 
-struct NewCellStat
-{
-	NewCellStat(Genome g) : genom(g) {}
-	bool is_mutating;
-	unsigned short hp;
-	unsigned short energy;
-	unsigned short max_age;
-	double defence;
-	unsigned short attack;
-	Genome genom;
-	size_t separation_cost;
-	size_t birth_cost;
+const std::vector<Organelle*> ORGANELLES = {
+	new Staying,
+	new Sleeping,
+
+	new Birthing,
+	new Separationing,
+
+	new Photosynthesing,
+	new Carnivorousing,
+	new Mineraling,
+
+	new Moving,
+	new Turning
 };
 
 class Cell : public Entity
@@ -26,27 +42,38 @@ protected:
 	Genome genom;
 	const size_t separation_cost;
 	const size_t birth_cost;
+	std::unordered_map<Protein, unsigned long> proteins;
+	std::vector<Organelle*> organelles;
 public:
-	Cell(Cell&& obj) :
-		Entity(std::move(obj.Hp()), std::move(obj.Energy()), std::move(obj.MaxAge()),
-			std::move(obj.Defence()),
-			std::move(obj.Attack())),
-		genom(std::move(obj.GetGenome())),
-		separation_cost(std::move(obj.SeparationCost())),
-		birth_cost(std::move(obj.BirthCost())) {}
-
 	explicit Cell(
 		unsigned short energy,
 		unsigned short max_age,
 		size_t sepr_cost,
 		size_t birthcost,
-		double defence,
+		float defence,
 		unsigned short attack,
-		Genome g)
+		Genome g,
+		const std::vector<Organelle*> organelles)
 		: 
 		Entity(MAX_HP, energy, max_age, defence, attack),
-		genom(g), separation_cost(sepr_cost), birth_cost(birthcost) {}
-	
+		genom(g), 
+		separation_cost(sepr_cost),
+		birth_cost(birthcost),
+		organelles(organelles) 
+	{
+		auto size = static_cast<unsigned int>(Protein::Count);
+		proteins.reserve(size);
+		for (unsigned int i = 0; i < size; i++)
+		{
+			proteins[static_cast<Protein>(i % size)] = 0;
+		}
+	}
+
+	bool IsDead() override
+	{
+		return !hp || age == max_age;
+	}
+
 	size_t SeparationCost()
 	{
 		return separation_cost;
@@ -68,9 +95,12 @@ public:
 		auto lhs_genom = GetGenome().data;
 		auto rhs_genom = cell->GetGenome().data;
 
+		if (lhs_genom.size() != rhs_genom.size())
+			return false;
+
 		for (size_t index = 0; index < lhs_genom.size(); index++)
 		{
-			if (lhs_genom[index].Read() != rhs_genom[index].Read())
+			if (lhs_genom[index] != rhs_genom[index])
 				count_of_non_equal++;
 
 			if (count_of_non_equal > BORDER)
@@ -82,31 +112,38 @@ public:
 
 	Cell* Separation()
 	{
-		NewCellStat new_cell = Reproduction();
+		Cell* new_cell = Reproduction();
 
 		DecreaceEnergy(separation_cost);
 		unsigned short hlph = energy / 2;
 		DecreaceEnergy(hlph);
-		new_cell.energy += hlph;
+		new_cell->IncreaceEnergy(hlph);
 
-		return Mutation(new_cell);
+		return new_cell;
 	}
 
 	Cell* Birth()
 	{
-		return Mutation(Reproduction());
-	}
-	
-	void Tic(std::vector<Gen::Command>& commands) override
-	{
-		if (!hp || age == max_age)
-			commands.push_back(Gen::Command::die);
-		else
-			commands.push_back(genom.Read());
-		
-		age++;
+		Cell* new_cell = Reproduction();
+
+		DecreaceEnergy(birth_cost);
+
+		return new_cell;
 	}
 
+	std::unordered_map<Protein, unsigned long>& Proteins()
+	{
+		return proteins;
+	}
+	const std::unordered_map<Protein, unsigned long>& Proteins() const
+	{
+		return proteins;
+	}
+
+	const std::vector<Organelle*>& Organelles()
+	{
+		return organelles;
+	}
 
 	RGBColor TerrainColor() override
 	{
@@ -120,11 +157,11 @@ public:
 	{
 		if (energy < (MAX_ENERGY / 2))
 		{
-			return { 255, static_cast<unsigned char>(255 * (energy / (double)(MAX_ENERGY / 2))), 0 };
+			return { 255, static_cast<unsigned char>(255 * (energy / (float)(MAX_ENERGY / 2))), 0 };
 		}
 		else
 		{
-			return { static_cast<unsigned char>(255 - 255 * (energy / (double)MAX_ENERGY)), 255, 0 };
+			return { static_cast<unsigned char>(255 - 255 * (energy / (float)MAX_ENERGY)), 255, 0 };
 		}
 	}
 	RGBColor SpeciesColor() override
@@ -133,87 +170,126 @@ public:
 	}
 	RGBColor AgeColor() override
 	{
-		unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)age / max_age));
+		unsigned char c = static_cast<unsigned char>(255 - 255 * ((float)age / max_age));
 		return { c, c, c };
 	}
 	RGBColor HpColor() override
 	{
 		if (hp < (MAX_HP / 2))
 		{
-			return { 191, static_cast<unsigned char>(191 * (hp / (double)(MAX_HP / 2))), 0 };
+			return { 191, static_cast<unsigned char>(191 * (hp / (float)(MAX_HP / 2))), 0 };
 		}
 		else
 		{
-			return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / hp)), 191, 0 };
+			return { static_cast<unsigned char>(191 * ((float)(MAX_HP / 2) / hp)), 191, 0 };
 		}
 	}
 	RGBColor SurvivalColor() override
 	{
-		double succes_survival = CellSuccessRule(energy, age, max_age, 1, -1);
-		if (succes_survival == 0)
+		switch (CellSuccessRule(energy, age, max_age))
 		{
-			return { 255, 225, 0 };
-		}
-		else if (succes_survival == -1)
-		{
+		case Cell::CellSuccess::fail:
 			return { 255, 21, 0 };
-		}
-		else
-		{
+			break;
+		case Cell::CellSuccess::normal:
+			return { 255, 225, 0 };
+			break;
+		case Cell::CellSuccess::good:
 			return { 0, 194, 0 };
+			break;
+		default:
+			return { 255, 225, 0 };
+			break;
 		}
 	}
 
+	void Tic(MapTerrain& terrain, size_t& x, size_t& y) override
+	{
+		auto p = genom.Read();
+		if (!proteins.count(p))
+		{
+			proteins[p] = 1;
+		}
+		else
+		{
+			proteins[p]++;
+		}
+
+		age++;
+
+		for (size_t i = 0; i < organelles.size(); i ++)
+		{
+			organelles[i]->Event(terrain, x, y);
+		}
+	}
+
+	RGBColor RationColor() override
+	{
+		return { 0, 143, 31 }; // green
+	}
+
 protected:
+
+
 
 	RGBColor Species() override
 	{
 		return genom.Hash();
 	}
-	NewCellStat Reproduction()
+	Cell* Reproduction()
 	{
-		srand(time(0) + rand());
-		auto new_genom = genom.data;
-		float mt = (rand() % 100) / (double)100;
-		if (mt < genom.mutationChance)
+		CellSuccess isSuccess = CellSuccessRule(energy, age, max_age);
+		float newMutationChanceK = 0;
+		switch (isSuccess)
 		{
-			size_t index = rand() % Genome::length;
-			new_genom[index] = Gen();
+		case Cell::CellSuccess::fail:
+			newMutationChanceK = 0.01;
+			break;
+		case Cell::CellSuccess::good:
+			newMutationChanceK = -0.01;
+			break;
+		}
+		Genome new_genom = genom.Replicate(newMutationChanceK);
+
+		short max_age_koef = 0;
+		switch (isSuccess)
+		{
+		case Cell::CellSuccess::fail:
+			max_age_koef = -1;
+			break;
+		case Cell::CellSuccess::good:
+			max_age_koef = 1;
+			break;
 		}
 
-		short max_age_koef = CellSuccessRule(energy, age, max_age, 1, -1);
 		unsigned short new_max_age = max_age + max_age_koef;
-		if (new_max_age > Genome::length * 4) new_max_age = Genome::length * 4;
-		if (new_max_age < Genome::length) new_max_age = Genome::length;
+		if (new_max_age > 1000) new_max_age = 1000;
+		if (new_max_age < 2) new_max_age = 2;
 		
-		float mutationChance_koef = CellSuccessRule(energy, age, max_age, -0.01, 0.01);
-		float new_mutationChance = genom.mutationChance + mutationChance_koef;
-		if (new_mutationChance > 1) new_mutationChance = 1;
-		if (new_mutationChance < 0.01) new_mutationChance = 0.01;
-		
+		std::vector<Organelle*> new_organelles = organelles;
 
-		NewCellStat stat(Genome(new_genom, new_mutationChance, genom.generation + 1));
-		stat.attack = attack;
-		stat.defence = defence;
-		stat.birth_cost = birth_cost;
-		stat.separation_cost = separation_cost;
-		stat.max_age = max_age;
-		stat.energy = 100;
-		stat.is_mutating = false;
-			   
-		if (mt < genom.mutationChance)
-		{
-			stat.is_mutating = true;
-		}
-
-		return stat;
+		return new Cell(
+			100,
+			new_max_age,
+			separation_cost,
+			birth_cost,
+			defence,
+			attack,
+			new_genom,
+			new_organelles);
 	}
-	virtual Cell* Mutation(NewCellStat) = 0;
 
-	float CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age, float success, float fail)
+	enum class CellSuccess
 	{
-		unsigned int success_border = MAX_ENERGY * (age / float(max_age));
-		return (accumulated_energy > success_border) ? success :
-			(accumulated_energy > (success_border / 2) ? 0 : fail);
+		fail,
+		normal,
+		good
+	};
+
+	CellSuccess CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age)
+	{
+		unsigned int success_border = MAX_ENERGY * (float(age) / (max_age / 2));
+		return (accumulated_energy > success_border) ? CellSuccess::good :
+			(accumulated_energy > (success_border / 2) ? CellSuccess::normal : CellSuccess::fail);
 	}
 };

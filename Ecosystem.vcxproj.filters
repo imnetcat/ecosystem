@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Header Files\organelle">
+      <UniqueIdentifier>{059efb91-a4d1-47d8-ba8b-c07e9f540786}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="entity.cpp">
@@ -27,13 +30,34 @@
     <ClCompile Include="structure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cell_herbivorous.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="photosynthesing.cpp">
+      <Filter>Header Files\organelle</Filter>
     </ClCompile>
-    <ClCompile Include="cell_mineravorous.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="mineraling.cpp">
+      <Filter>Header Files\organelle</Filter>
     </ClCompile>
-    <ClCompile Include="cell_predator.cpp">
+    <ClCompile Include="carnivorousing.cpp">
+      <Filter>Header Files\organelle</Filter>
+    </ClCompile>
+    <ClCompile Include="birthing.cpp">
+      <Filter>Header Files\organelle</Filter>
+    </ClCompile>
+    <ClCompile Include="moving.cpp">
+      <Filter>Header Files\organelle</Filter>
+    </ClCompile>
+    <ClCompile Include="separationing.cpp">
+      <Filter>Header Files\organelle</Filter>
+    </ClCompile>
+    <ClCompile Include="sleeping.cpp">
+      <Filter>Header Files\organelle</Filter>
+    </ClCompile>
+    <ClCompile Include="staying.cpp">
+      <Filter>Header Files\organelle</Filter>
+    </ClCompile>
+    <ClCompile Include="turning.cpp">
+      <Filter>Header Files\organelle</Filter>
+    </ClCompile>
+    <ClCompile Include="map_terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,9 +78,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="environment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="glass.h">
@@ -86,20 +107,50 @@
     <ClInclude Include="sfml_box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cell_herbivorous.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cell_mineravorous.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cell_predator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="object.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="genome.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map_terrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="protein.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sleeping.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="moving.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="turning.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="staying.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="organelle.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="photosynthesing.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="mineraling.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="carnivorousing.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="birthing.h">
+      <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="separationing.h">
+      <Filter>Header Files\organelle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

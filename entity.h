@@ -1,22 +1,7 @@
 #pragma once
 #include "object.h"
-#include "item.h"
-#include "gen.h"
+#include "genome.h"
 #include <memory>
-
-class Structure;
-
-enum view_side
-{
-	top,
-	right_top,
-	right,
-	right_bottom,
-	bottom,
-	left_bottom,
-	left,
-	left_top,
-};
 
 class Entity : public Object
 {
@@ -26,20 +11,19 @@ protected:
 	unsigned short max_age;
 	unsigned short hp;
 	unsigned short energy;
-	double defence;
+	float defence;
 	unsigned short attack;
 public:
-	Entity(unsigned short h, unsigned short e, unsigned short max_age, double def, unsigned short attck);
+	Entity(unsigned short h, unsigned short e, unsigned short max_age, float def, unsigned short attck);
 	virtual Genome GetGenome() = 0;
 	virtual size_t SeparationCost() = 0;
 	virtual size_t BirthCost() = 0;
-	virtual void Tic(std::vector<Gen::Command>& commands) = 0;
-	virtual void Eat(Structure*, Structure*) = 0;
 	virtual RGBColor Species() = 0;
+	virtual bool IsDead() = 0;
 
 	bool Outline(view_settings) override;
 	bool Defenced(unsigned short);
-	double Defence();
+	float Defence();
 	unsigned short Attack();
 	void AttackUp();
 	unsigned short Age();

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cell_herbivorous.h"
-
 #include <vector>
 #include <map>
 #include <memory>
@@ -21,15 +19,11 @@
 #include <array>
 
 #include "sfml.h"
+#include "map_terrain.h"
 
 using namespace std;
 
 const int CELL_START_COUNT = 1;
-
-const int ENVIRONMENT_SIZE_X = 110;
-const int ENVIRONMENT_SIZE_Y = 60;
-
-using MapTerrain = std::array<std::array<std::shared_ptr<Structure>, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y>;
 
 #define GLASS std::shared_ptr<Structure>(new Glass())
 #define WATER std::shared_ptr<Structure>(new Water())
@@ -37,18 +31,6 @@ using MapTerrain = std::array<std::array<std::shared_ptr<Structure>, ENVIRONMENT
 #define CERAMIC std::shared_ptr<Structure>(new Ceramic())
 #define EARTH std::shared_ptr<Structure>(new Earth())
 #define SAND std::shared_ptr<Structure>(new Sand())
-
-
-struct Position
-{
-	size_t x;
-	size_t y;
-};
-
-bool operator == (const Position& lhs, const Position& rhs)
-{
-	return lhs.x == rhs.x && lhs.y == rhs.y;
-}
 
 using CellId = size_t;
 using ObjectId = size_t;
@@ -70,13 +52,13 @@ struct Info
 		size_t curr = 0;
 		size_t max = 0;
 	} age;
-	vector<Gen::Command> genom;
+	std::vector<int> genom;
 	unsigned short hp = 0;
 	size_t energy = 0;
 	size_t generation = 0;
 	size_t light_power = 0;
 	size_t food_power = 0;
-	double ch_of_mut;
+	float ch_of_mut;
 };
 
 struct LightLevel
@@ -120,23 +102,24 @@ public:
 					// put minerals
 					if (y > (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 8))
 					{
-						terrain[y][x]->SetFood(5000 * (double(y) / ENVIRONMENT_SIZE_Y));
+						terrain[y][x]->SetFood(5000 * (float(y) / ENVIRONMENT_SIZE_Y));
 					}
 
 					// put first cells
 					if (((rand() % 100) == 0) && count < CELL_START_COUNT)
 					{
 						count++;
-						//double mutation_chance = static_cast<double>((rand() % 101) / (double)100);
-						terrain[y][x]->SetEntity(
-							new CellHerbivorous(
+						//float mutation_chance = static_cast<float>((rand() % 101) / (float)100);
+						terrain[y][x]->SetCell(
+							new Cell(
 								0,
-								Genome::length,
+								16,
 								200,
 								100,
 								0.01,
-								50,
-								{ 0.3 }
+								25,
+								Genome(0.5),
+								ORGANELLES
 							)
 						);
 					}
@@ -211,12 +194,27 @@ public:
 			{
 				if (update_env)
 				{
-					vector<Gen::Command> commands;
-					terrain[y][x]->Tic(commands);
-					for (auto command : commands)
+
+					// Check if terrain contains dead cell
+					bool contains_dead_cell = false;
+					if (terrain[y][x]->IsContainsCell())
 					{
-						Event(command, x, y);
+						contains_dead_cell = terrain[y][x]->GetCell()->IsDead();
 					}
+
+					// delete cell if terrain contains dead cell
+					if (contains_dead_cell)
+					{
+						if (terrain[y][x]->IsContainsFood())
+							terrain[y][x]->GetFood().Put(terrain[y][x]->GetCell()->Energy() + 100);
+						else
+							terrain[y][x]->SetFood(terrain[y][x]->GetCell()->Energy() + 100);
+
+						terrain[y][x]->DelCell();
+					}
+					size_t changable_x = x;
+					size_t changable_y = y;
+					terrain[y][x]->Tic(terrain, changable_x, changable_y);
 
 					// set up light
 					size_t power = LIGHT_POWER;
@@ -321,19 +319,19 @@ public:
 		}
 
 		info.light_power = terrain[y][x]->GetLightPower();
-		if (terrain[y][x]->IsContainsEntity())
+		if (terrain[y][x]->IsContainsCell())
 		{
-			info.age.curr = terrain[y][x]->GetEntity()->Age();
-			info.age.max = terrain[y][x]->GetEntity()->MaxAge();
-			auto& data = terrain[y][x]->GetEntity()->GetGenome().data;
-			for (auto command : data)
+			info.age.curr = terrain[y][x]->GetCell()->Age();
+			info.age.max = terrain[y][x]->GetCell()->MaxAge();
+			auto& data = terrain[y][x]->GetCell()->GetGenome().data;
+			for (unsigned int i = 0; i < data.size(); i++)
 			{
-				info.genom.push_back(command.Read());
+				info.genom.push_back(static_cast<int>(data[i]));
 			}
-			info.generation = terrain[y][x]->GetEntity()->GetGenome().generation;
-			info.hp = terrain[y][x]->GetEntity()->Hp();
-			info.ch_of_mut = terrain[y][x]->GetEntity()->GetGenome().mutationChance;
-			info.energy = terrain[y][x]->GetEntity()->Energy();
+			info.generation = terrain[y][x]->GetCell()->GetGenome().generation;
+			info.hp = terrain[y][x]->GetCell()->Hp();
+			info.ch_of_mut = terrain[y][x]->GetCell()->GetGenome().mutationChance;
+			info.energy = terrain[y][x]->GetCell()->Energy();
 		}
 		if (terrain[y][x]->IsContainsFood())
 		{
@@ -353,186 +351,6 @@ public:
 private:
 
 	view_settings view = view_settings::terrain;
-		
-	void Event(Gen::Command command, size_t x, size_t y)
-	{
-		switch (command)
-		{
-		case Gen::Command::sleep:
-			terrain[y][x]->GetEntity()->DecreaceEnergy(1);
-			break;
-		case Gen::Command::stay:
-			terrain[y][x]->GetEntity()->DecreaceEnergy(5);
-			break;
-		case Gen::Command::die:
-			if (terrain[y][x]->IsContainsFood())
-				terrain[y][x]->GetFood().Put(terrain[y][x]->GetEntity()->Energy() + 100);
-			else
-				terrain[y][x]->SetFood(terrain[y][x]->GetEntity()->Energy() + 100);
-
-			terrain[y][x]->DelEntity();
-			break;
-		case Gen::Command::move:
-		{
-			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
-
-			if (new_position == Position{ x, y })
-				break;
-
-			if (terrain[new_position.y][new_position.x]->IsWalkable() && !terrain[new_position.y][new_position.x]->IsContainsEntity())
-			{
-				terrain[y][x]->GetEntity()->DecreaceEnergy(10);
-				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity());
-				terrain[y][x]->ClearEntity();
-			}
-			break;
-		}
-		case Gen::Command::turn_left:
-		{
-			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
-			view_side new_side = static_cast<view_side>(old_side == 0 ? 7 : old_side - 1);
-			terrain[y][x]->GetEntity()->SetView(new_side);
-			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
-		}
-			break;
-		case Gen::Command::turn_right:
-		{
-			unsigned short old_side = terrain[y][x]->GetEntity()->GetView();
-			view_side new_side = static_cast<view_side>(old_side == 7 ? 0 : old_side + 1);
-			terrain[y][x]->GetEntity()->SetView(new_side);
-			terrain[y][x]->GetEntity()->DecreaceEnergy(8);
-		}
-			break;
-		case Gen::Command::eat:
-		{
-			Position viewed_pos = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x, y });
-
-			terrain[y][x]->GetEntity()->Eat(&(*terrain[y][x]), &(*terrain[viewed_pos.y][viewed_pos.x]));
-
-			break;
-		}
-		case Gen::Command::separation:
-		{
-			if (terrain[y][x]->GetEntity()->Energy() < terrain[y][x]->GetEntity()->SeparationCost())
-				break;
-
-			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
-
-			if (!terrain[new_position.y][new_position.x]->IsContainsEntity() && terrain[new_position.y][new_position.x]->IsWalkable())
-			{
-				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Separation());
-				break;
-			}
-			break;
-		}
-		case Gen::Command::birth:
-		{
-			if (terrain[y][x]->GetEntity()->Energy() < terrain[y][x]->GetEntity()->BirthCost())
-				break;
-
-			Position new_position = GetViewedPosition(terrain[y][x]->GetEntity()->GetView(), { x,y });
-
-			if (!terrain[new_position.y][new_position.x]->IsContainsEntity() && terrain[new_position.y][new_position.x]->IsWalkable())
-			{
-				terrain[new_position.y][new_position.x]->SetEntity(terrain[y][x]->GetEntity()->Birth());
-				break;
-			}
-			break;
-		}
-		}
-	}
-
-	Position GetViewedPosition(view_side view, Position init)
-	{
-		auto maxX = ENVIRONMENT_SIZE_X - 1;
-		auto maxY = ENVIRONMENT_SIZE_Y - 1;
-
-		Position viewed_position = init;
-		switch (view)
-		{
-		case view_side::left:
-			if (init.x > 0)
-			{
-				viewed_position.x--;
-			}
-			else if (LOOPED_ENVIRONMENT)
-			{
-				viewed_position.x = maxX;
-			}
-			break;
-		case view_side::right:
-			if (init.x < maxX)
-			{
-				viewed_position.x++;
-			}
-			else if (LOOPED_ENVIRONMENT)
-			{
-				viewed_position.x = 0;
-			}
-			break;
-		case view_side::bottom:
-			if (init.y > 0)
-			{
-				viewed_position.y--;
-			}
-			break;
-		case view_side::top:
-			if (init.y < maxY)
-			{
-				viewed_position.y++;
-			}
-			break;
-		case view_side::left_bottom:
-			if (init.x > 0 && init.y < maxY)
-			{
-				viewed_position.x--;
-				viewed_position.y++;
-			}
-			else if (init.y < maxY && LOOPED_ENVIRONMENT)
-			{
-				viewed_position.x = maxX;
-				viewed_position.y++;
-			}
-			break;
-		case view_side::left_top:
-			if (init.x > 0 && init.y > 0)
-			{
-				viewed_position.x--;
-				viewed_position.y--;
-			}
-			else if (init.y > 0 && LOOPED_ENVIRONMENT)
-			{
-				viewed_position.x = maxX;
-				viewed_position.y--;
-			}
-			break;
-		case view_side::right_bottom:
-			if (init.y < maxY && init.x < maxX)
-			{
-				viewed_position.x++;
-				viewed_position.y++;
-			}
-			else if (init.y < maxX && LOOPED_ENVIRONMENT)
-			{
-				viewed_position.x = 0;
-				viewed_position.y++;
-			}
-			break;
-		case view_side::right_top:
-			if (init.y > 0 && init.x < maxX)
-			{
-				viewed_position.x++;
-				viewed_position.y--;
-			}
-			else if (init.y > 0 && LOOPED_ENVIRONMENT)
-			{
-				viewed_position.x = 0;
-				viewed_position.y--;
-			}
-			break;
-		}
-		return viewed_position;
-	}
-
+	
 	MapTerrain terrain;
 };

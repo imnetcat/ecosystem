@@ -16,6 +16,8 @@ public:
 		energy = e;
 	}
 
+	void Tic(MapTerrain&, size_t&, size_t&) override {}
+
 	unsigned short Get()
 	{
 		return energy;

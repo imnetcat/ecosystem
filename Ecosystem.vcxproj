@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -119,35 +119,51 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cell_herbivorous.cpp" />
-    <ClCompile Include="cell_mineravorous.cpp" />
-    <ClCompile Include="cell_predator.cpp" />
+    <ClCompile Include="birthing.cpp" />
+    <ClCompile Include="carnivorousing.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="map_terrain.cpp" />
+    <ClCompile Include="mineraling.cpp" />
+    <ClCompile Include="moving.cpp" />
+    <ClCompile Include="separationing.cpp" />
+    <ClCompile Include="photosynthesing.cpp" />
+    <ClCompile Include="sleeping.cpp" />
+    <ClCompile Include="staying.cpp" />
     <ClCompile Include="structure.cpp" />
+    <ClCompile Include="turning.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="air.h" />
+    <ClInclude Include="birthing.h" />
+    <ClInclude Include="carnivorousing.h" />
     <ClInclude Include="cell.h" />
-    <ClInclude Include="cell_herbivorous.h" />
-    <ClInclude Include="cell_mineravorous.h" />
-    <ClInclude Include="cell_predator.h" />
     <ClInclude Include="ceramic.h" />
     <ClInclude Include="earth.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="environment.h" />
-    <ClInclude Include="gen.h" />
+    <ClInclude Include="mineraling.h" />
+    <ClInclude Include="photosynthesing.h" />
+    <ClInclude Include="genome.h" />
     <ClInclude Include="glass.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="map_terrain.h" />
     <ClInclude Include="minerals.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="moving.h" />
     <ClInclude Include="object.h" />
+    <ClInclude Include="organelle.h" />
+    <ClInclude Include="protein.h" />
     <ClInclude Include="sand.h" />
+    <ClInclude Include="separationing.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />
     <ClInclude Include="sfml_button.h" />
+    <ClInclude Include="sleeping.h" />
+    <ClInclude Include="staying.h" />
     <ClInclude Include="structure.h" />
+    <ClInclude Include="turning.h" />
     <ClInclude Include="water.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

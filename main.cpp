@@ -10,7 +10,7 @@ using namespace sf;
 
 const int SPEED = 10;
 
-const int WINDOW_POS_X = 500;
+const int WINDOW_POS_X = 250;
 const int WINDOW_POS_Y = 100;
 const char* FONT = "SourceCodePro-Black.ttf";
 
@@ -71,9 +71,6 @@ const int CLEAR_INFO_SIZE_Y = 20;
 
 int main()
 {
-	srand(time(0) - rand());
-	int loopback = 0;
-	// Объект, который, собственно, является главным окном приложения
 	RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X * CELL_OUTLINE, ENVIRONMENT_SIZE_Y * CELL_OUTLINE), "Ecosystem | Map");
 	window.setPosition(sf::Vector2i(WINDOW_POS_X, WINDOW_POS_Y));
 
@@ -208,29 +205,22 @@ int main()
 	
 	ter_view_btn.Disable(true);
 
-	sf::RectangleShape sprite_cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-	sf::RectangleShape sprite_struct(sf::Vector2f(CELL_OUTLINE, CELL_OUTLINE));
-
 	Environment environment;
 
 	bool turn_on_info_block = false;
 	bool pause = false;
 
-	// Главный цикл приложения. Выполняется, пока открыто окно
 	while (window.isOpen())
 	{
 		setting_window.clear();
 
-		// Обрабатываем очередь событий в цикле
 		Event main_event, settings_event;
 		while (setting_window.pollEvent(settings_event))
 		{
 			if (settings_event.type == sf::Event::MouseButtonPressed)
 			{
-				// Пользователь нажал и отпустил лкм
 				if (settings_event.mouseButton.button == sf::Mouse::Left)
 				{
-					// нажатие на кнопку выключения окна информации
 					if (info_clear_rect_btn.IsClicked(settings_event.mouseButton.x, 
 						settings_event.mouseButton.y))
 					{
@@ -353,15 +343,12 @@ int main()
 		}
 		while (window.pollEvent(main_event))
 		{
-			// Пользователь нажал на «крестик» и хочет закрыть окно?
 			if (main_event.type == Event::Closed)
 			{
-				// Тогда закрываем его
 				setting_window.close();
 				window.close();
 			}
 			
-			// Пользователь нажал и отпустил какую-то из кнопок
 			if (main_event.type == sf::Event::KeyReleased)
 			{
 				// turn on\off pause
@@ -373,7 +360,6 @@ int main()
 
 			if (main_event.type == sf::Event::MouseButtonPressed)
 			{
-				// Пользователь нажал и отпустил лкм
 				if (main_event.mouseButton.button == sf::Mouse::Left)
 				{
 					auto info = environment.GetInfo(main_event.mouseButton.x, main_event.mouseButton.y);
@@ -448,46 +434,12 @@ int main()
 
 
 		// clear the window and draw background with background color
-		window.clear(sf::Color(0, 61, 156));
+		window.clear();
+
 		// update environment
-		//if(!loopback)
-		if (!loopback && !pause)
-		{
-			environment.Update();
-		}
+		environment.Update(window, !pause);
 
-		auto envdata = environment.UpdateColors();
-		// draw all entities
-		for (const auto& object : envdata)
-		{
-			if (object.outline)
-			{
-				sprite_cell.setPosition(object.position.x, object.position.y);
-				sprite_cell.setOutlineThickness(OUTLINE);
-				sprite_cell.setFillColor({ object.color.r, object.color.g, object.color.b,
-					(unsigned char)((unsigned char)255 - object.shadow) });
-				sprite_cell.setOutlineColor(sf::Color(0, 0, 0,
-					(unsigned char)((unsigned char)255 - object.shadow)));
-				window.draw(sprite_cell);
-			}
-			else
-			{
-				sprite_struct.setPosition(object.position.x, object.position.y);
-				sprite_struct.setFillColor({ object.color.r, object.color.g, object.color.b,
-					(unsigned char)((unsigned char)255 - object.shadow) });
-				sprite_struct.setOutlineColor(sf::Color(object.color.r, object.color.g, object.color.b,
-					(unsigned char)((unsigned char)255 - object.shadow)));
-				window.draw(sprite_struct);
-			}
-		}
-
-		// Отрисовка окна
 		window.display();
-
-		loopback++;
-		
-		if (loopback == SPEED)
-			loopback = 0;
 
 		setting_window.display();
 	}

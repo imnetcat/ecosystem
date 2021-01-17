@@ -1,5 +1,7 @@
 #pragma once
 #include "config.h"
+#include "map_terrain.h"
+#include <map>
 
 enum view_settings
 {
@@ -31,4 +33,5 @@ struct Object
 	virtual RGBColor HpColor() = 0;
 	virtual RGBColor SurvivalColor() = 0;
 	virtual bool Outline(view_settings) = 0;
+	virtual void Tic(MapTerrain& terrain, size_t& x, size_t& y) = 0;
 };

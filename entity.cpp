@@ -1,6 +1,7 @@
 #include "entity.h"
+#include "item.h"
 
-Entity::Entity(unsigned short h, unsigned short e, unsigned short ma, double def, unsigned short attck) :
+Entity::Entity(unsigned short h, unsigned short e, unsigned short ma, float def, unsigned short attck) :
 		view(top),
 		age(0),
 		max_age(ma),
@@ -45,7 +46,7 @@ void Entity::AttackUp()
 {
 	attack++;
 }
-double Entity::Defence()
+float Entity::Defence()
 {
 	return defence;
 }

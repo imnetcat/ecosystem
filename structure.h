@@ -10,17 +10,14 @@ class Structure : public Object
 protected:
 	bool ticed;
 	RGBColor color;
-	const double transparency;
+	const float transparency;
 	unsigned char light_level;
 	unsigned short light_power;
 	bool walkable;
 	Minerals food;
-	Cell* entity;
-	bool contains_entity;
+	Cell* cell;
 public:
-	Structure(RGBColor c, bool w, double tr);
-
-	double Transparency();
+	Structure(RGBColor c, bool w, float tr);
 
 	void Untick();
 
@@ -32,10 +29,9 @@ public:
 	RGBColor AgeColor() override;
 	RGBColor HpColor() override;
 	RGBColor SurvivalColor() override;
+	void Tic(MapTerrain& terrain, size_t& x, size_t& y) override;
 
-	void Tic(std::vector<Gen::Command>& commands);
-
-	unsigned short GetLightLevel();
+	unsigned char GetLightLevel();
 	void SetLightLevel(unsigned short lv);
 	unsigned short GetLightPower();
 	void SetLightPower(unsigned short lp);
@@ -48,14 +44,14 @@ public:
 	Minerals& GetFood();
 	const Minerals& GetFood() const;
 
-	void SetEntity(Cell* e);
-	void ClearEntity();
-	void DelEntity();
-	Cell* GetEntity();
+	void SetCell(Cell* e);
+	void DelCell();
+	void CleanCell();
+	Cell* GetCell();
 	
 	void Walkable(bool val);
 	bool IsWalkable();
 
 	bool IsContainsFood();
-	bool IsContainsEntity();
+	bool IsContainsCell();
 };

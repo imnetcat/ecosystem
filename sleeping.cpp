@@ -3,7 +3,7 @@
 
 void Sleeping::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 {
-	if (HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
+	if (!HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
 		return;
 
 	terrain[y][x]->GetCell()->Proteins()[Protein::sleepon]--;
@@ -12,7 +12,7 @@ void Sleeping::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 }
 bool Sleeping::HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const
 {
-	return proteins.count(Protein::sleepon) > 1;
+	return proteins.at(Protein::sleepon) > 1;
 }
 bool Sleeping::IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const
 {

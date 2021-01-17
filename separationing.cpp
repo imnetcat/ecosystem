@@ -2,7 +2,7 @@
 #include "structure.h"
 void Separationing::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 {
-	if (HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
+	if (!HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
 		return;
 
 	if (terrain[y][x]->GetCell()->Energy() < terrain[y][x]->GetCell()->SeparationCost())
@@ -19,7 +19,7 @@ void Separationing::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 }
 bool Separationing::HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const
 {
-	return proteins.count(Protein::separation) > 10;
+	return proteins.at(Protein::separation) > 10;
 }
 bool Separationing::IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const
 {

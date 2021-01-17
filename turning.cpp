@@ -3,7 +3,7 @@
 
 void Turning::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 {
-	if (HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
+	if (!HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
 		return;
 
 	std::unordered_map<Protein, unsigned long>& proteins = terrain[y][x]->GetCell()->Proteins();
@@ -29,7 +29,7 @@ void Turning::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 }
 bool Turning::HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const
 {
-	return proteins.count(Protein::turnon) > 5;
+	return proteins.at(Protein::turnon) > 5;
 }
 bool Turning::IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const
 {

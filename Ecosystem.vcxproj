@@ -139,14 +139,11 @@
     <ClInclude Include="birthing.h" />
     <ClInclude Include="carnivorousing.h" />
     <ClInclude Include="cell.h" />
-    <ClInclude Include="ceramic.h" />
-    <ClInclude Include="earth.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="mineraling.h" />
     <ClInclude Include="photosynthesing.h" />
     <ClInclude Include="genome.h" />
-    <ClInclude Include="glass.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="map_terrain.h" />
     <ClInclude Include="minerals.h" />
@@ -155,7 +152,6 @@
     <ClInclude Include="object.h" />
     <ClInclude Include="organelle.h" />
     <ClInclude Include="protein.h" />
-    <ClInclude Include="sand.h" />
     <ClInclude Include="separationing.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />

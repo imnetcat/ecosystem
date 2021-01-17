@@ -9,17 +9,6 @@ Structure::Structure(RGBColor c, bool w, float tr) :
 	cell(nullptr)
 { }
 
-float Structure::Transparency()
-{
-	const float cell_transparency = 0.99;
-	if (cell)
-	{
-		return cell_transparency;
-	}
-
-	return transparency;
-}
-
 void Structure::Untick()
 {
 	ticed = false;

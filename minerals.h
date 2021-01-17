@@ -60,7 +60,7 @@ public:
 
 	RGBColor TerrainColor()
 	{
-		return	{ 0, 255, 226 };
+		return	{ 0, 171, 209 };
 	}
 	RGBColor MineralsColor()
 	{

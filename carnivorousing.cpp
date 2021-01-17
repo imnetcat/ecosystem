@@ -3,7 +3,7 @@
 
 void Carnivorousing::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 {
-	if (HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
+	if (!HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
 		return;
 
 	Position viewed_position = GetViewedPosition(terrain[y][x]->GetCell()->GetView(), { x, y });
@@ -31,7 +31,7 @@ void Carnivorousing::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 }
 bool Carnivorousing::HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const
 {
-	return proteins.count(Protein::carnivorouson) > 10;
+	return proteins.at(Protein::carnivorouson) > 10;
 }
 bool Carnivorousing::IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const
 {

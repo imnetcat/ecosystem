@@ -19,8 +19,6 @@ protected:
 public:
 	Structure(RGBColor c, bool w, float tr);
 
-	float Transparency();
-
 	void Untick();
 
 	RGBColor TerrainColor() override;

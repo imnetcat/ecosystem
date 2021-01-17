@@ -3,7 +3,7 @@
 
 void Birthing::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 {
-	if (HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
+	if (!HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
 		return;
 
 	if (terrain[y][x]->GetCell()->Energy() < terrain[y][x]->GetCell()->BirthCost())
@@ -20,7 +20,7 @@ void Birthing::Event(MapTerrain& terrain, size_t& x, size_t& y) const
 }
 bool Birthing::HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const
 {
-	return proteins.count(Protein::birthon) > 10;
+	return proteins.at(Protein::birthon) > 10;
 }
 bool Birthing::IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const
 {

@@ -7,12 +7,8 @@
 #include <ctime>
 #include <array>
 #include <cmath>
-#include "glass.h"
 #include "water.h"
 #include "air.h"
-#include "ceramic.h"
-#include "earth.h"
-#include "sand.h"
 
 #include <memory>
 #include <ctime>
@@ -23,7 +19,7 @@
 
 using namespace std;
 
-const int CELL_START_COUNT = 1;
+const int CELL_START_COUNT = 10;
 
 #define GLASS std::shared_ptr<Structure>(new Glass())
 #define WATER std::shared_ptr<Structure>(new Water())
@@ -81,56 +77,37 @@ public:
 		{
 			for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 			{
-				// set up simply aquarium
-				/*
-				if ((x == 0 || x == ENVIRONMENT_SIZE_X - 1) ||
-					(y == ENVIRONMENT_SIZE_Y - 1))
-				{
-					terrain[y][x] = shared_ptr<Structure>(new Glass());
-				}
-				*/
-
 				// set up looped body of water
-				if (y == ENVIRONMENT_SIZE_Y - 1)
-				{
-					terrain[y][x] = shared_ptr<Structure>(new Glass());
-				}
-				else
-				{
-					terrain[y][x] = shared_ptr<Structure>(new Water());
 
-					// put minerals
-					if (y > (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 8))
-					{
-						terrain[y][x]->SetFood(5000 * (float(y) / ENVIRONMENT_SIZE_Y));
-					}
+				terrain[y][x] = shared_ptr<Structure>(new Water());
 
-					// put first cells
-					if (((rand() % 100) == 0) && count < CELL_START_COUNT)
-					{
-						count++;
-						//float mutation_chance = static_cast<float>((rand() % 101) / (float)100);
-						terrain[y][x]->SetCell(
-							new Cell(
-								0,
-								16,
-								200,
-								100,
-								0.01,
-								25,
-								Genome(0.5),
-								ORGANELLES
-							)
-						);
-					}
+				// put minerals
+				if (((rand() % 100) < 50))
+				{
+					terrain[y][x]->SetFood(2500);
 				}
+
+				// put first cells
+				if (((rand() % 1000) < 1) && count < CELL_START_COUNT)
+				{
+					count++;
+					terrain[y][x]->SetCell(
+						new Cell(
+							0,
+							150,
+							200,
+							100,
+							0.01,
+							25,
+							Genome(),
+							ORGANELLES
+						)
+					);
+				}
+
 
 				// set up light
-				size_t power = LIGHT_POWER;
-				if (y != 0)
-					power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
-
-				terrain[y][x]->SetLightPower(power);
+				terrain[y][x]->SetLightPower(LIGHT_POWER);
 
 				// init map sprites positions
 				sf::RectangleShape cell;
@@ -145,46 +122,6 @@ public:
 		}
 	}
 	
-	// DEPRECATED UPDATE ENVIRONMENT WITH GRAVITATION EFFECT
-	/*
-	void Update()
-	{
-		size_t y = ENVIRONMENT_SIZE_Y - 2;
-		while (true)
-		{
-			size_t x = ENVIRONMENT_SIZE_X - 1;
-			while (true)
-			{
-				vector<Gen::Command> commands;
-				terrain[y][x]->Tic(commands);
-				for (auto command : commands)
-				{
-					Event(command, x, y);
-				}
-
-				// gravitation effect
-				if (terrain[y][x]->IsContainsFood())
-				{
-					if (terrain[y + 1][x]->IsWalkable())
-					{
-						if (!terrain[y + 1][x]->IsContainsFood())
-						{
-							terrain[y + 1][x]->SetFood(terrain[y][x]->GetFood());
-							terrain[y][x]->DelFood();
-						}
-					}
-				}
-				if (x == 0)
-					break;
-				x--;
-			}
-			if (y == 0)
-				break;
-			y--;
-		}
-	}
-	*/
-
 	void Update(sf::RenderWindow& window, bool update_env)
 	{
 		size_t index = 0;
@@ -215,12 +152,6 @@ public:
 					size_t changable_x = x;
 					size_t changable_y = y;
 					terrain[y][x]->Tic(terrain, changable_x, changable_y);
-
-					// set up light
-					size_t power = LIGHT_POWER;
-					if (y != 0)
-						power = terrain[y - 1][x]->Transparency() * terrain[y - 1][x]->GetLightPower();
-					terrain[y][x]->SetLightPower(power);
 
 					terrain[y][x]->Untick();
 				}
@@ -265,18 +196,9 @@ public:
 					sprites[index].setOutlineThickness(0);
 				}
 
-				if (view == view_settings::terrain)
-				{
-					sprites[index].setOutlineColor({ 0, 0, 0 });
-					sprites[index].setFillColor({ color.r, color.g, color.b,
-						(unsigned char)(255 - terrain[y][x]->GetLightLevel()) });
-				}
-				else
-				{
-					sprites[index].setOutlineColor({ 0, 0, 0 });
-					sprites[index].setFillColor({ color.r, color.g, color.b });
-				}
-
+				sprites[index].setOutlineColor({ 0, 0, 0 });
+				sprites[index].setFillColor({ color.r, color.g, color.b });
+				
 				window.draw(sprites[index]);
 
 				index++;

@@ -38,11 +38,19 @@ Position GetViewedPosition(view_side view, Position init)
 		{
 			viewed_position.y--;
 		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.y = maxY;
+		}
 		break;
 	case view_side::top:
 		if (init.y < maxY)
 		{
 			viewed_position.y++;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.y = 0;
 		}
 		break;
 	case view_side::left_bottom:
@@ -56,6 +64,16 @@ Position GetViewedPosition(view_side view, Position init)
 			viewed_position.x = maxX;
 			viewed_position.y++;
 		}
+		else if (LOOPED_ENVIRONMENT && init.x > 0)
+		{
+			viewed_position.x--;
+			viewed_position.y = 0;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = maxX;
+			viewed_position.y = 0;
+		}
 		break;
 	case view_side::left_top:
 		if (init.x > 0 && init.y > 0)
@@ -68,6 +86,16 @@ Position GetViewedPosition(view_side view, Position init)
 			viewed_position.x = maxX;
 			viewed_position.y--;
 		}
+		else if (LOOPED_ENVIRONMENT && init.x > 0)
+		{
+			viewed_position.x--;
+			viewed_position.y = maxY;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = maxX;
+			viewed_position.y = maxY;
+		}
 		break;
 	case view_side::right_bottom:
 		if (init.y < maxY && init.x < maxX)
@@ -75,10 +103,20 @@ Position GetViewedPosition(view_side view, Position init)
 			viewed_position.x++;
 			viewed_position.y++;
 		}
-		else if (init.y < maxX && LOOPED_ENVIRONMENT)
+		else if (init.y < maxY && LOOPED_ENVIRONMENT)
 		{
 			viewed_position.x = 0;
 			viewed_position.y++;
+		}
+		else if (LOOPED_ENVIRONMENT && init.x < maxX)
+		{
+			viewed_position.x++;
+			viewed_position.y = 0;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = 0;
+			viewed_position.y = 0;
 		}
 		break;
 	case view_side::right_top:
@@ -91,6 +129,16 @@ Position GetViewedPosition(view_side view, Position init)
 		{
 			viewed_position.x = 0;
 			viewed_position.y--;
+		}
+		else if (LOOPED_ENVIRONMENT && init.x < maxX)
+		{
+			viewed_position.x++;
+			viewed_position.y = maxY;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = 0;
+			viewed_position.y = maxY;
 		}
 		break;
 	}

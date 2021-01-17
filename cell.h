@@ -147,7 +147,7 @@ public:
 
 	RGBColor TerrainColor() override
 	{
-		return { 119, 255, 110 };
+		return { 13, 168, 19 };
 	}
 	RGBColor MineralsColor() override
 	{

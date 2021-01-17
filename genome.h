@@ -16,10 +16,9 @@ public:
 	explicit Genome(std::vector<Gen> d, float mh, size_t g)
 		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) {};
 
-	explicit Genome(float mh)
-		: generation(1), mutationChance(mh), hash(Hashing()), index(0)
+	explicit Genome()
+		: generation(1), mutationChance((rand() % 100) / float(100)), hash(Hashing()), index(0)
 	{
-		srand(time(0) + rand());
 		auto size = static_cast<int>(Protein::Count);
 		data.resize(size);
 		for (int i = 0; i < size; i++)
@@ -85,7 +84,7 @@ public:
 
 		float new_mutationChance = mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
-		if (new_mutationChance < 0.01) new_mutationChance = 0.01;
+		if (new_mutationChance < 0) new_mutationChance = 0;
 
 		return Genome(new_genom, new_mutationChance, generation + 1);
 	}

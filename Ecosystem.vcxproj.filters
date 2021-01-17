@@ -68,28 +68,16 @@
     <ClInclude Include="cell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ceramic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="earth.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="environment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="glass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="item.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="minerals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="structure.h">

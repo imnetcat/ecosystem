@@ -1,11 +1,11 @@
 #pragma once
-#include "map_terrain.h"
 #include "protein.h"
+#include "map_terrain.h"
 #include <unordered_map>
 class Organelle
 {
 public:
-	virtual void Event(MapTerrain& terrain, size_t& x, size_t& y) const = 0;
-	virtual bool HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const = 0;
-	virtual bool IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const = 0;
+	virtual void Event(size_t& x, size_t& y) const = 0;
+	virtual inline unsigned int MaintenanceCost() const = 0;
+	virtual inline unsigned int CreationCost() const = 0;
 };

@@ -121,7 +121,8 @@
   <ItemGroup>
     <ClCompile Include="birthing.cpp" />
     <ClCompile Include="carnivorousing.cpp" />
-    <ClCompile Include="entity.cpp" />
+    <ClCompile Include="cell.cpp" />
+    <ClCompile Include="environment.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_terrain.cpp" />
@@ -135,11 +136,9 @@
     <ClCompile Include="turning.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="air.h" />
     <ClInclude Include="birthing.h" />
     <ClInclude Include="carnivorousing.h" />
     <ClInclude Include="cell.h" />
-    <ClInclude Include="entity.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="mineraling.h" />
     <ClInclude Include="photosynthesing.h" />

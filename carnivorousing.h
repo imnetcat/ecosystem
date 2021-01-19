@@ -4,7 +4,13 @@
 class Carnivorousing : public Organelle
 {
 public:
-	void Event(MapTerrain& terrain, size_t& x, size_t& y) const override;
-	bool HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const override;
-	bool IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const override;
+	void Event(size_t& x, size_t& y) const override;
+	inline unsigned int MaintenanceCost() const override
+	{
+		return 15;
+	}
+	inline unsigned int CreationCost() const override
+	{
+		return 30;
+	}
 };

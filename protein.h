@@ -17,3 +17,16 @@ enum class Protein
 
 	Count
 };
+
+enum class Trigger
+{
+	Sleep,
+	Stay,
+	Move,
+	Turn,
+	Photosyntesis,
+	Mineraleon,
+	Carnivorous,
+	Birth,
+	Separate
+};

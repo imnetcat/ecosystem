@@ -27,6 +27,14 @@ public:
 		}
 	};
 
+	Genome& operator = (const Genome& genome)
+	{
+		generation = genome.generation;
+		mutationChance = genome.mutationChance;
+		data = genome.data;
+		index = genome.index;
+		return *this;
+	}
 
 	size_t generation;
 	float mutationChance;

@@ -1,22 +1,18 @@
 #pragma once
 #include "item.h"
 
-
 class Minerals : public Item
 {
 protected:
 	unsigned short energy;
-	bool ticed;
 public:
 	Minerals() : Item(true, true),
-		ticed(false), energy(0) {}
+		energy(0) {}
 	Minerals(unsigned short e)
 		: Item(true, true)
 	{
 		energy = e;
 	}
-
-	void Tic(MapTerrain&, size_t&, size_t&) override {}
 
 	unsigned short Get()
 	{
@@ -70,13 +66,5 @@ public:
 	bool Outline(view_settings) override
 	{
 		return false;
-	}
-	void Ticed(bool val)
-	{
-		ticed = val;
-	}
-	bool Ticed()
-	{
-		return ticed;
 	}
 };

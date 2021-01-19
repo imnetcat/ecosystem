@@ -1,27 +1,21 @@
 #include "separationing.h"
-#include "structure.h"
-void Separationing::Event(MapTerrain& terrain, size_t& x, size_t& y) const
+void Separationing::Event(size_t& x, size_t& y) const
 {
-	if (!HaveRequestProteins(terrain[y][x]->GetCell()->Proteins()))
+	if (terrain[y][x].GetCell().Proteins().at(Protein::separation) < 10)
 		return;
 
-	if (terrain[y][x]->GetCell()->Energy() < terrain[y][x]->GetCell()->SeparationCost())
+	if (terrain[y][x].GetCell().Energy() < terrain[y][x].GetCell().SeparationCost())
 		return;
 
-	Position new_position = GetViewedPosition(terrain[y][x]->GetCell()->GetView(), { x,y });
+	Position new_position = GetViewedPosition(terrain[y][x].GetCell().GetView(), { x,y });
 
-	if (!terrain[new_position.y][new_position.x]->IsContainsCell() && terrain[new_position.y][new_position.x]->IsWalkable())
+	if (terrain[new_position.y][new_position.x].IsWalkable())
 	{
-		terrain[new_position.y][new_position.x]->SetCell(terrain[y][x]->GetCell()->Separation());
+		terrain[y][x].GetCell().Separation(terrain[new_position.y][new_position.x].GetCell());
+		cells[cells_count] = &terrain[new_position.y][new_position.x].GetCell();
+		cells[cells_count]->SetPosition(new_position.x, new_position.y);
+		cells_count++;
 	}
 
-	terrain[y][x]->GetCell()->Proteins()[Protein::separation] -= 10;
-}
-bool Separationing::HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const
-{
-	return proteins.at(Protein::separation) > 10;
-}
-bool Separationing::IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const
-{
-	return proteins.count(Protein::separation);
+	terrain[y][x].GetCell().Proteins()[Protein::separation] -= 10;
 }

@@ -8,18 +8,25 @@
 class Structure : public Object
 {
 protected:
-	bool ticed;
 	RGBColor color;
-	const float transparency;
-	unsigned char light_level;
-	unsigned short light_power;
 	bool walkable;
+	Cell cell;
+	bool has_cell = false;
 	Minerals food;
-	Cell* cell;
 public:
+	Structure() {}
+	Structure(Structure&&) = default;
+	Structure(const Structure&) = default;
 	Structure(RGBColor c, bool w, float tr);
 
-	void Untick();
+	Structure& operator = (const Structure& structure);
+	Structure& operator = (Structure&& structure);
+
+	void SetCell(const Cell& c);
+	void SetCell();
+	void DelCell();
+	Cell& GetCell();
+	bool ContainsCell() const;
 
 	RGBColor TerrainColor() override;
 	RGBColor MineralsColor() override;
@@ -29,12 +36,6 @@ public:
 	RGBColor AgeColor() override;
 	RGBColor HpColor() override;
 	RGBColor SurvivalColor() override;
-	void Tic(MapTerrain& terrain, size_t& x, size_t& y) override;
-
-	unsigned char GetLightLevel();
-	void SetLightLevel(unsigned short lv);
-	unsigned short GetLightPower();
-	void SetLightPower(unsigned short lp);
 
 	bool Outline(view_settings vs) override;
 	
@@ -44,14 +45,8 @@ public:
 	Minerals& GetFood();
 	const Minerals& GetFood() const;
 
-	void SetCell(Cell* e);
-	void DelCell();
-	void CleanCell();
-	Cell* GetCell();
-	
 	void Walkable(bool val);
 	bool IsWalkable();
 
 	bool IsContainsFood();
-	bool IsContainsCell();
 };

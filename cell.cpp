@@ -11,8 +11,7 @@ Cell::Cell()
 	energy(0),
 	defence(0),
 	attack(0),
-	separation_cost(0),
-	birth_cost(0)
+	reproduction_cost(0)
 {}
 
 Cell::Cell(
@@ -20,8 +19,7 @@ Cell::Cell(
 	size_t y,
 	unsigned short energy,
 	unsigned short max_age,
-	size_t sepr_cost,
-	size_t birthcost,
+	size_t repr_cost,
 	float defence,
 	unsigned short attack,
 	Genome g,
@@ -37,8 +35,7 @@ Cell::Cell(
 	defence(defence),
 	attack(attack),
 	genom(g),
-	separation_cost(sepr_cost),
-	birth_cost(birthcost),
+	reproduction_cost(repr_cost),
 	organelles(organelles)
 {
 	auto size = static_cast<unsigned int>(Protein::Count);
@@ -62,8 +59,7 @@ Cell::Cell(Cell&& cell)
 	attack = cell.attack;
 
 	genom = cell.genom;
-	separation_cost = cell.separation_cost;
-	birth_cost = cell.birth_cost;
+	reproduction_cost = cell.reproduction_cost;
 	proteins = cell.proteins;
 	organelles = cell.organelles;
 }
@@ -80,8 +76,7 @@ Cell::Cell(const Cell& cell)
 	attack = cell.attack;
 
 	genom = cell.genom;
-	separation_cost = cell.separation_cost;
-	birth_cost = cell.birth_cost;
+	reproduction_cost = cell.reproduction_cost;
 	proteins = cell.proteins;
 	organelles = cell.organelles;
 }
@@ -98,8 +93,7 @@ Cell& Cell::operator = (const Cell& cell)
 	attack = cell.attack;
 
 	genom = cell.genom;
-	separation_cost = cell.separation_cost;
-	birth_cost = cell.birth_cost;
+	reproduction_cost = cell.reproduction_cost;
 	proteins = cell.proteins;
 	organelles = cell.organelles;
 	return *this;
@@ -117,8 +111,7 @@ Cell& Cell::operator = (Cell&& cell)
 	attack = cell.attack;
 
 	genom = cell.genom;
-	separation_cost = cell.separation_cost;
-	birth_cost = cell.birth_cost;
+	reproduction_cost = cell.reproduction_cost;
 	proteins = cell.proteins;
 	organelles = cell.organelles;
 	return *this;
@@ -259,13 +252,9 @@ bool Cell::IsDead()
 	return !hp || age == max_age;
 }
 
-size_t Cell::SeparationCost()
+size_t Cell::ReprodutionCost()
 {
-	return separation_cost;
-}
-size_t Cell::BirthCost()
-{
-	return birth_cost;
+	return reproduction_cost;
 }
 
 const Genome& Cell::GetGenome() const
@@ -293,22 +282,6 @@ bool Cell::IsFriendly(const Cell& cell)
 	}
 
 	return true;
-}
-
-void Cell::Separation(Cell& new_cell)
-{
-	Reproduction(new_cell);
-
-	DecreaceEnergy(separation_cost);
-	unsigned short hlph = energy / 2;
-	DecreaceEnergy(hlph);
-	new_cell.IncreaceEnergy(hlph);
-}
-
-void Cell::Birth(Cell& new_cell)
-{
-	DecreaceEnergy(birth_cost);
-	Reproduction(new_cell);
 }
 
 std::unordered_map<Protein, unsigned long>& Cell::Proteins()
@@ -442,8 +415,7 @@ void Cell::Reproduction(Cell& new_cell)
 	new_cell.SetPosition(x, y);
 	new_cell.Energy(100);
 	new_cell.MaxAge(new_max_age);
-	new_cell.SeparationCost(separation_cost);
-	new_cell.BirthCost(birth_cost);
+	new_cell.ReproductionCost(reproduction_cost);
 	new_cell.Defence(defence);
 	new_cell.Attack(attack);
 	new_cell.SetGenome(new_genom);
@@ -465,13 +437,9 @@ void Cell::Organelles(std::vector<Trigger> value)
 {
 	organelles = value;
 }
-void Cell::SeparationCost(size_t value)
+void Cell::ReproductionCost(size_t value)
 {
-	separation_cost = value;
-}
-void Cell::BirthCost(size_t value)
-{
-	birth_cost = value;
+	reproduction_cost = value;
 }
 void Cell::Defence(float value)
 {

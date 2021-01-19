@@ -104,10 +104,8 @@ Environment::Environment()
 				terrain[y][x].SetCell();
 				cells[cells_count] = &terrain[y][x].GetCell();
 				cells[cells_count]->SetPosition(x, y);
-				cells[cells_count]->Energy(100);
-				cells[cells_count]->MaxAge(150);
-				cells[cells_count]->SeparationCost(200);
-				cells[cells_count]->BirthCost(100);
+				cells[cells_count]->Energy(1000);
+				cells[cells_count]->MaxAge(100);
 				cells[cells_count]->Defence(0.01);
 				cells[cells_count]->Attack(25);
 				cells[cells_count]->SetGenome(Genome());
@@ -117,6 +115,14 @@ Environment::Environment()
 					Trigger::Separate,
 					Trigger::Photosyntesis 
 				});
+
+				size_t cost = 0;
+				for (auto trigger : cells[cells_count]->Organelles())
+				{
+					cost += CREATION_COST.at(trigger);
+				}
+				cells[cells_count]->ReproductionCost(100 + cost);
+
 				cells_count++;
 			}
 
@@ -169,6 +175,7 @@ void Environment::Update()
 
 			for (auto trigger : cell->Organelles())
 			{
+				cell->DecreaceEnergy(MAINTENANACE_COST.at(trigger));
 				ORGANELLES.at(trigger)->Event(x, y);
 			}
 		}

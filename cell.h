@@ -21,8 +21,7 @@ protected:
 	float defence;
 	unsigned short attack;
 	Genome genom;
-	size_t separation_cost;
-	size_t birth_cost;
+	size_t reproduction_cost;
 	std::unordered_map<Protein, unsigned long> proteins;
 	std::vector<Trigger> organelles;
 public:
@@ -32,8 +31,7 @@ public:
 		size_t y,
 		unsigned short energy,
 		unsigned short max_age,
-		size_t sepr_cost,
-		size_t birthcost,
+		size_t repr_cost,
 		float defence,
 		unsigned short attack,
 		Genome g,
@@ -50,15 +48,11 @@ public:
 
 	bool IsDead();
 
-	size_t SeparationCost();
-	size_t BirthCost();
+	size_t ReprodutionCost();
 
 	const Genome& GetGenome() const;
 	
 	bool IsFriendly(const Cell& cell);
-
-	void Separation(Cell&);
-	void Birth(Cell&);
 
 	std::unordered_map<Protein, unsigned long>& Proteins();
 	const std::unordered_map<Protein, unsigned long>& Proteins() const;
@@ -72,6 +66,8 @@ public:
 	RGBColor AgeColor() override;
 	RGBColor HpColor() override;
 	RGBColor SurvivalColor() override;
+
+	void Reproduction(Cell&);
 
 	void Tic();
 
@@ -95,8 +91,7 @@ public:
 
 	void SetGenome(Genome value);
 	void Organelles(std::vector<Trigger> value);
-	void SeparationCost(size_t);
-	void BirthCost(size_t);
+	void ReproductionCost(size_t);
 	void Defence(float);
 	void Attack(unsigned short);
 	void Age(unsigned short);
@@ -107,7 +102,6 @@ public:
 protected:
 
 	RGBColor Species();
-	void Reproduction(Cell&);
 
 	enum class CellSuccess
 	{

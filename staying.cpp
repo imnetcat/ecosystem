@@ -6,6 +6,4 @@ void Staying::Event(size_t& x, size_t& y) const
 		return;
 
 	terrain[y][x].GetCell().Proteins()[Protein::stayon]--;
-
-	terrain[y][x].GetCell().DecreaceEnergy(3);
 }

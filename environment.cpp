@@ -1,18 +1,17 @@
 #include "environment.h"
 
 // organelles
+#include "map_terrain.h"
 #include "separationing.h"
 #include "carnivorousing.h"
 #include "mineraling.h"
 #include "birthing.h"
 #include "photosynthesing.h"
 #include "moving.h"
-#include "sleeping.h"
 #include "staying.h"
 #include "turning.h"
 const std::map<Trigger, Organelle*> ORGANELLES = {
 	{Trigger::Stay, new Staying},
-	{Trigger::Sleep, new Sleeping},
 
 	{Trigger::Birth, new Birthing},
 	{Trigger::Separate, new Separationing},
@@ -24,6 +23,8 @@ const std::map<Trigger, Organelle*> ORGANELLES = {
 	{Trigger::Move, new Moving},
 	{Trigger::Turn, new Turning}
 };
+
+static array<array<sf::RectangleShape, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> sprites;
 
 void Environment::Draw(sf::RenderWindow& window)
 {
@@ -99,7 +100,7 @@ Environment::Environment()
 			}
 
 			// put first cells
-			if (((rand() % 100) < 5) && cells_count < CELL_START_COUNT)
+			if (((rand() % 100) < 4) && cells_count < CELL_START_COUNT)
 			{
 				terrain[y][x].SetCell();
 				cells[cells_count] = &terrain[y][x].GetCell();
@@ -107,11 +108,11 @@ Environment::Environment()
 				cells[cells_count]->Energy(1000);
 				cells[cells_count]->MaxAge(100);
 				cells[cells_count]->Defence(0.01);
+				cells[cells_count]->Hp(MAX_HP);
 				cells[cells_count]->Attack(25);
 				cells[cells_count]->SetGenome(Genome());
 				cells[cells_count]->Organelles({ 
-					Trigger::Stay, 
-					Trigger::Sleep,
+					Trigger::Stay,
 					Trigger::Separate,
 					Trigger::Photosyntesis 
 				});

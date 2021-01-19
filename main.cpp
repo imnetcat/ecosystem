@@ -1,6 +1,7 @@
 #include "sfml_button.h"
 #include "sfml_box.h"
 #include "environment.h"
+#include "config.h"
 
 #include <iostream>
 #include <string>

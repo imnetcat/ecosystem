@@ -20,6 +20,5 @@ void Turning::Event(size_t& x, size_t& y) const
 		new_side = static_cast<view_side>(old_side == 7 ? 0 : old_side + 1);
 	}
 	terrain[y][x].GetCell().SetView(new_side);
-	terrain[y][x].GetCell().DecreaceEnergy(8);
 	proteins[Protein::right] -= 5;
 }

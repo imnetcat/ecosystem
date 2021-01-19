@@ -14,9 +14,6 @@ struct Position
 
 bool operator == (const Position& lhs, const Position& rhs);
 
-const int ENVIRONMENT_SIZE_X = 110;
-const int ENVIRONMENT_SIZE_Y = 60;
-
 Position GetViewedPosition(view_side view, Position init);
 
 static size_t cells_count = 0;

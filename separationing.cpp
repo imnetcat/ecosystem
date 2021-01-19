@@ -1,4 +1,5 @@
 #include "separationing.h"
+
 void Separationing::Event(size_t& x, size_t& y) const
 {
 	if (terrain[y][x].GetCell().Proteins().at(Protein::separation) < 10)

@@ -21,7 +21,6 @@ enum class Protein
 
 enum class Trigger
 {
-	Sleep,
 	Stay,
 	Move,
 	Turn,
@@ -35,7 +34,6 @@ enum class Trigger
 };
 
 const std::map<Trigger, unsigned int> CREATION_COST = {
-	{Trigger::Sleep, 1},
 	{Trigger::Stay, 1},
 	{Trigger::Move, 15},
 	{Trigger::Turn, 10},
@@ -47,7 +45,6 @@ const std::map<Trigger, unsigned int> CREATION_COST = {
 };
 
 const std::map<Trigger, unsigned int> MAINTENANACE_COST = {
-	{Trigger::Sleep, 1},
 	{Trigger::Stay, 1},
 	{Trigger::Move, 5},
 	{Trigger::Turn, 2},

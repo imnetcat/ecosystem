@@ -12,7 +12,14 @@ Cell::Cell()
 	defence(0),
 	attack(0),
 	reproduction_cost(0)
-{}
+{
+	auto size = static_cast<unsigned int>(Protein::Count);
+	proteins.reserve(size);
+	for (unsigned int i = 0; i < size; i++)
+	{
+		proteins[static_cast<Protein>(i % size)] = 0;
+	}
+}
 
 Cell::Cell(
 	size_t x,
@@ -420,6 +427,7 @@ void Cell::Reproduction(Cell& new_cell)
 	new_cell.Attack(attack);
 	new_cell.SetGenome(new_genom);
 	new_cell.Organelles(new_organelles);
+	new_cell.Hp(MAX_HP);
 }
 
 Cell::CellSuccess Cell::CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age)

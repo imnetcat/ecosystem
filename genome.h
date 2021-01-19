@@ -2,10 +2,9 @@
 #include <array>
 #include <ctime>
 #include <sstream>
+#include <vector>
 #include "object.h"
 #include "protein.h"
-
-
 
 class Genome
 {
@@ -17,7 +16,7 @@ public:
 		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) {};
 
 	explicit Genome()
-		: generation(1), mutationChance((rand() % 100) / float(100)), hash(Hashing()), index(0)
+		: generation(1), mutationChance((rand() % 100) / float(100)), index(0)
 	{
 		auto size = static_cast<int>(Protein::Count);
 		data.resize(size);
@@ -25,6 +24,7 @@ public:
 		{
 			data[i] = static_cast<Protein>(rand() % size);
 		}
+		hash = Hashing();
 	};
 
 	Genome& operator = (const Genome& genome)
@@ -114,7 +114,7 @@ private:
 		unsigned char b = std::hash<std::string>{}(bs.str()) % 255;
 		return { r, g, b };
 	}
-	const RGBColor hash;
+	RGBColor hash;
 
 	size_t index = 0;
 };

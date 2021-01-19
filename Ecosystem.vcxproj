@@ -130,7 +130,6 @@
     <ClCompile Include="moving.cpp" />
     <ClCompile Include="separationing.cpp" />
     <ClCompile Include="photosynthesing.cpp" />
-    <ClCompile Include="sleeping.cpp" />
     <ClCompile Include="staying.cpp" />
     <ClCompile Include="structure.cpp" />
     <ClCompile Include="turning.cpp" />
@@ -155,7 +154,6 @@
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />
     <ClInclude Include="sfml_button.h" />
-    <ClInclude Include="sleeping.h" />
     <ClInclude Include="staying.h" />
     <ClInclude Include="structure.h" />
     <ClInclude Include="turning.h" />

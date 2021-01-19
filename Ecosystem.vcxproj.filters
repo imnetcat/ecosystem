@@ -45,9 +45,6 @@
     <ClCompile Include="separationing.cpp">
       <Filter>Header Files\organelle</Filter>
     </ClCompile>
-    <ClCompile Include="sleeping.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
     <ClCompile Include="staying.cpp">
       <Filter>Header Files\organelle</Filter>
     </ClCompile>
@@ -106,9 +103,6 @@
     </ClInclude>
     <ClInclude Include="protein.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sleeping.h">
-      <Filter>Header Files\organelle</Filter>
     </ClInclude>
     <ClInclude Include="moving.h">
       <Filter>Header Files\organelle</Filter>

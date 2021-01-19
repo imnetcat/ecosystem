@@ -9,27 +9,13 @@
 #include <cmath>
 #include "water.h"
 
-#include <memory>
-#include <ctime>
-#include <array>
-
 #include "sfml.h"
-#include "map_terrain.h"
-#include "cell.h"
 
 using namespace std;
 
 using CellId = size_t;
 using ObjectId = size_t;
 using PositionId = size_t;
-
-struct DrawData
-{
-	Position position;
-	RGBColor color;
-	bool outline;
-	unsigned char shadow;
-};
 
 struct Info
 {
@@ -53,8 +39,6 @@ struct LightLevel
 	size_t power;
 	size_t power_max;
 };
-
-static array<array<sf::RectangleShape, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> sprites;
 
 class Environment
 {

@@ -1,7 +1,6 @@
 #pragma once
 #include "protein.h"
 #include "map_terrain.h"
-#include <unordered_map>
 class Organelle
 {
 public:

@@ -1,8 +1,8 @@
 #pragma once
-#include "organelle.h"
+#include "map_terrain.h"
 
-class Photosynthesing : public Organelle
+void Photosynthesing(int args, size_t x, size_t y)
 {
-public:
-	void Event(size_t& x, size_t& y) const override;
-};
+	terrain[y][x].GetCell().RationLevel(-1, 5, -1);
+	terrain[y][x].GetCell().IncreaceEnergy(LIGHT_POWER);
+}

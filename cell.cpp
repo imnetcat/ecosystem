@@ -12,14 +12,7 @@ Cell::Cell()
 	defence(0),
 	attack(0),
 	reproduction_cost(0)
-{
-	auto size = static_cast<unsigned int>(Protein::Count);
-	proteins.reserve(size);
-	for (unsigned int i = 0; i < size; i++)
-	{
-		proteins[static_cast<Protein>(i % size)] = 0;
-	}
-}
+{}
 
 Cell::Cell(
 	size_t x,
@@ -27,10 +20,9 @@ Cell::Cell(
 	unsigned short energy,
 	unsigned short max_age,
 	size_t repr_cost,
-	float defence,
-	unsigned short attack,
-	Genome g,
-	const std::vector<Trigger> organelles)
+	double defence,
+	double attack,
+	Genome g)
 	:
 	x(x),
 	y(y),
@@ -42,16 +34,8 @@ Cell::Cell(
 	defence(defence),
 	attack(attack),
 	genom(g),
-	reproduction_cost(repr_cost),
-	organelles(organelles)
-{
-	auto size = static_cast<unsigned int>(Protein::Count);
-	proteins.reserve(size);
-	for (unsigned int i = 0; i < size; i++)
-	{
-		proteins[static_cast<Protein>(i % size)] = 0;
-	}
-}
+	reproduction_cost(repr_cost)
+{}
 
 Cell::Cell(Cell&& cell)
 {
@@ -67,8 +51,6 @@ Cell::Cell(Cell&& cell)
 
 	genom = cell.genom;
 	reproduction_cost = cell.reproduction_cost;
-	proteins = cell.proteins;
-	organelles = cell.organelles;
 }
 Cell::Cell(const Cell& cell)
 {
@@ -84,8 +66,6 @@ Cell::Cell(const Cell& cell)
 
 	genom = cell.genom;
 	reproduction_cost = cell.reproduction_cost;
-	proteins = cell.proteins;
-	organelles = cell.organelles;
 }
 Cell& Cell::operator = (const Cell& cell)
 {
@@ -101,8 +81,6 @@ Cell& Cell::operator = (const Cell& cell)
 
 	genom = cell.genom;
 	reproduction_cost = cell.reproduction_cost;
-	proteins = cell.proteins;
-	organelles = cell.organelles;
 	return *this;
 }
 Cell& Cell::operator = (Cell&& cell)
@@ -119,8 +97,6 @@ Cell& Cell::operator = (Cell&& cell)
 
 	genom = cell.genom;
 	reproduction_cost = cell.reproduction_cost;
-	proteins = cell.proteins;
-	organelles = cell.organelles;
 	return *this;
 }
 
@@ -138,9 +114,9 @@ void Cell::SetPosition(size_t nx, size_t ny)
 	y = ny;
 }
 
-bool Cell::Outline(view_settings)
+bool Cell::Outline(view_settings vs)
 {
-	return true;
+	return vs != view_settings::minerals;
 }
 unsigned short Cell::Age()
 {
@@ -150,9 +126,16 @@ unsigned short Cell::MaxAge()
 {
 	return max_age;
 }
-bool Cell::Defenced(unsigned short attack_power)
+bool Cell::Defencing(double attack)
 {
-	unsigned short dif = attack_power * defence;
+	if (attack < defence)
+	{
+		return false;
+	}
+	
+	attack -= defence;
+
+	unsigned short dif = attack * hp;
 	if (hp < dif)
 	{
 		hp = 0;
@@ -165,15 +148,15 @@ bool Cell::Defenced(unsigned short attack_power)
 		return true;
 	}
 }
-unsigned short Cell::Attack()
+double Cell::Attack()
 {
 	return attack;
 }
 void Cell::AttackUp()
 {
-	attack++;
+	attack += 0.01;
 }
-float Cell::Defence()
+double Cell::Defence()
 {
 	return defence;
 }
@@ -256,7 +239,7 @@ unsigned short Cell::Hp()
 
 bool Cell::IsDead()
 {
-	return !hp || age == max_age;
+	return !hp || age > max_age;
 }
 
 size_t Cell::ReprodutionCost()
@@ -265,6 +248,10 @@ size_t Cell::ReprodutionCost()
 }
 
 const Genome& Cell::GetGenome() const
+{
+	return genom;
+}
+Genome& Cell::GetGenome()
 {
 	return genom;
 }
@@ -281,7 +268,8 @@ bool Cell::IsFriendly(const Cell& cell)
 
 	for (size_t index = 0; index < lhs_genom.size(); index++)
 	{
-		if (lhs_genom[index] != rhs_genom[index])
+		if (lhs_genom[index].trigger != rhs_genom[index].trigger && 
+			lhs_genom[index].args != rhs_genom[index].args)
 			count_of_non_equal++;
 
 		if (count_of_non_equal > BORDER)
@@ -289,20 +277,6 @@ bool Cell::IsFriendly(const Cell& cell)
 	}
 
 	return true;
-}
-
-std::unordered_map<Protein, unsigned long>& Cell::Proteins()
-{
-	return proteins;
-}
-const std::unordered_map<Protein, unsigned long>& Cell::Proteins() const
-{
-	return proteins;
-}
-
-const std::vector<Trigger>& Cell::Organelles()
-{
-	return organelles;
 }
 
 RGBColor Cell::TerrainColor()
@@ -317,11 +291,11 @@ RGBColor Cell::EnergyColor()
 {
 	if (energy < (MAX_ENERGY / 2))
 	{
-		return { 255, static_cast<unsigned char>(255 * (energy / (float)(MAX_ENERGY / 2))), 0 };
+		return { 255, static_cast<unsigned char>(255 * (energy / (double)(MAX_ENERGY / 2))), 0 };
 	}
 	else
 	{
-		return { static_cast<unsigned char>(255 - 255 * (energy / (float)MAX_ENERGY)), 255, 0 };
+		return { static_cast<unsigned char>(255 - 255 * (energy / (double)MAX_ENERGY)), 255, 0 };
 	}
 }
 RGBColor Cell::SpeciesColor()
@@ -330,18 +304,18 @@ RGBColor Cell::SpeciesColor()
 }
 RGBColor Cell::AgeColor()
 {
-	unsigned char c = static_cast<unsigned char>(255 - 255 * ((float)age / max_age));
+	unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)age / max_age));
 	return { c, c, c };
 }
 RGBColor Cell::HpColor()
 {
 	if (hp < (MAX_HP / 2))
 	{
-		return { 191, static_cast<unsigned char>(191 * (hp / (float)(MAX_HP / 2))), 0 };
+		return { 191, static_cast<unsigned char>(191 * (hp / (double)(MAX_HP / 2))), 0 };
 	}
 	else
 	{
-		return { static_cast<unsigned char>(191 * ((float)(MAX_HP / 2) / hp)), 191, 0 };
+		return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / hp)), 191, 0 };
 	}
 }
 RGBColor Cell::SurvivalColor()
@@ -365,22 +339,30 @@ RGBColor Cell::SurvivalColor()
 
 void Cell::Tic()
 {
-	auto p = genom.Read();
-	if (!proteins.count(p))
-	{
-		proteins[p] = 1;
-	}
-	else
-	{
-		proteins[p]++;
-	}
-
 	age++;
+}
+
+void Cell::RationLevel(char r, char g, char b)
+{
+	if (r < 0 && carnivorousing < r)
+		carnivorousing = 0;
+	else
+		carnivorousing += r;
+
+	if (g < 0 && fotosintesis < g)
+		fotosintesis = 0;
+	else
+		fotosintesis += g;
+
+	if (b < 0 && mineraling < b)
+		mineraling = 0;
+	else
+		mineraling += b;
 }
 
 RGBColor Cell::RationColor()
 {
-	return { 0, 143, 31 }; // green
+	return { carnivorousing, fotosintesis, mineraling };
 }
 
 RGBColor Cell::Species()
@@ -390,7 +372,7 @@ RGBColor Cell::Species()
 void Cell::Reproduction(Cell& new_cell)
 {
 	CellSuccess isSuccess = CellSuccessRule(energy, age, max_age);
-	float newMutationChanceK = 0;
+	double newMutationChanceK = 0;
 	switch (isSuccess)
 	{
 	case Cell::CellSuccess::fail:
@@ -417,8 +399,6 @@ void Cell::Reproduction(Cell& new_cell)
 	if (new_max_age > 1000) new_max_age = 1000;
 	if (new_max_age < 2) new_max_age = 2;
 
-	std::vector<Trigger> new_organelles = organelles;
-
 	new_cell.SetPosition(x, y);
 	new_cell.Energy(100);
 	new_cell.MaxAge(new_max_age);
@@ -426,13 +406,13 @@ void Cell::Reproduction(Cell& new_cell)
 	new_cell.Defence(defence);
 	new_cell.Attack(attack);
 	new_cell.SetGenome(new_genom);
-	new_cell.Organelles(new_organelles);
 	new_cell.Hp(MAX_HP);
 }
 
 Cell::CellSuccess Cell::CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age)
 {
-	unsigned int success_border = MAX_ENERGY * (float(age) / (max_age / 2));
+	unsigned int success_border = MAX_ENERGY * (double(age) / (max_age));
+	success_border /= 2;
 	return (accumulated_energy > success_border) ? CellSuccess::good :
 		(accumulated_energy > (success_border / 2) ? CellSuccess::normal : CellSuccess::fail);
 }
@@ -441,19 +421,15 @@ void Cell::SetGenome(Genome value)
 {
 	genom = value;
 }
-void Cell::Organelles(std::vector<Trigger> value)
-{
-	organelles = value;
-}
 void Cell::ReproductionCost(size_t value)
 {
 	reproduction_cost = value;
 }
-void Cell::Defence(float value)
+void Cell::Defence(double value)
 {
 	defence = value;
 }
-void Cell::Attack(unsigned short value)
+void Cell::Attack(double value)
 {
 	attack = value;
 }

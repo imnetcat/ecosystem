@@ -1,24 +1,5 @@
 #pragma once
 #include <map>
-enum class Protein
-{
-	sleepon,
-	stayon,
-	moveon,
-	turnon,
-	photosyntheson,
-	mineraleon,
-	carnivorouson,
-
-	birthon,
-	separation,
-
-	right,
-	left,
-
-	Count
-};
-
 enum class Trigger
 {
 	Stay,
@@ -31,6 +12,12 @@ enum class Trigger
 	Separate,
 
 	Count
+};
+
+struct Gen
+{
+	Trigger trigger;
+	int args;
 };
 
 const std::map<Trigger, unsigned int> CREATION_COST = {

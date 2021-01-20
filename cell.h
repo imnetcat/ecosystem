@@ -18,12 +18,13 @@ protected:
 	unsigned short max_age;
 	unsigned short hp;
 	unsigned short energy;
-	float defence;
-	unsigned short attack;
+	double defence;
+	double attack;
 	Genome genom;
 	size_t reproduction_cost;
-	std::unordered_map<Protein, unsigned long> proteins;
-	std::vector<Trigger> organelles;
+	unsigned char carnivorousing = 0;
+	unsigned char fotosintesis = 0;
+	unsigned char mineraling = 0;
 public:
 	Cell();
 	Cell(
@@ -32,10 +33,9 @@ public:
 		unsigned short energy,
 		unsigned short max_age,
 		size_t repr_cost,
-		float defence,
-		unsigned short attack,
-		Genome g,
-		const std::vector<Trigger> organelles
+		double defence,
+		double attack,
+		Genome g
 	);
 	Cell(Cell&& cell);
 	Cell(const Cell& cell);
@@ -51,13 +51,9 @@ public:
 	size_t ReprodutionCost();
 
 	const Genome& GetGenome() const;
+	Genome& GetGenome();
 	
 	bool IsFriendly(const Cell& cell);
-
-	std::unordered_map<Protein, unsigned long>& Proteins();
-	const std::unordered_map<Protein, unsigned long>& Proteins() const;
-
-	const std::vector<Trigger>& Organelles();
 
 	RGBColor TerrainColor() override;
 	RGBColor MineralsColor() override;
@@ -71,12 +67,13 @@ public:
 
 	void Tic();
 
+	void RationLevel(char r, char g, char b);
 	RGBColor RationColor() override;
 
 	bool Outline(view_settings) override;
-	bool Defenced(unsigned short);
-	float Defence();
-	unsigned short Attack();
+	bool Defencing(double);
+	double Defence();
+	double Attack();
 	void AttackUp();
 	unsigned short Age();
 	unsigned short MaxAge();
@@ -90,10 +87,9 @@ public:
 	unsigned short Hp();
 
 	void SetGenome(Genome value);
-	void Organelles(std::vector<Trigger> value);
 	void ReproductionCost(size_t);
-	void Defence(float);
-	void Attack(unsigned short);
+	void Defence(double);
+	void Attack(double);
 	void Age(unsigned short);
 	void MaxAge(unsigned short);
 	void View(view_side);

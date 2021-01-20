@@ -54,8 +54,6 @@ RGBColor Structure::TerrainColor()
 }
 RGBColor Structure::MineralsColor()
 {
-	if (has_cell)
-		return cell.MineralsColor();
 	if (!food.Empty())
 		return food.MineralsColor();
 	return { 209, 209, 209 };
@@ -82,7 +80,7 @@ RGBColor Structure::AgeColor()
 {
 	if (has_cell)
 		return cell.AgeColor();
-	return { 143, 229, 255 };
+	return { 209, 209, 209 };
 }
 RGBColor Structure::HpColor()
 {
@@ -134,7 +132,7 @@ void Structure::Walkable(bool val)
 }
 bool Structure::IsWalkable()
 {
-	return walkable && ContainsCell();
+	return walkable && !ContainsCell();
 }
 
 bool Structure::IsContainsFood()

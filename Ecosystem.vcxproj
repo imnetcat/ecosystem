@@ -119,20 +119,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="birthing.cpp" />
-    <ClCompile Include="carnivorousing.cpp" />
     <ClCompile Include="cell.cpp" />
     <ClCompile Include="environment.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_terrain.cpp" />
-    <ClCompile Include="mineraling.cpp" />
-    <ClCompile Include="moving.cpp" />
-    <ClCompile Include="separationing.cpp" />
-    <ClCompile Include="photosynthesing.cpp" />
-    <ClCompile Include="staying.cpp" />
     <ClCompile Include="structure.cpp" />
-    <ClCompile Include="turning.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="birthing.h" />
@@ -148,8 +140,7 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="moving.h" />
     <ClInclude Include="object.h" />
-    <ClInclude Include="organelle.h" />
-    <ClInclude Include="protein.h" />
+    <ClInclude Include="Gen.h" />
     <ClInclude Include="separationing.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />

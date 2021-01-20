@@ -433,7 +433,6 @@ int main()
 			info_clear_rect_btn.Draw(setting_window);
 		}
 
-
 		if (!pause)
 		{
 			// clear the window and draw background with background color

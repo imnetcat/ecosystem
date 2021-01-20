@@ -10,18 +10,18 @@
 #include "moving.h"
 #include "staying.h"
 #include "turning.h"
-const std::map<Trigger, Organelle*> ORGANELLES = {
-	{Trigger::Stay, new Staying},
+static const std::map<Trigger, Organelle> ORGANELLES = {
+	{Trigger::Stay, Staying},
 
-	{Trigger::Birth, new Birthing},
-	{Trigger::Separate, new Separationing},
+	{Trigger::Birth, Birthing},
+	{Trigger::Separate, Separationing},
 
-	{Trigger::Photosyntesis, new Photosynthesing},
-	{Trigger::Carnivorous, new Carnivorousing},
-	{Trigger::Mineraleon, new Mineraling},
+	{Trigger::Photosyntesis, Photosynthesing},
+	{Trigger::Carnivorous, Carnivorousing},
+	{Trigger::Mineraleon, Mineraling},
 
-	{Trigger::Move, new Moving},
-	{Trigger::Turn, new Turning}
+	{Trigger::Move, Moving},
+	{Trigger::Turn, Turning}
 };
 
 static array<array<sf::RectangleShape, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> sprites;
@@ -96,31 +96,26 @@ Environment::Environment()
 			// put minerals
 			if (((rand() % 100) < 25))
 			{
-				terrain[y][x].SetFood(1000);
+				terrain[y][x].SetFood(100);
 			}
 
 			// put first cells
-			if (((rand() % 100) < 4) && cells_count < CELL_START_COUNT)
+			if (((rand() % 100) < 1) && cells_count < CELL_START_COUNT)
 			{
 				terrain[y][x].SetCell();
 				cells[cells_count] = &terrain[y][x].GetCell();
 				cells[cells_count]->SetPosition(x, y);
-				cells[cells_count]->Energy(1000);
+				cells[cells_count]->Energy(100);
 				cells[cells_count]->MaxAge(100);
 				cells[cells_count]->Defence(0.01);
 				cells[cells_count]->Hp(MAX_HP);
-				cells[cells_count]->Attack(25);
+				cells[cells_count]->Attack(0.01);
 				cells[cells_count]->SetGenome(Genome());
-				cells[cells_count]->Organelles({ 
-					Trigger::Stay,
-					Trigger::Separate,
-					Trigger::Photosyntesis 
-				});
 
 				size_t cost = 0;
-				for (auto trigger : cells[cells_count]->Organelles())
+				for (const Gen& gen : cells[cells_count]->GetGenome().data)
 				{
-					cost += CREATION_COST.at(trigger);
+					cost += CREATION_COST.at(gen.trigger);
 				}
 				cells[cells_count]->ReproductionCost(100 + cost);
 
@@ -140,45 +135,26 @@ Environment::Environment()
 	}
 }
 
-void Shift(size_t i)
-{
-	for (size_t index = i + 1; Cell* cell = cells[index]; index++)
-	{
-		cells[index - 1] = cell;
-		cell = nullptr;
-	}
-}
-
 void Environment::Update()
 {
-	for (size_t index = 0; Cell* cell = cells[index]; index++)
+	for (size_t index = 0; index < cells.size(); index++)
 	{
-		if (!cell) break;
+		if (!cells[index]) break;
 
-		size_t x = cell->GetX();
-		size_t y = cell->GetY();
-		if (cell->IsDead())
+		size_t x = cells[index]->GetX();
+		size_t y = cells[index]->GetY();
+		if (cells[index]->IsDead())
 			// remove cell if it is dead
 		{
-			if (terrain[y][x].IsContainsFood())
-				terrain[y][x].GetFood().Put(cell->Energy() + 100);
-			else
-				terrain[y][x].SetFood(cell->Energy() + 100);
-
-			terrain[y][x].DelCell();
-			cells_count--;
-			cell = nullptr;
-			Shift(index);
+			CellDie(index, x, y);
 		}
 		else
 		{
-			cell->Tic();
+			cells[index]->Tic();
 
-			for (auto trigger : cell->Organelles())
-			{
-				cell->DecreaceEnergy(MAINTENANACE_COST.at(trigger));
-				ORGANELLES.at(trigger)->Event(x, y);
-			}
+			Gen& gen = cells[index]->GetGenome().Read();
+			cells[index]->DecreaceEnergy(MAINTENANACE_COST.at(gen.trigger));
+			ORGANELLES.at(gen.trigger)(gen.args, x, y);
 		}
 	}
 }
@@ -225,7 +201,7 @@ Info Environment::GetInfo(size_t x_px, size_t y_px)
 		auto& data = terrain[y][x].GetCell().GetGenome().data;
 		for (unsigned int i = 0; i < data.size(); i++)
 		{
-			info.genom.push_back(static_cast<int>(data[i]));
+			info.genom.push_back(static_cast<int>(data[i].trigger));
 		}
 		info.generation = terrain[y][x].GetCell().GetGenome().generation;
 		info.hp = terrain[y][x].GetCell().Hp();

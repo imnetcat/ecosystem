@@ -1,8 +1,6 @@
 #pragma once
-#include "organelle.h"
+#include "map_terrain.h"
 
-class Staying : public Organelle
+void Staying(int args, size_t x, size_t y)
 {
-public:
-	void Event(size_t& x, size_t& y) const override;
-};
+}

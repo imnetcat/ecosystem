@@ -1,8 +1,12 @@
 #pragma once
-#include "organelle.h"
+#include "map_terrain.h"
 
-class Mineraling : public Organelle
+void Mineraling(int args, size_t x, size_t y)
 {
-public:
-	void Event(size_t& x, size_t& y) const override;
-};
+	terrain[y][x].GetCell().RationLevel(-1, -1, 5);
+	auto e = terrain[y][x].GetFood().Eat(MAX_MINERALS_TO_EAT);
+	if (e)
+	{
+		terrain[y][x].GetCell().IncreaceEnergy(e);
+	}
+}

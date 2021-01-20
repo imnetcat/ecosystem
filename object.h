@@ -23,7 +23,8 @@ enum class view_settings
 	species,
 	age,
 	hp,
-	survival
+	survival,
+	generations
 };
 
 struct RGBColor
@@ -35,6 +36,7 @@ struct RGBColor
 
 struct Object
 {
+	virtual RGBColor GenerationsColor() = 0;
 	virtual RGBColor TerrainColor() = 0;
 	virtual RGBColor MineralsColor() = 0;
 	virtual RGBColor RationColor() = 0;

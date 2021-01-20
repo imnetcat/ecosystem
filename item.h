@@ -22,6 +22,7 @@ public:
 		return *this;
 	}
 
+	RGBColor GenerationsColor();
 	RGBColor MineralsColor();
 	RGBColor RationColor();
 	RGBColor EnergyColor();

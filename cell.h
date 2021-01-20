@@ -55,6 +55,7 @@ public:
 	
 	bool IsFriendly(const Cell& cell);
 
+	RGBColor GenerationsColor() override;
 	RGBColor TerrainColor() override;
 	RGBColor MineralsColor() override;
 	RGBColor EnergyColor() override;

@@ -32,6 +32,10 @@ RGBColor Item::SurvivalColor()
 {
 	return { 143, 229, 255 };
 }
+RGBColor Item::GenerationsColor()
+{
+	return { 143, 229, 255 };
+}
 
 void Item::Walkable(bool val)
 {

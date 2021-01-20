@@ -14,4 +14,4 @@ const unsigned int MAX_HP = 100;
 
 const bool LOOPED_ENVIRONMENT = true;
 
-const int CELL_START_COUNT = 20;
+const int CELL_START_COUNT = 3;

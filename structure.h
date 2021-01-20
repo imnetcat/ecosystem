@@ -30,6 +30,7 @@ public:
 
 	RGBColor TerrainColor() override;
 	RGBColor MineralsColor() override;
+	RGBColor GenerationsColor() override;
 	RGBColor RationColor() override;
 	RGBColor EnergyColor() override;
 	RGBColor SpeciesColor() override;

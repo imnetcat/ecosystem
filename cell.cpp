@@ -279,6 +279,11 @@ bool Cell::IsFriendly(const Cell& cell)
 	return true;
 }
 
+RGBColor Cell::GenerationsColor()
+{
+	unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)genom.generation / (size_t(0) - 1)));
+	return { c, c, c };
+}
 RGBColor Cell::TerrainColor()
 {
 	return { 13, 168, 19 };
@@ -401,6 +406,7 @@ void Cell::Reproduction(Cell& new_cell)
 
 	new_cell.SetPosition(x, y);
 	new_cell.Energy(100);
+	new_cell.Age(0);
 	new_cell.MaxAge(new_max_age);
 	new_cell.ReproductionCost(reproduction_cost);
 	new_cell.Defence(defence);

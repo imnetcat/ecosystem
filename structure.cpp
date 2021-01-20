@@ -94,7 +94,12 @@ RGBColor Structure::SurvivalColor()
 		return cell.SurvivalColor();
 	return { 209, 209, 209 };
 }
-
+RGBColor Structure::GenerationsColor()
+{
+	if (has_cell)
+		return cell.GenerationsColor();
+	return { 209, 209, 209 };
+}
 bool Structure::Outline(view_settings vs)
 {
 	if (has_cell)

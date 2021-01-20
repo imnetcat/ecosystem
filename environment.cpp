@@ -59,6 +59,9 @@ void Environment::Draw(sf::RenderWindow& window)
 			case view_settings::survival:
 				color = terrain[y][x].SurvivalColor();
 				break;
+			case view_settings::generations:
+				color = terrain[y][x].GenerationsColor();
+				break;
 			}
 
 			if (terrain[y][x].Outline(view))

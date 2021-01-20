@@ -1,24 +1,53 @@
 #include "structure.h"
 
 Structure::Structure(RGBColor c, bool w, float tr) :
-	ticed(false),
 	color(c),
-	walkable(w),
-	transparency(tr),
-	light_level(0),
-	cell(nullptr)
+	walkable(w)
 { }
 
-void Structure::Untick()
+Structure& Structure::operator = (const Structure& structure)
 {
-	ticed = false;
-	food.Ticed(false);
+	color = structure.color;
+	walkable = structure.walkable;
+	food = structure.food;
+	cell = structure.cell;
+	return *this;
+}
+Structure& Structure::operator = (Structure&& structure)
+{
+	color = structure.color;
+	walkable = structure.walkable;
+	food = structure.food;
+	cell = structure.cell;
+	return *this;
+}
+
+Cell& Structure::GetCell()
+{
+	return cell;
+}
+void Structure::SetCell(const Cell& c)
+{
+	cell = c;
+	has_cell = true;
+}
+void Structure::SetCell()
+{
+	has_cell = true;
+}
+void Structure::DelCell()
+{
+	has_cell = false;
+}
+bool Structure::ContainsCell() const
+{
+	return has_cell;
 }
 
 RGBColor Structure::TerrainColor()
 {
-	if (cell)
-		return cell->TerrainColor();
+	if(has_cell)
+		return cell.TerrainColor();
 	if (!food.Empty())
 		return food.TerrainColor();
 	return color;
@@ -27,83 +56,54 @@ RGBColor Structure::MineralsColor()
 {
 	if (!food.Empty())
 		return food.MineralsColor();
-	if (cell)
-		return cell->MineralsColor();
 	return { 209, 209, 209 };
 }
 RGBColor Structure::RationColor()
 {
-	if (cell)
-		return cell->RationColor();
+	if (has_cell)
+		return cell.RationColor();
 	return { 209, 209, 209 };
 }
 RGBColor Structure::EnergyColor()
 {
-	if (cell)
-		return cell->EnergyColor();
+	if (has_cell)
+		return cell.EnergyColor();
 	return { 209, 209, 209 };
 }
 RGBColor Structure::SpeciesColor()
 {
-	if (cell)
-		return cell->SpeciesColor();
+	if (has_cell)
+		return cell.SpeciesColor();
 	return { 209, 209, 209 };
 }
 RGBColor Structure::AgeColor()
 {
-	if (cell)
-		return cell->AgeColor();
-	return { 143, 229, 255 };
+	if (has_cell)
+		return cell.AgeColor();
+	return { 209, 209, 209 };
 }
 RGBColor Structure::HpColor()
 {
-	if (cell)
-		return cell->HpColor();
+	if (has_cell)
+		return cell.HpColor();
 	return { 209, 209, 209 };
 }
 RGBColor Structure::SurvivalColor()
 {
-	if (cell)
-		return cell->SurvivalColor();
+	if (has_cell)
+		return cell.SurvivalColor();
 	return { 209, 209, 209 };
 }
-
-void Structure::Tic(MapTerrain& terrain, size_t& x, size_t& y)
+RGBColor Structure::GenerationsColor()
 {
-	if (ticed)
-		return;
-
-	if (!food.Empty())
-		food.Ticed(true);
-	if (cell)
-		cell->Tic(terrain, x, y);
-	ticed = true;
+	if (has_cell)
+		return cell.GenerationsColor();
+	return { 209, 209, 209 };
 }
-
-unsigned char Structure::GetLightLevel()
-{
-	return light_level;
-}
-void Structure::SetLightLevel(unsigned short lv)
-{
-	light_level = lv;
-}
-unsigned short Structure::GetLightPower()
-{
-	return light_power;
-}
-void Structure::SetLightPower(unsigned short lp)
-{
-	light_power = lp;
-	float power = (float)light_power / LIGHT_POWER;
-	light_level = 128 - power * 128;
-}
-
 bool Structure::Outline(view_settings vs)
 {
-	if (vs != view_settings::minerals && cell)
-		return cell->Outline(vs);
-
+	if (has_cell)
+		return cell.Outline(vs);
 	if (!food.Empty())
 		return food.Outline(vs);
 
@@ -112,7 +112,6 @@ bool Structure::Outline(view_settings vs)
 
 void Structure::SetFood(Minerals obj)
 {
-	food.Ticed(true);
 	food.Put(obj.Get());
 }
 void Structure::SetFood(unsigned short energy)
@@ -131,24 +130,6 @@ const Minerals& Structure::GetFood() const
 {
 	return food;
 }
-void Structure::CleanCell()
-{
-	cell = nullptr;
-}
-void Structure::SetCell(Cell* c)
-{
-	delete cell;
-	cell = c;
-}
-void Structure::DelCell()
-{
-	delete cell;
-	cell = nullptr;
-}
-Cell* Structure::GetCell()
-{
-	return cell;
-}
 
 void Structure::Walkable(bool val)
 {
@@ -156,14 +137,10 @@ void Structure::Walkable(bool val)
 }
 bool Structure::IsWalkable()
 {
-	return walkable;
+	return walkable && !ContainsCell();
 }
 
 bool Structure::IsContainsFood()
 {
 	return !food.Empty();
-}
-bool Structure::IsContainsCell()
-{
-	return cell != nullptr;
 }

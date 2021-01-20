@@ -1,18 +1,5 @@
 #pragma once
-#include "entity.h"
 #include "genome.h"
-#include "organelle.h"
-
-// organelles
-#include "separationing.h"
-#include "carnivorousing.h"
-#include "mineraling.h"
-#include "birthing.h"
-#include "photosynthesing.h"
-#include "moving.h"
-#include "sleeping.h"
-#include "staying.h"
-#include "turning.h"
 
 #include <iostream>
 #include <memory>
@@ -21,263 +8,97 @@
 #include <map>
 #include <sstream>
 
-const std::vector<Organelle*> ORGANELLES = {
-	new Staying,
-	new Sleeping,
-
-	new Birthing,
-	new Separationing,
-
-	new Photosynthesing,
-	new Carnivorousing,
-	new Mineraling,
-
-	new Moving,
-	new Turning
-};
-
-class Cell : public Entity
+class Cell : public Object
 {
 protected:
+	size_t x;
+	size_t y;
+	view_side view;
+	unsigned short age;
+	unsigned short max_age;
+	unsigned short hp;
+	unsigned short energy;
+	double defence;
+	double attack;
 	Genome genom;
-	const size_t separation_cost;
-	const size_t birth_cost;
-	std::unordered_map<Protein, unsigned long> proteins;
-	std::vector<Organelle*> organelles;
+	size_t reproduction_cost;
+	unsigned char carnivorousing = 0;
+	unsigned char fotosintesis = 0;
+	unsigned char mineraling = 0;
 public:
-	explicit Cell(
+	Cell();
+	Cell(
+		size_t x,
+		size_t y,
 		unsigned short energy,
 		unsigned short max_age,
-		size_t sepr_cost,
-		size_t birthcost,
-		float defence,
-		unsigned short attack,
-		Genome g,
-		const std::vector<Organelle*> organelles)
-		: 
-		Entity(MAX_HP, energy, max_age, defence, attack),
-		genom(g), 
-		separation_cost(sepr_cost),
-		birth_cost(birthcost),
-		organelles(organelles) 
-	{
-		auto size = static_cast<unsigned int>(Protein::Count);
-		proteins.reserve(size);
-		for (unsigned int i = 0; i < size; i++)
-		{
-			proteins[static_cast<Protein>(i % size)] = 0;
-		}
-	}
+		size_t repr_cost,
+		double defence,
+		double attack,
+		Genome g
+	);
+	Cell(Cell&& cell);
+	Cell(const Cell& cell);
+	Cell& operator = (const Cell& cell);
+	Cell& operator = (Cell&& cell);
 
-	bool IsDead() override
-	{
-		return !hp || age == max_age;
-	}
+	size_t GetX() const;
+	size_t GetY() const;
+	void SetPosition(size_t nx, size_t ny);
 
-	size_t SeparationCost()
-	{
-		return separation_cost;
-	}
-	size_t BirthCost()
-	{
-		return birth_cost;
-	}
+	bool IsDead();
 
-	Genome GetGenome()
-	{
-		return genom;
-	}
+	size_t ReprodutionCost();
+
+	const Genome& GetGenome() const;
+	Genome& GetGenome();
 	
-	bool IsFriendly(Cell* cell)
-	{
-		const unsigned short BORDER = 8;
-		size_t count_of_non_equal = 0;
-		auto lhs_genom = GetGenome().data;
-		auto rhs_genom = cell->GetGenome().data;
+	bool IsFriendly(const Cell& cell);
 
-		if (lhs_genom.size() != rhs_genom.size())
-			return false;
+	RGBColor GenerationsColor() override;
+	RGBColor TerrainColor() override;
+	RGBColor MineralsColor() override;
+	RGBColor EnergyColor() override;
+	RGBColor SpeciesColor() override;
+	RGBColor AgeColor() override;
+	RGBColor HpColor() override;
+	RGBColor SurvivalColor() override;
 
-		for (size_t index = 0; index < lhs_genom.size(); index++)
-		{
-			if (lhs_genom[index] != rhs_genom[index])
-				count_of_non_equal++;
+	void Reproduction(Cell&);
 
-			if (count_of_non_equal > BORDER)
-				return false;
-		}
+	void Tic();
 
-		return true;
-	}
+	void RationLevel(char r, char g, char b);
+	RGBColor RationColor() override;
 
-	Cell* Separation()
-	{
-		Cell* new_cell = Reproduction();
+	bool Outline(view_settings) override;
+	bool Defencing(double);
+	double Defence();
+	double Attack();
+	void AttackUp();
+	unsigned short Age();
+	unsigned short MaxAge();
+	view_side GetView();
+	void SetView(view_side val);
+	void IncreaceEnergy(unsigned short value);
+	void DecreaceEnergy(unsigned short value);
+	void IncreaceHp(unsigned short value);
+	void DecreaceHp(unsigned short value);
+	unsigned short Energy();
+	unsigned short Hp();
 
-		DecreaceEnergy(separation_cost);
-		unsigned short hlph = energy / 2;
-		DecreaceEnergy(hlph);
-		new_cell->IncreaceEnergy(hlph);
-
-		return new_cell;
-	}
-
-	Cell* Birth()
-	{
-		Cell* new_cell = Reproduction();
-
-		DecreaceEnergy(birth_cost);
-
-		return new_cell;
-	}
-
-	std::unordered_map<Protein, unsigned long>& Proteins()
-	{
-		return proteins;
-	}
-	const std::unordered_map<Protein, unsigned long>& Proteins() const
-	{
-		return proteins;
-	}
-
-	const std::vector<Organelle*>& Organelles()
-	{
-		return organelles;
-	}
-
-	RGBColor TerrainColor() override
-	{
-		return { 13, 168, 19 };
-	}
-	RGBColor MineralsColor() override
-	{
-		return { 209, 209, 209 };
-	}
-	RGBColor EnergyColor() override
-	{
-		if (energy < (MAX_ENERGY / 2))
-		{
-			return { 255, static_cast<unsigned char>(255 * (energy / (float)(MAX_ENERGY / 2))), 0 };
-		}
-		else
-		{
-			return { static_cast<unsigned char>(255 - 255 * (energy / (float)MAX_ENERGY)), 255, 0 };
-		}
-	}
-	RGBColor SpeciesColor() override
-	{
-		return Species();
-	}
-	RGBColor AgeColor() override
-	{
-		unsigned char c = static_cast<unsigned char>(255 - 255 * ((float)age / max_age));
-		return { c, c, c };
-	}
-	RGBColor HpColor() override
-	{
-		if (hp < (MAX_HP / 2))
-		{
-			return { 191, static_cast<unsigned char>(191 * (hp / (float)(MAX_HP / 2))), 0 };
-		}
-		else
-		{
-			return { static_cast<unsigned char>(191 * ((float)(MAX_HP / 2) / hp)), 191, 0 };
-		}
-	}
-	RGBColor SurvivalColor() override
-	{
-		switch (CellSuccessRule(energy, age, max_age))
-		{
-		case Cell::CellSuccess::fail:
-			return { 255, 21, 0 };
-			break;
-		case Cell::CellSuccess::normal:
-			return { 255, 225, 0 };
-			break;
-		case Cell::CellSuccess::good:
-			return { 0, 194, 0 };
-			break;
-		default:
-			return { 255, 225, 0 };
-			break;
-		}
-	}
-
-	void Tic(MapTerrain& terrain, size_t& x, size_t& y) override
-	{
-		auto p = genom.Read();
-		if (!proteins.count(p))
-		{
-			proteins[p] = 1;
-		}
-		else
-		{
-			proteins[p]++;
-		}
-
-		age++;
-
-		for (size_t i = 0; i < organelles.size(); i ++)
-		{
-			organelles[i]->Event(terrain, x, y);
-		}
-	}
-
-	RGBColor RationColor() override
-	{
-		return { 0, 143, 31 }; // green
-	}
-
+	void SetGenome(Genome value);
+	void ReproductionCost(size_t);
+	void Defence(double);
+	void Attack(double);
+	void Age(unsigned short);
+	void MaxAge(unsigned short);
+	void View(view_side);
+	void Energy(unsigned short);
+	void Hp(unsigned short);
 protected:
 
-
-
-	RGBColor Species() override
-	{
-		return genom.Hash();
-	}
-	Cell* Reproduction()
-	{
-		CellSuccess isSuccess = CellSuccessRule(energy, age, max_age);
-		float newMutationChanceK = 0;
-		switch (isSuccess)
-		{
-		case Cell::CellSuccess::fail:
-			newMutationChanceK = 0.01;
-			break;
-		case Cell::CellSuccess::good:
-			newMutationChanceK = -0.01;
-			break;
-		}
-		Genome new_genom = genom.Replicate(newMutationChanceK);
-
-		short max_age_koef = 0;
-		switch (isSuccess)
-		{
-		case Cell::CellSuccess::fail:
-			max_age_koef = -1;
-			break;
-		case Cell::CellSuccess::good:
-			max_age_koef = 1;
-			break;
-		}
-
-		unsigned short new_max_age = max_age + max_age_koef;
-		if (new_max_age > 1000) new_max_age = 1000;
-		if (new_max_age < 2) new_max_age = 2;
-		
-		std::vector<Organelle*> new_organelles = organelles;
-
-		return new Cell(
-			100,
-			new_max_age,
-			separation_cost,
-			birth_cost,
-			defence,
-			attack,
-			new_genom,
-			new_organelles);
-	}
+	RGBColor Species();
 
 	enum class CellSuccess
 	{
@@ -286,10 +107,5 @@ protected:
 		good
 	};
 
-	CellSuccess CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age)
-	{
-		unsigned int success_border = MAX_ENERGY * (float(age) / (max_age / 2));
-		return (accumulated_energy > success_border) ? CellSuccess::good :
-			(accumulated_energy > (success_border / 2) ? CellSuccess::normal : CellSuccess::fail);
-	}
+	CellSuccess CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age);
 };

@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,45 +27,18 @@
     <ClCompile Include="structure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="photosynthesing.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
-    <ClCompile Include="mineraling.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
-    <ClCompile Include="carnivorousing.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
-    <ClCompile Include="birthing.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
-    <ClCompile Include="moving.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
-    <ClCompile Include="separationing.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
-    <ClCompile Include="sleeping.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
-    <ClCompile Include="staying.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
-    <ClCompile Include="turning.cpp">
-      <Filter>Header Files\organelle</Filter>
-    </ClCompile>
     <ClCompile Include="map_terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="environment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="air.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="cell.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="environment.h">
@@ -107,12 +77,6 @@
     <ClInclude Include="map_terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="protein.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sleeping.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
     <ClInclude Include="moving.h">
       <Filter>Header Files\organelle</Filter>
     </ClInclude>
@@ -120,9 +84,6 @@
       <Filter>Header Files\organelle</Filter>
     </ClInclude>
     <ClInclude Include="staying.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="organelle.h">
       <Filter>Header Files\organelle</Filter>
     </ClInclude>
     <ClInclude Include="photosynthesing.h">
@@ -139,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="separationing.h">
       <Filter>Header Files\organelle</Filter>
+    </ClInclude>
+    <ClInclude Include="Gen.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

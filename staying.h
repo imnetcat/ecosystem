@@ -1,10 +1,6 @@
 #pragma once
-#include "organelle.h"
+#include "map_terrain.h"
 
-class Staying : public Organelle
+void Staying(int args, size_t x, size_t y)
 {
-public:
-	void Event(MapTerrain& terrain, size_t& x, size_t& y) const override;
-	bool HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const override;
-	bool IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const override;
-};
+}

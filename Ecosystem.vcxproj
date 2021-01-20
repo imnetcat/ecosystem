@@ -119,27 +119,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="birthing.cpp" />
-    <ClCompile Include="carnivorousing.cpp" />
-    <ClCompile Include="entity.cpp" />
+    <ClCompile Include="cell.cpp" />
+    <ClCompile Include="environment.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_terrain.cpp" />
-    <ClCompile Include="mineraling.cpp" />
-    <ClCompile Include="moving.cpp" />
-    <ClCompile Include="separationing.cpp" />
-    <ClCompile Include="photosynthesing.cpp" />
-    <ClCompile Include="sleeping.cpp" />
-    <ClCompile Include="staying.cpp" />
     <ClCompile Include="structure.cpp" />
-    <ClCompile Include="turning.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="air.h" />
     <ClInclude Include="birthing.h" />
     <ClInclude Include="carnivorousing.h" />
     <ClInclude Include="cell.h" />
-    <ClInclude Include="entity.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="mineraling.h" />
     <ClInclude Include="photosynthesing.h" />
@@ -150,13 +140,11 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="moving.h" />
     <ClInclude Include="object.h" />
-    <ClInclude Include="organelle.h" />
-    <ClInclude Include="protein.h" />
+    <ClInclude Include="Gen.h" />
     <ClInclude Include="separationing.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />
     <ClInclude Include="sfml_button.h" />
-    <ClInclude Include="sleeping.h" />
     <ClInclude Include="staying.h" />
     <ClInclude Include="structure.h" />
     <ClInclude Include="turning.h" />

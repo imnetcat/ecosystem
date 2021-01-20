@@ -1,9 +1,20 @@
 #pragma once
 #include "config.h"
-#include "map_terrain.h"
 #include <map>
 
-enum view_settings
+enum class view_side
+{
+	top,
+	right_top,
+	right,
+	right_bottom,
+	bottom,
+	left_bottom,
+	left,
+	left_top,
+};
+
+enum class view_settings
 {
 	terrain,
 	minerals,
@@ -12,7 +23,8 @@ enum view_settings
 	species,
 	age,
 	hp,
-	survival
+	survival,
+	generations
 };
 
 struct RGBColor
@@ -24,6 +36,7 @@ struct RGBColor
 
 struct Object
 {
+	virtual RGBColor GenerationsColor() = 0;
 	virtual RGBColor TerrainColor() = 0;
 	virtual RGBColor MineralsColor() = 0;
 	virtual RGBColor RationColor() = 0;
@@ -33,5 +46,4 @@ struct Object
 	virtual RGBColor HpColor() = 0;
 	virtual RGBColor SurvivalColor() = 0;
 	virtual bool Outline(view_settings) = 0;
-	virtual void Tic(MapTerrain& terrain, size_t& x, size_t& y) = 0;
 };

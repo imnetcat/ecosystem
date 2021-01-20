@@ -1,6 +1,7 @@
 #include "sfml_button.h"
 #include "sfml_box.h"
 #include "environment.h"
+#include "config.h"
 
 #include <iostream>
 #include <string>
@@ -238,7 +239,7 @@ int main()
 						age_view_btn.Disable(true);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
-						environment.SetView(age);
+						environment.SetView(view_settings::age);
 					}
 
 					if (ter_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -252,7 +253,7 @@ int main()
 						hp_view_btn.Disable(false);
 						age_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
-						environment.SetView(terrain);
+						environment.SetView(view_settings::terrain);
 					}
 
 					if (species_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -266,7 +267,7 @@ int main()
 						age_view_btn.Disable(false);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
-						environment.SetView(species);
+						environment.SetView(view_settings::species);
 					}
 
 					if (energy_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -280,7 +281,7 @@ int main()
 						age_view_btn.Disable(false);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
-						environment.SetView(energy);
+						environment.SetView(view_settings::energy);
 					}
 
 					if (minerals_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -432,14 +433,16 @@ int main()
 			info_clear_rect_btn.Draw(setting_window);
 		}
 
-
-		// clear the window and draw background with background color
-		window.clear();
-
-		// update environment
-		environment.Update(window, !pause);
-
-		window.display();
+		if (!pause)
+		{
+			// clear the window and draw background with background color
+			window.clear();
+			// update environment and draw sprites
+			environment.Update();
+			environment.Draw(window);
+			// display 
+			window.display();
+		}
 
 		setting_window.display();
 	}

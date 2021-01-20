@@ -1,10 +1,8 @@
 #pragma once
-#include "organelle.h"
+#include "map_terrain.h"
 
-class Photosynthesing : public Organelle
+void Photosynthesing(int args, size_t x, size_t y)
 {
-public:
-	void Event(MapTerrain& terrain, size_t& x, size_t& y) const override;
-	bool HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const override;
-	bool IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const override;
-};
+	terrain[y][x].GetCell().RationLevel(-1, 5, -1);
+	terrain[y][x].GetCell().IncreaceEnergy(LIGHT_POWER);
+}

@@ -4,40 +4,32 @@
 class Item : public Object
 {
 protected:
-	const bool eatable;
+	bool eatable;
 	bool walkable;
 public:
 	Item(bool ea, bool w);
 
+	Item& operator = (const Item& obj)
+	{
+		eatable = obj.eatable;
+		walkable = obj.walkable;
+		return *this;
+	}
+	Item& operator = (Item&& obj)
+	{
+		eatable = obj.eatable;
+		walkable = obj.walkable;
+		return *this;
+	}
 
-	RGBColor MineralsColor()
-	{
-		return { 143, 229, 255 };
-	}
-	RGBColor RationColor()
-	{
-		return { 143, 229, 255 };
-	}
-	RGBColor EnergyColor()
-	{
-		return { 143, 229, 255 };
-	}
-	RGBColor SpeciesColor()
-	{
-		return { 143, 229, 255 };
-	}
-	RGBColor AgeColor()
-	{
-		return { 143, 229, 255 };
-	}
-	RGBColor HpColor()
-	{
-		return { 143, 229, 255 };
-	}
-	RGBColor SurvivalColor()
-	{
-		return { 143, 229, 255 };
-	}
+	RGBColor GenerationsColor();
+	RGBColor MineralsColor();
+	RGBColor RationColor();
+	RGBColor EnergyColor();
+	RGBColor SpeciesColor();
+	RGBColor AgeColor();
+	RGBColor HpColor();
+	RGBColor SurvivalColor();
 
 	void Walkable(bool val);
 	bool IsWalkable();

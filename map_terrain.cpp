@@ -144,3 +144,28 @@ Position GetViewedPosition(view_side view, Position init)
 	}
 	return viewed_position;
 }
+
+Position GetInvertedViewedPosition(view_side view, Position init)
+{
+	switch (view)
+	{
+	case view_side::top:
+		return GetViewedPosition(view_side::bottom, init);
+	case view_side::right_top:
+		return GetViewedPosition(view_side::left_bottom, init);
+	case view_side::right:
+		return GetViewedPosition(view_side::left, init);
+	case view_side::right_bottom:
+		return GetViewedPosition(view_side::left_top, init);
+	case view_side::bottom:
+		return GetViewedPosition(view_side::top, init);
+	case view_side::left_bottom:
+		return GetViewedPosition(view_side::right_top, init);
+	case view_side::left:
+		return GetViewedPosition(view_side::right, init);
+	case view_side::left_top:
+		return GetViewedPosition(view_side::right_bottom, init);
+	default:
+		return GetViewedPosition(view_side::top, init);
+	}
+}

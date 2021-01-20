@@ -1,10 +1,12 @@
 #pragma once
-#include "organelle.h"
+#include "map_terrain.h"
 
-class Mineraling : public Organelle
+void Mineraling(int args, size_t x, size_t y)
 {
-public:
-	void Event(MapTerrain& terrain, size_t& x, size_t& y) const override;
-	bool HaveRequestProteins(const std::unordered_map<Protein, unsigned long>& proteins) const override;
-	bool IsNeeded(const std::unordered_map<Protein, unsigned long>& proteins) const override;
-};
+	terrain[y][x].GetCell().RationLevel(-1, -1, 5);
+	auto e = terrain[y][x].GetFood().Eat(MAX_MINERALS_TO_EAT);
+	if (e)
+	{
+		terrain[y][x].GetCell().IncreaceEnergy(e);
+	}
+}

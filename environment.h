@@ -13,42 +13,40 @@
 
 using namespace std;
 
-using CellId = size_t;
-using ObjectId = size_t;
-using PositionId = size_t;
-
-struct Info
+struct Position
 {
-	RGBColor color;
-	struct Age
-	{
-		size_t curr = 0;
-		size_t max = 0;
-	} age;
-	std::vector<int> genom;
-	unsigned short hp = 0;
-	size_t energy = 0;
-	size_t generation = 0;
-	size_t light_power = 0;
-	size_t food_power = 0;
-	float ch_of_mut;
+	size_t x;
+	size_t y;
 };
 
-struct LightLevel
-{
-	size_t power;
-	size_t power_max;
-};
+bool operator == (const Position& lhs, const Position& rhs);
 
 class Environment
 {
 public:
 	explicit Environment();
 	void Update();
-	void Draw(sf::RenderWindow& window);
-	Info GetInfo(size_t x_px, size_t y_px);
-	view_settings GetView();
-	void SetView(view_settings new_val);
+protected:
+
+	static size_t cells_count;
+	static size_t max_generation;
+	static std::array<std::array<Structure, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> terrain;
+	static std::array<Cell*, ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y> cells;
+
 private:
-	view_settings view = view_settings::terrain;
+	static void Shift(size_t i);
+	static void CellDie(size_t index, size_t x, size_t y);
+	static void CellDie(size_t x, size_t y);
+
+	Position GetViewedPosition(view_side view, Position init);
+	Position GetInvertedViewedPosition(view_side view, Position init);
+private:
+	void Separationing(int args, size_t x, size_t y);
+	void Birthing(int args, size_t x, size_t y);
+	void Carnivorousing(int args, size_t x, size_t y);
+	void Mineraling(int args, size_t x, size_t y);
+	void Moving(int args, size_t x, size_t y);
+	void Photosynthesing(int args, size_t x, size_t y);
+	void Staying(int args, size_t x, size_t y);
+	void Turning(int args, size_t x, size_t y);
 };

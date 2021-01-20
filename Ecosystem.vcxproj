@@ -120,34 +120,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cell.cpp" />
+    <ClCompile Include="Ecosystem.cpp" />
     <ClCompile Include="environment.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="map_terrain.cpp" />
     <ClCompile Include="structure.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="birthing.h" />
-    <ClInclude Include="carnivorousing.h" />
     <ClInclude Include="cell.h" />
+    <ClInclude Include="Ecosystem.h" />
     <ClInclude Include="environment.h" />
-    <ClInclude Include="mineraling.h" />
-    <ClInclude Include="photosynthesing.h" />
     <ClInclude Include="genome.h" />
     <ClInclude Include="item.h" />
-    <ClInclude Include="map_terrain.h" />
     <ClInclude Include="minerals.h" />
     <ClInclude Include="config.h" />
-    <ClInclude Include="moving.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="Gen.h" />
-    <ClInclude Include="separationing.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />
     <ClInclude Include="sfml_button.h" />
-    <ClInclude Include="staying.h" />
     <ClInclude Include="structure.h" />
-    <ClInclude Include="turning.h" />
     <ClInclude Include="water.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

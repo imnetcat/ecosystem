@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="Header Files\organelle">
-      <UniqueIdentifier>{059efb91-a4d1-47d8-ba8b-c07e9f540786}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="item.cpp">
@@ -27,13 +24,13 @@
     <ClCompile Include="structure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="map_terrain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="environment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ecosystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,34 +71,10 @@
     <ClInclude Include="genome.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="map_terrain.h">
+    <ClInclude Include="Gen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="moving.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="turning.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="staying.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="photosynthesing.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="mineraling.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="carnivorousing.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="birthing.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="separationing.h">
-      <Filter>Header Files\organelle</Filter>
-    </ClInclude>
-    <ClInclude Include="Gen.h">
+    <ClInclude Include="Ecosystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

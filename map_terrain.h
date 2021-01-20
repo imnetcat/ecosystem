@@ -18,6 +18,7 @@ Position GetViewedPosition(view_side view, Position init);
 Position GetInvertedViewedPosition(view_side view, Position init);
 
 static size_t cells_count = 0;
+static size_t max_generation = 0;
 static std::array<std::array<Structure, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> terrain;
 static std::array<Cell*, ENVIRONMENT_SIZE_X * ENVIRONMENT_SIZE_Y> cells;
 

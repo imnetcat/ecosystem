@@ -55,6 +55,11 @@ const int SURVIVAL_BTN_POS_Y = 140;
 const int SURVIVAL_BTN_SIZE_X = 75;
 const int SURVIVAL_BTN_SIZE_Y = 30;
 
+const int GENERATION_BTN_POS_X = 15;
+const int GENERATION_BTN_POS_Y = 185;
+const int GENERATION_BTN_SIZE_X = 75;
+const int GENERATION_BTN_SIZE_Y = 30;
+
 const int MINERALS_BTN_POS_X = 15;
 const int MINERALS_BTN_POS_Y = 105;
 const int MINERALS_BTN_SIZE_X = 75;
@@ -140,6 +145,12 @@ int main()
 		SURVIVAL_BTN_POS_Y,
 		SURVIVAL_BTN_SIZE_X,
 		SURVIVAL_BTN_SIZE_Y, 14);
+
+	Button generation_view_btn(font, "generation",
+		GENERATION_BTN_POS_X,
+		GENERATION_BTN_POS_Y,
+		GENERATION_BTN_SIZE_X,
+		GENERATION_BTN_SIZE_Y, 14);
 
 	Box info_rect(font, "info", INFO_RECT_POS_X, INFO_RECT_POS_Y, INFO_RECT_SIZE_X, INFO_RECT_SIZE_Y, 16);
 	Box cell_ico(font, "", 10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 30, 50, 50, 16);
@@ -228,6 +239,21 @@ int main()
 						turn_on_info_block = false;
 					}
 
+					if (generation_view_btn.IsClicked(settings_event.mouseButton.x,
+						settings_event.mouseButton.y))
+					{
+						ter_view_btn.Disable(false);
+						species_view_btn.Disable(false);
+						energy_view_btn.Disable(false);
+						minerals_view_btn.Disable(false);
+						ration_view_btn.Disable(false);
+						age_view_btn.Disable(false);
+						hp_view_btn.Disable(false);
+						survival_view_btn.Disable(false);
+						generation_view_btn.Disable(true);
+						environment.SetView(view_settings::generations);
+					}
+
 					if (age_view_btn.IsClicked(settings_event.mouseButton.x,
 						settings_event.mouseButton.y))
 					{
@@ -239,6 +265,7 @@ int main()
 						age_view_btn.Disable(true);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
+						generation_view_btn.Disable(false);
 						environment.SetView(view_settings::age);
 					}
 
@@ -253,6 +280,7 @@ int main()
 						hp_view_btn.Disable(false);
 						age_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
+						generation_view_btn.Disable(false);
 						environment.SetView(view_settings::terrain);
 					}
 
@@ -267,6 +295,7 @@ int main()
 						age_view_btn.Disable(false);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
+						generation_view_btn.Disable(false);
 						environment.SetView(view_settings::species);
 					}
 
@@ -281,6 +310,7 @@ int main()
 						age_view_btn.Disable(false);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
+						generation_view_btn.Disable(false);
 						environment.SetView(view_settings::energy);
 					}
 
@@ -295,6 +325,7 @@ int main()
 						age_view_btn.Disable(false);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
+						generation_view_btn.Disable(false);
 						environment.SetView(view_settings::minerals);
 					}
 
@@ -309,6 +340,7 @@ int main()
 						age_view_btn.Disable(false);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
+						generation_view_btn.Disable(false);
 						environment.SetView(view_settings::ration);
 					}
 
@@ -323,6 +355,7 @@ int main()
 						age_view_btn.Disable(false);
 						hp_view_btn.Disable(true);
 						survival_view_btn.Disable(false);
+						generation_view_btn.Disable(false);
 						environment.SetView(view_settings::hp);
 					}
 
@@ -337,6 +370,7 @@ int main()
 						age_view_btn.Disable(false);
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(true);
+						generation_view_btn.Disable(false);
 						environment.SetView(view_settings::survival);
 					}
 				}
@@ -416,6 +450,7 @@ int main()
 		info_rect.Draw(setting_window);
 		hp_view_btn.Draw(setting_window);
 		survival_view_btn.Draw(setting_window);
+		generation_view_btn.Draw(setting_window);
 
 		if (turn_on_info_block)
 		{

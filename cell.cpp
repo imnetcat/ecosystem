@@ -281,7 +281,7 @@ bool Cell::IsFriendly(const Cell& cell)
 
 RGBColor Cell::GenerationsColor()
 {
-	unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)genom.generation / (size_t(0) - 1)));
+	unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)genom.generation / 200));
 	return { c, c, c };
 }
 RGBColor Cell::TerrainColor()

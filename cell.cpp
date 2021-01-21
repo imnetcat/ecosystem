@@ -281,29 +281,6 @@ void Cell::Tic()
 	age++;
 }
 
-void Cell::RationLevel(char r, char g, char b)
-{
-	if (r < 0 && carnivorousing < r)
-		carnivorousing = 0;
-	else
-		carnivorousing += r;
-
-	if (g < 0 && fotosintesis < g)
-		fotosintesis = 0;
-	else
-		fotosintesis += g;
-
-	if (b < 0 && mineraling < b)
-		mineraling = 0;
-	else
-		mineraling += b;
-}
-
-RGBColor Cell::RationColor()
-{
-	return { carnivorousing, fotosintesis, mineraling };
-}
-
 RGBColor Cell::Species()
 {
 	return genom.Hash();

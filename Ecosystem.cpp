@@ -22,20 +22,51 @@ Ecosystem::Ecosystem()
 
 RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 {
-	RGBColor color;
 	if (terrain[y][x].ContainsCell() && view != view_settings::minerals)
 	{
 		switch (view)
 		{
 		case view_settings::terrain:
 			return { 13, 168, 19 };
-			break;
 		case view_settings::minerals:
 			return { 209, 209, 209 };
-			break;
 		case view_settings::ration:
-			color = terrain[y][x].GetCell().RationColor();
+		{
+			const auto& rationmap = terrain[y][x].GetCell().GetGenome().RationMap();
+			if (rationmap.at(Ration::cells) && rationmap.at(Ration::minerals) && rationmap.at(Ration::light))
+			{
+				return { 0, 0, 0 };
+			}
+			else if (rationmap.at(Ration::cells) && rationmap.at(Ration::minerals))
+			{
+				return { 50, 255, 30 };
+			}
+			else if (rationmap.at(Ration::light) && rationmap.at(Ration::minerals))
+			{
+				return { 30, 255, 248 };
+			}
+			else if (rationmap.at(Ration::light) && rationmap.at(Ration::cells))
+			{
+				return { 255, 160, 30 };
+			}
+			else if (rationmap.at(Ration::cells))
+			{
+				return { 255, 51, 51 };
+			}
+			else if (rationmap.at(Ration::light))
+			{
+				return { 255, 245, 30 };
+			}
+			else if (rationmap.at(Ration::minerals))
+			{
+				return { 37, 53, 217 };
+			}
+			else
+			{
+				return { 0, 0, 0 };
+			}
 			break;
+		}
 		case view_settings::energy:
 		{
 			if (terrain[y][x].GetCell().Energy() < (MAX_ENERGY / 2))
@@ -93,10 +124,8 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 	{
 		return	{ 0, 171, 209 };
 	}
-	else
-	{
-		return terrain[y][x].Color();
-	}
+
+	return terrain[y][x].Color();
 }
 
 void Ecosystem::Draw(sf::RenderWindow& window)

@@ -2,6 +2,7 @@
 #include <array>
 #include <ctime>
 #include <sstream>
+#include <map>
 #include <vector>
 #include "Gen.h"
 
@@ -12,12 +13,22 @@ struct RGBColor
 	unsigned char b = 0;
 };
 
+enum class Ration
+{
+	cells,
+	light,
+	minerals
+};
+
 class Genome
 {
 public:
 
 	explicit Genome(std::vector<Gen> d, float mh, size_t g)
-		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) {};
+		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) 
+	{
+		RationHashing();
+	}
 
 	explicit Genome()
 		: generation(1), mutationChance((rand() % 100) / float(100)), index(0)
@@ -30,6 +41,7 @@ public:
 			data[i].args = rand() % 256;
 		}
 		hash = Hashing();
+		RationHashing();
 	};
 
 	Genome& operator = (const Genome& genome)
@@ -45,9 +57,13 @@ public:
 	float mutationChance;
 	std::vector<Gen> data;
 
-	RGBColor Hash()
+	const RGBColor& Hash() const
 	{
 		return hash;
+	}
+	const std::map<Ration, bool>& RationMap() const
+	{
+		return ration_map;
 	}
 
 	Gen Read()
@@ -130,7 +146,31 @@ private:
 		unsigned char b = std::hash<std::string>{}(bs.str()) % 255;
 		return { r, g, b };
 	}
+	void RationHashing()
+	{
+		ration_map[Ration::cells] = false;
+		ration_map[Ration::light] = false;
+		ration_map[Ration::minerals] = false;
+		for (const auto& g : data)
+		{
+			switch (g.trigger)
+			{
+			case Trigger::Carnivorous:
+				ration_map[Ration::cells] = true;
+				break;
+			case Trigger::Photosyntesis:
+				ration_map[Ration::light] = true;
+				break;
+			case Trigger::Mineraleon:
+				ration_map[Ration::minerals] = true;
+				break;
+			}
+			if (ration_map[Ration::cells] && ration_map[Ration::light] && ration_map[Ration::minerals])
+				break;
+		}
+	}
 	RGBColor hash;
+	std::map<Ration, bool> ration_map;
 
 	size_t index = 0;
 };

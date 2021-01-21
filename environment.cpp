@@ -369,7 +369,6 @@ void Environment::Birthing(size_t x, size_t y)
 }
 void Environment::Carnivorousing(size_t x, size_t y)
 {
-	terrain[y][x].GetCell().RationLevel(5, -1, -1);
 	Position viewed_position = GetViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
 
 	if (viewed_position == Position{ x, y })
@@ -396,7 +395,6 @@ void Environment::Carnivorousing(size_t x, size_t y)
 }
 void Environment::Mineraling(size_t x, size_t y)
 {
-	terrain[y][x].GetCell().RationLevel(-1, -1, 5);
 	auto e = terrain[y][x].GetFood().Eat(MAX_MINERALS_TO_EAT);
 	if (e)
 	{
@@ -430,7 +428,6 @@ void Environment::Moving(size_t x, size_t y)
 }
 void Environment::Photosynthesing(size_t x, size_t y)
 {
-	terrain[y][x].GetCell().RationLevel(-1, 5, -1);
 	terrain[y][x].GetCell().IncreaceEnergy(LIGHT_POWER);
 }
 void Environment::Staying() {}

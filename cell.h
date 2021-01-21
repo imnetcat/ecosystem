@@ -80,14 +80,11 @@ public:
 	
 	bool IsFriendly(const Cell& cell);
 
-	RGBColor RationColor();
 	RGBColor Species();
 
 	void Reproduction(Cell&);
 
 	void Tic();
-
-	void RationLevel(char r, char g, char b);
 
 	bool Defencing(double);
 	double Defence();

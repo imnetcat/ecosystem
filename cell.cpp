@@ -285,7 +285,7 @@ RGBColor Cell::Species()
 {
 	return genom.Hash();
 }
-void Cell::Reproduction(Cell& new_cell)
+size_t Cell::Reproduction(Cell& new_cell)
 {
 	Success isSuccess = SuccessRule();
 	double newMutationChanceK = 0;
@@ -324,6 +324,8 @@ void Cell::Reproduction(Cell& new_cell)
 	new_cell.Attack(attack);
 	new_cell.SetGenome(new_genom);
 	new_cell.Hp(MAX_HP);
+
+	return new_genom.generation;
 }
 
 Cell::Success Cell::SuccessRule()

@@ -82,7 +82,7 @@ public:
 
 	RGBColor Species();
 
-	void Reproduction(Cell&);
+	size_t Reproduction(Cell&);
 
 	void Tic();
 

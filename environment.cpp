@@ -106,7 +106,8 @@ void Environment::Separationing(size_t x, size_t y)
 	if (terrain[new_position.y][new_position.x].IsWalkable())
 	{
 		terrain[new_position.y][new_position.x].SetCell();
-		terrain[y][x].GetCell().Reproduction(terrain[new_position.y][new_position.x].GetCell());
+		if (terrain[y][x].GetCell().Reproduction(terrain[new_position.y][new_position.x].GetCell()) > max_generation)
+			max_generation++;
 
 		terrain[y][x].GetCell().DecreaceEnergy(terrain[y][x].GetCell().ReprodutionCost());
 		unsigned short hlph = terrain[y][x].GetCell().Energy() / 2;
@@ -353,7 +354,8 @@ void Environment::Birthing(size_t x, size_t y)
 	{
 		terrain[new_position.y][new_position.x].SetCell();
 		terrain[y][x].GetCell().DecreaceEnergy(terrain[y][x].GetCell().ReprodutionCost() / 2);
-		terrain[y][x].GetCell().Reproduction(terrain[new_position.y][new_position.x].GetCell());
+		if (terrain[y][x].GetCell().Reproduction(terrain[new_position.y][new_position.x].GetCell()) > max_generation)
+			max_generation++;
 		cells[cells_count] = &terrain[new_position.y][new_position.x].GetCell();
 		cells[cells_count]->SetPosition(new_position.x, new_position.y);
 

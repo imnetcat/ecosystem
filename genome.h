@@ -3,8 +3,14 @@
 #include <ctime>
 #include <sstream>
 #include <vector>
-#include "object.h"
 #include "Gen.h"
+
+struct RGBColor
+{
+	unsigned char r = 0;
+	unsigned char g = 0;
+	unsigned char b = 0;
+};
 
 class Genome
 {

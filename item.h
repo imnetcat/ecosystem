@@ -1,7 +1,5 @@
 #pragma once
-#include "object.h"
-
-class Item : public Object
+class Item
 {
 protected:
 	bool eatable;
@@ -21,15 +19,6 @@ public:
 		walkable = obj.walkable;
 		return *this;
 	}
-
-	RGBColor GenerationsColor();
-	RGBColor MineralsColor();
-	RGBColor RationColor();
-	RGBColor EnergyColor();
-	RGBColor SpeciesColor();
-	RGBColor AgeColor();
-	RGBColor HpColor();
-	RGBColor SurvivalColor();
 
 	void Walkable(bool val);
 	bool IsWalkable();

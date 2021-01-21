@@ -8,6 +8,7 @@
 #include <array>
 #include <cmath>
 #include "water.h"
+#include "config.h"
 
 #include "sfml.h"
 
@@ -41,12 +42,12 @@ private:
 	Position GetViewedPosition(view_side view, Position init);
 	Position GetInvertedViewedPosition(view_side view, Position init);
 private:
-	void Separationing(int args, size_t x, size_t y);
-	void Birthing(int args, size_t x, size_t y);
-	void Carnivorousing(int args, size_t x, size_t y);
-	void Mineraling(int args, size_t x, size_t y);
-	void Moving(int args, size_t x, size_t y);
-	void Photosynthesing(int args, size_t x, size_t y);
-	void Staying(int args, size_t x, size_t y);
+	void Separationing(size_t x, size_t y);
+	void Birthing(size_t x, size_t y);
+	void Carnivorousing(size_t x, size_t y);
+	void Mineraling(size_t x, size_t y);
+	void Moving(size_t x, size_t y);
+	void Photosynthesing(size_t x, size_t y);
+	void Staying();
 	void Turning(int args, size_t x, size_t y);
 };

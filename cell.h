@@ -8,7 +8,32 @@
 #include <map>
 #include <sstream>
 
-class Cell : public Object
+enum class view_side
+{
+	top,
+	right_top,
+	right,
+	right_bottom,
+	bottom,
+	left_bottom,
+	left,
+	left_top,
+};
+
+enum class view_settings
+{
+	terrain,
+	minerals,
+	ration,
+	energy,
+	species,
+	age,
+	hp,
+	survival,
+	generations
+};
+
+class Cell
 {
 protected:
 	size_t x;
@@ -55,23 +80,15 @@ public:
 	
 	bool IsFriendly(const Cell& cell);
 
-	RGBColor GenerationsColor() override;
-	RGBColor TerrainColor() override;
-	RGBColor MineralsColor() override;
-	RGBColor EnergyColor() override;
-	RGBColor SpeciesColor() override;
-	RGBColor AgeColor() override;
-	RGBColor HpColor() override;
-	RGBColor SurvivalColor() override;
+	RGBColor RationColor();
+	RGBColor Species();
 
 	void Reproduction(Cell&);
 
 	void Tic();
 
 	void RationLevel(char r, char g, char b);
-	RGBColor RationColor() override;
 
-	bool Outline(view_settings) override;
 	bool Defencing(double);
 	double Defence();
 	double Attack();
@@ -96,16 +113,13 @@ public:
 	void View(view_side);
 	void Energy(unsigned short);
 	void Hp(unsigned short);
-protected:
 
-	RGBColor Species();
-
-	enum class CellSuccess
+	enum class Success
 	{
 		fail,
 		normal,
 		good
 	};
-
-	CellSuccess CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age);
+	Success SuccessRule();
+protected:
 };

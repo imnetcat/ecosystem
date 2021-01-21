@@ -1,7 +1,8 @@
 #include "environment.h"
+#include "config.h"
 
 size_t Environment::cells_count = 0;
-size_t Environment::max_generation = 0;
+size_t Environment::max_generation = 1;
 std::array<std::array<Structure, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> Environment::terrain;
 std::array<Cell*, ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y> Environment::cells;
 
@@ -95,7 +96,7 @@ void Environment::CellDie(size_t x, size_t y)
 	terrain[y][x].DelCell();
 	Shift(index);
 }
-void Environment::Separationing(int args, size_t x, size_t y)
+void Environment::Separationing(size_t x, size_t y)
 {
 	if (terrain[y][x].GetCell().Energy() < terrain[y][x].GetCell().ReprodutionCost())
 		return;
@@ -147,25 +148,25 @@ void Environment::Update()
 			switch (gen.trigger)
 			{
 			case Trigger::Separate:
-				Separationing(gen.args, x, y);
+				Separationing(x, y);
 				break;
 			case Trigger::Birth:
-				Separationing(gen.args, x, y);
+				Birthing(x, y);
 				break;
 			case Trigger::Carnivorous:
-				Separationing(gen.args, x, y);
+				Carnivorousing(x, y);
 				break;
 			case Trigger::Mineraleon:
-				Separationing(gen.args, x, y);
+				Mineraling(x, y);
 				break;
 			case Trigger::Photosyntesis:
-				Separationing(gen.args, x, y);
+				Photosynthesing(x, y);
 				break;
 			case Trigger::Stay:
-				Separationing(gen.args, x, y);
+				Staying();
 				break;
 			case Trigger::Turn:
-				Separationing(gen.args, x, y);
+				Turning(gen.args, x, y);
 				break;
 			}
 		}
@@ -341,7 +342,7 @@ Position Environment::GetInvertedViewedPosition(view_side view, Position init)
 		return GetViewedPosition(view_side::top, init);
 	}
 }
-void Environment::Birthing(int args, size_t x, size_t y)
+void Environment::Birthing(size_t x, size_t y)
 {
 	if (terrain[y][x].GetCell().Energy() < (terrain[y][x].GetCell().ReprodutionCost() / 2))
 		return;
@@ -366,7 +367,7 @@ void Environment::Birthing(int args, size_t x, size_t y)
 		cells_count++;
 	}
 }
-void Environment::Carnivorousing(int args, size_t x, size_t y)
+void Environment::Carnivorousing(size_t x, size_t y)
 {
 	terrain[y][x].GetCell().RationLevel(5, -1, -1);
 	Position viewed_position = GetViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
@@ -393,7 +394,7 @@ void Environment::Carnivorousing(int args, size_t x, size_t y)
 		}
 	}
 }
-void Environment::Mineraling(int args, size_t x, size_t y)
+void Environment::Mineraling(size_t x, size_t y)
 {
 	terrain[y][x].GetCell().RationLevel(-1, -1, 5);
 	auto e = terrain[y][x].GetFood().Eat(MAX_MINERALS_TO_EAT);
@@ -402,7 +403,7 @@ void Environment::Mineraling(int args, size_t x, size_t y)
 		terrain[y][x].GetCell().IncreaceEnergy(e);
 	}
 }
-void Environment::Moving(int args, size_t x, size_t y)
+void Environment::Moving(size_t x, size_t y)
 {
 	Position new_position = GetViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
 
@@ -427,12 +428,12 @@ void Environment::Moving(int args, size_t x, size_t y)
 		terrain[y][x].DelCell();
 	}
 }
-void Environment::Photosynthesing(int args, size_t x, size_t y)
+void Environment::Photosynthesing(size_t x, size_t y)
 {
 	terrain[y][x].GetCell().RationLevel(-1, 5, -1);
 	terrain[y][x].GetCell().IncreaceEnergy(LIGHT_POWER);
 }
-void Environment::Staying(int args, size_t x, size_t y) {}
+void Environment::Staying() {}
 void Environment::Turning(int args, size_t x, size_t y)
 {
 	unsigned short old_side = static_cast<unsigned short>(terrain[y][x].GetCell().GetView());

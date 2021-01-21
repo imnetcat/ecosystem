@@ -44,70 +44,9 @@ bool Structure::ContainsCell() const
 	return has_cell;
 }
 
-RGBColor Structure::TerrainColor()
+RGBColor Structure::Color()
 {
-	if(has_cell)
-		return cell.TerrainColor();
-	if (!food.Empty())
-		return food.TerrainColor();
 	return color;
-}
-RGBColor Structure::MineralsColor()
-{
-	if (!food.Empty())
-		return food.MineralsColor();
-	return { 209, 209, 209 };
-}
-RGBColor Structure::RationColor()
-{
-	if (has_cell)
-		return cell.RationColor();
-	return { 209, 209, 209 };
-}
-RGBColor Structure::EnergyColor()
-{
-	if (has_cell)
-		return cell.EnergyColor();
-	return { 209, 209, 209 };
-}
-RGBColor Structure::SpeciesColor()
-{
-	if (has_cell)
-		return cell.SpeciesColor();
-	return { 209, 209, 209 };
-}
-RGBColor Structure::AgeColor()
-{
-	if (has_cell)
-		return cell.AgeColor();
-	return { 209, 209, 209 };
-}
-RGBColor Structure::HpColor()
-{
-	if (has_cell)
-		return cell.HpColor();
-	return { 209, 209, 209 };
-}
-RGBColor Structure::SurvivalColor()
-{
-	if (has_cell)
-		return cell.SurvivalColor();
-	return { 209, 209, 209 };
-}
-RGBColor Structure::GenerationsColor()
-{
-	if (has_cell)
-		return cell.GenerationsColor();
-	return { 209, 209, 209 };
-}
-bool Structure::Outline(view_settings vs)
-{
-	if (has_cell)
-		return cell.Outline(vs);
-	if (!food.Empty())
-		return food.Outline(vs);
-
-	return false;
 }
 
 void Structure::SetFood(Minerals obj)

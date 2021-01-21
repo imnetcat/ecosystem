@@ -27,5 +27,6 @@ public:
 	view_settings GetView();
 	void SetView(view_settings new_val);
 private:
+	RGBColor ObtainColor(size_t x, size_t y);
 	view_settings view = view_settings::terrain;
 };

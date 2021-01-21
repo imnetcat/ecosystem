@@ -134,7 +134,6 @@
     <ClInclude Include="item.h" />
     <ClInclude Include="minerals.h" />
     <ClInclude Include="config.h" />
-    <ClInclude Include="object.h" />
     <ClInclude Include="Gen.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />

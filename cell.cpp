@@ -1,4 +1,5 @@
 #include "cell.h"
+#include "config.h"
 
 Cell::Cell()
 	:
@@ -114,10 +115,6 @@ void Cell::SetPosition(size_t nx, size_t ny)
 	y = ny;
 }
 
-bool Cell::Outline(view_settings vs)
-{
-	return vs != view_settings::minerals;
-}
 unsigned short Cell::Age()
 {
 	return age;
@@ -279,69 +276,6 @@ bool Cell::IsFriendly(const Cell& cell)
 	return true;
 }
 
-RGBColor Cell::GenerationsColor()
-{
-	unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)genom.generation / 200));
-	return { c, c, c };
-}
-RGBColor Cell::TerrainColor()
-{
-	return { 13, 168, 19 };
-}
-RGBColor Cell::MineralsColor()
-{
-	return { 209, 209, 209 };
-}
-RGBColor Cell::EnergyColor()
-{
-	if (energy < (MAX_ENERGY / 2))
-	{
-		return { 255, static_cast<unsigned char>(255 * (energy / (double)(MAX_ENERGY / 2))), 0 };
-	}
-	else
-	{
-		return { static_cast<unsigned char>(255 - 255 * (energy / (double)MAX_ENERGY)), 255, 0 };
-	}
-}
-RGBColor Cell::SpeciesColor()
-{
-	return Species();
-}
-RGBColor Cell::AgeColor()
-{
-	unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)age / max_age));
-	return { c, c, c };
-}
-RGBColor Cell::HpColor()
-{
-	if (hp < (MAX_HP / 2))
-	{
-		return { 191, static_cast<unsigned char>(191 * (hp / (double)(MAX_HP / 2))), 0 };
-	}
-	else
-	{
-		return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / hp)), 191, 0 };
-	}
-}
-RGBColor Cell::SurvivalColor()
-{
-	switch (CellSuccessRule(energy, age, max_age))
-	{
-	case Cell::CellSuccess::fail:
-		return { 255, 21, 0 };
-		break;
-	case Cell::CellSuccess::normal:
-		return { 255, 225, 0 };
-		break;
-	case Cell::CellSuccess::good:
-		return { 0, 194, 0 };
-		break;
-	default:
-		return { 255, 225, 0 };
-		break;
-	}
-}
-
 void Cell::Tic()
 {
 	age++;
@@ -376,14 +310,14 @@ RGBColor Cell::Species()
 }
 void Cell::Reproduction(Cell& new_cell)
 {
-	CellSuccess isSuccess = CellSuccessRule(energy, age, max_age);
+	Success isSuccess = SuccessRule();
 	double newMutationChanceK = 0;
 	switch (isSuccess)
 	{
-	case Cell::CellSuccess::fail:
+	case Cell::Success::fail:
 		newMutationChanceK = 0.01;
 		break;
-	case Cell::CellSuccess::good:
+	case Cell::Success::good:
 		newMutationChanceK = -0.01;
 		break;
 	}
@@ -392,10 +326,10 @@ void Cell::Reproduction(Cell& new_cell)
 	short max_age_koef = 0;
 	switch (isSuccess)
 	{
-	case Cell::CellSuccess::fail:
+	case Cell::Success::fail:
 		max_age_koef = -1;
 		break;
-	case Cell::CellSuccess::good:
+	case Cell::Success::good:
 		max_age_koef = 1;
 		break;
 	}
@@ -415,12 +349,12 @@ void Cell::Reproduction(Cell& new_cell)
 	new_cell.Hp(MAX_HP);
 }
 
-Cell::CellSuccess Cell::CellSuccessRule(size_t accumulated_energy, unsigned short age, unsigned short max_age)
+Cell::Success Cell::SuccessRule()
 {
 	unsigned int success_border = MAX_ENERGY * (double(age) / (max_age));
 	success_border /= 2;
-	return (accumulated_energy > success_border) ? CellSuccess::good :
-		(accumulated_energy > (success_border / 2) ? CellSuccess::normal : CellSuccess::fail);
+	return (energy > success_border) ? Success::good :
+		(energy > (success_border / 2) ? Success::normal : Success::fail);
 }
 
 void Cell::SetGenome(Genome value)

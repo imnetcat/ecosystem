@@ -116,7 +116,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 		}
 		case view_settings::generations:
 		{
-			unsigned char c = static_cast<unsigned char>(255 - 255 * (max_generation / (double)terrain[y][x].GetCell().GetGenome().generation));
+			unsigned char c = static_cast<unsigned char>(255 * ((double)terrain[y][x].GetCell().GetGenome().generation) / max_generation);
 			return { c, c, c }; }
 		}
 	}

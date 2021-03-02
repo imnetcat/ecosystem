@@ -3,8 +3,8 @@
 
 size_t Environment::cells_count = 0;
 size_t Environment::max_generation = 1;
-std::array<std::array<Structure, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> Environment::terrain;
-std::array<Cell*, ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y> Environment::cells;
+std::array<std::array<Cell, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> Environment::terrain;
+std::array<Cell*, ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y> Environment::entities;
 
 Environment::Environment()
 {

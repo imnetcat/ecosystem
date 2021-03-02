@@ -1,9 +1,9 @@
 #pragma once
-#include "structure.h"
+#include "Material.h"
 
-class Water : public Structure
+class Water : public Material
 {
 public:
 	Water() 
-		: Structure({ 0, 121, 235 }, true, 0.99) {}
+		: Material({ 0, 121, 235 }, true, 0.99) {}
 };

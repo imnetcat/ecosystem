@@ -33,7 +33,7 @@ enum class view_settings
 	generations
 };
 
-class Cell
+class Entity
 {
 protected:
 	size_t x;
@@ -51,8 +51,8 @@ protected:
 	unsigned char fotosintesis = 0;
 	unsigned char mineraling = 0;
 public:
-	Cell();
-	Cell(
+	Entity();
+	Entity(
 		size_t x,
 		size_t y,
 		unsigned short energy,
@@ -62,10 +62,10 @@ public:
 		double attack,
 		Genome g
 	);
-	Cell(Cell&& cell);
-	Cell(const Cell& cell);
-	Cell& operator = (const Cell& cell);
-	Cell& operator = (Cell&& cell);
+	Entity(Entity&& cell);
+	Entity(const Entity& cell);
+	Entity& operator = (const Entity& cell);
+	Entity& operator = (Entity&& cell);
 
 	size_t GetX() const;
 	size_t GetY() const;
@@ -78,11 +78,11 @@ public:
 	const Genome& GetGenome() const;
 	Genome& GetGenome();
 	
-	bool IsFriendly(const Cell& cell);
+	bool IsFriendly(const Entity& cell);
 
 	RGBColor Species();
 
-	size_t Reproduction(Cell&);
+	size_t Reproduction(Entity&);
 
 	void Tic();
 

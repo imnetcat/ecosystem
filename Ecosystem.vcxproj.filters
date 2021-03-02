@@ -21,23 +21,23 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="structure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="environment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Ecosystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainCell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cell.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="environment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,12 +45,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="minerals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="structure.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="water.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sfml_button.h">
@@ -72,6 +66,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ecosystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="water.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainCell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

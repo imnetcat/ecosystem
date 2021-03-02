@@ -1,7 +1,7 @@
-#include "cell.h"
+#include "entity.h"
 #include "config.h"
 
-Cell::Cell()
+Entity::Entity()
 	:
 	x(0),
 	y(0),
@@ -15,7 +15,7 @@ Cell::Cell()
 	reproduction_cost(0)
 {}
 
-Cell::Cell(
+Entity::Entity(
 	size_t x,
 	size_t y,
 	unsigned short energy,
@@ -38,7 +38,7 @@ Cell::Cell(
 	reproduction_cost(repr_cost)
 {}
 
-Cell::Cell(Cell&& cell)
+Entity::Entity(Entity&& cell)
 {
 	x = cell.x;
 	y = cell.y;
@@ -53,7 +53,7 @@ Cell::Cell(Cell&& cell)
 	genom = cell.genom;
 	reproduction_cost = cell.reproduction_cost;
 }
-Cell::Cell(const Cell& cell)
+Entity::Entity(const Entity& cell)
 {
 	x = cell.x;
 	y = cell.y;
@@ -68,23 +68,7 @@ Cell::Cell(const Cell& cell)
 	genom = cell.genom;
 	reproduction_cost = cell.reproduction_cost;
 }
-Cell& Cell::operator = (const Cell& cell)
-{
-	x = cell.x;
-	y = cell.y;
-	view = cell.view;
-	age = cell.age;
-	max_age = cell.max_age;
-	hp = cell.hp;
-	energy = cell.energy;
-	defence = cell.defence;
-	attack = cell.attack;
-
-	genom = cell.genom;
-	reproduction_cost = cell.reproduction_cost;
-	return *this;
-}
-Cell& Cell::operator = (Cell&& cell)
+Entity& Entity::operator = (const Entity& cell)
 {
 	x = cell.x;
 	y = cell.y;
@@ -100,30 +84,46 @@ Cell& Cell::operator = (Cell&& cell)
 	reproduction_cost = cell.reproduction_cost;
 	return *this;
 }
+Entity& Entity::operator = (Entity&& cell)
+{
+	x = cell.x;
+	y = cell.y;
+	view = cell.view;
+	age = cell.age;
+	max_age = cell.max_age;
+	hp = cell.hp;
+	energy = cell.energy;
+	defence = cell.defence;
+	attack = cell.attack;
 
-size_t Cell::GetX() const
+	genom = cell.genom;
+	reproduction_cost = cell.reproduction_cost;
+	return *this;
+}
+
+size_t Entity::GetX() const
 {
 	return x;
 }
-size_t Cell::GetY() const
+size_t Entity::GetY() const
 {
 	return y;
 }
-void Cell::SetPosition(size_t nx, size_t ny)
+void Entity::SetPosition(size_t nx, size_t ny)
 {
 	x = nx;
 	y = ny;
 }
 
-unsigned short Cell::Age()
+unsigned short Entity::Age()
 {
 	return age;
 }
-unsigned short Cell::MaxAge()
+unsigned short Entity::MaxAge()
 {
 	return max_age;
 }
-bool Cell::Defencing(double attack)
+bool Entity::Defencing(double attack)
 {
 	if (attack < defence)
 	{
@@ -145,29 +145,29 @@ bool Cell::Defencing(double attack)
 		return true;
 	}
 }
-double Cell::Attack()
+double Entity::Attack()
 {
 	return attack;
 }
-void Cell::AttackUp()
+void Entity::AttackUp()
 {
 	attack += 0.01;
 }
-double Cell::Defence()
+double Entity::Defence()
 {
 	return defence;
 }
 
-view_side Cell::GetView()
+view_side Entity::GetView()
 {
 	return view;
 }
-void Cell::SetView(view_side val)
+void Entity::SetView(view_side val)
 {
 	view = val;
 }
 
-void Cell::IncreaceEnergy(unsigned short value)
+void Entity::IncreaceEnergy(unsigned short value)
 {
 	unsigned short dif = MAX_HP - hp;
 	if (dif != 0)
@@ -190,7 +190,7 @@ void Cell::IncreaceEnergy(unsigned short value)
 		energy = MAX_ENERGY;
 }
 
-void Cell::DecreaceEnergy(unsigned short value)
+void Entity::DecreaceEnergy(unsigned short value)
 {
 	if (energy > value)
 	{
@@ -204,7 +204,7 @@ void Cell::DecreaceEnergy(unsigned short value)
 	DecreaceHp(value);
 }
 
-void Cell::IncreaceHp(unsigned short value)
+void Entity::IncreaceHp(unsigned short value)
 {
 	if (hp + value > MAX_HP)
 		hp = 100;
@@ -212,7 +212,7 @@ void Cell::IncreaceHp(unsigned short value)
 		hp += value;
 }
 
-void Cell::DecreaceHp(unsigned short value)
+void Entity::DecreaceHp(unsigned short value)
 {
 	if (hp > value)
 	{
@@ -224,36 +224,36 @@ void Cell::DecreaceHp(unsigned short value)
 	}
 }
 
-unsigned short Cell::Energy()
+unsigned short Entity::Energy()
 {
 	return energy;
 }
 
-unsigned short Cell::Hp()
+unsigned short Entity::Hp()
 {
 	return hp;
 }
 
-bool Cell::IsDead()
+bool Entity::IsDead()
 {
 	return !hp || age > max_age;
 }
 
-size_t Cell::ReprodutionCost()
+size_t Entity::ReprodutionCost()
 {
 	return reproduction_cost;
 }
 
-const Genome& Cell::GetGenome() const
+const Genome& Entity::GetGenome() const
 {
 	return genom;
 }
-Genome& Cell::GetGenome()
+Genome& Entity::GetGenome()
 {
 	return genom;
 }
 
-bool Cell::IsFriendly(const Cell& cell)
+bool Entity::IsFriendly(const Entity& cell)
 {
 	const unsigned short BORDER = 8;
 	size_t count_of_non_equal = 0;
@@ -276,25 +276,25 @@ bool Cell::IsFriendly(const Cell& cell)
 	return true;
 }
 
-void Cell::Tic()
+void Entity::Tic()
 {
 	age++;
 }
 
-RGBColor Cell::Species()
+RGBColor Entity::Species()
 {
 	return genom.Hash();
 }
-size_t Cell::Reproduction(Cell& new_cell)
+size_t Entity::Reproduction(Entity& new_cell)
 {
 	Success isSuccess = SuccessRule();
 	double newMutationChanceK = 0;
 	switch (isSuccess)
 	{
-	case Cell::Success::fail:
+	case Entity::Success::fail:
 		newMutationChanceK = 0.01;
 		break;
-	case Cell::Success::good:
+	case Entity::Success::good:
 		newMutationChanceK = -0.01;
 		break;
 	}
@@ -303,10 +303,10 @@ size_t Cell::Reproduction(Cell& new_cell)
 	short max_age_koef = 0;
 	switch (isSuccess)
 	{
-	case Cell::Success::fail:
+	case Entity::Success::fail:
 		max_age_koef = -1;
 		break;
-	case Cell::Success::good:
+	case Entity::Success::good:
 		max_age_koef = 1;
 		break;
 	}
@@ -328,46 +328,46 @@ size_t Cell::Reproduction(Cell& new_cell)
 	return new_genom.generation;
 }
 
-Cell::Success Cell::SuccessRule()
+Entity::Success Entity::SuccessRule()
 {
 	unsigned int success_border = MAX_ENERGY * (double(age) / (max_age));
 	return (energy > success_border) ? Success::good :
 		(energy > (success_border / 2) ? Success::normal : Success::fail);
 }
 
-void Cell::SetGenome(Genome value)
+void Entity::SetGenome(Genome value)
 {
 	genom = value;
 }
-void Cell::ReproductionCost(size_t value)
+void Entity::ReproductionCost(size_t value)
 {
 	reproduction_cost = value;
 }
-void Cell::Defence(double value)
+void Entity::Defence(double value)
 {
 	defence = value;
 }
-void Cell::Attack(double value)
+void Entity::Attack(double value)
 {
 	attack = value;
 }
-void Cell::Age(unsigned short value)
+void Entity::Age(unsigned short value)
 {
 	age = value;
 }
-void Cell::MaxAge(unsigned short value)
+void Entity::MaxAge(unsigned short value)
 {
 	max_age = value;
 }
-void Cell::View(view_side value)
+void Entity::View(view_side value)
 {
 	view = value;
 }
-void Cell::Energy(unsigned short value)
+void Entity::Energy(unsigned short value)
 {
 	energy = value;
 }
-void Cell::Hp(unsigned short value)
+void Entity::Hp(unsigned short value)
 {
 	hp = value;
 }

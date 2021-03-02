@@ -331,7 +331,6 @@ size_t Cell::Reproduction(Cell& new_cell)
 Cell::Success Cell::SuccessRule()
 {
 	unsigned int success_border = MAX_ENERGY * (double(age) / (max_age));
-	success_border /= 2;
 	return (energy > success_border) ? Success::good :
 		(energy > (success_border / 2) ? Success::normal : Success::fail);
 }

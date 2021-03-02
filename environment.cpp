@@ -26,7 +26,9 @@ Environment::Environment()
 			}
 
 			// put first cells
-			if (((rand() % 100) < 1) && cells_count < CELL_START_COUNT)
+			if (((rand() % 100) < 30) && cells_count < CELL_START_COUNT)
+				//&& y > (ENVIRONMENT_SIZE_Y / 3) && y < (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 3)
+				//&& x > (ENVIRONMENT_SIZE_X / 3) && x < (ENVIRONMENT_SIZE_X - ENVIRONMENT_SIZE_X / 3))
 			{
 				terrain[y][x].SetCell();
 				cells[cells_count] = &terrain[y][x].GetCell();

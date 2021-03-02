@@ -53,18 +53,4 @@ public:
 		}
 		return val;
 	}
-
-	RGBColor TerrainColor()
-	{
-		return	{ 0, 171, 209 };
-	}
-	RGBColor MineralsColor()
-	{
-		return	{ 15, 214, 194 };
-	}
-
-	bool Outline(view_settings) override
-	{
-		return false;
-	}
 };

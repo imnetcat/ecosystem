@@ -1,11 +1,10 @@
 #pragma once
-#include "object.h"
 #include "minerals.h"
 #include "cell.h"
 #include <memory>
 #include <map>
 
-class Structure : public Object
+class Structure
 {
 protected:
 	RGBColor color;
@@ -28,18 +27,8 @@ public:
 	Cell& GetCell();
 	bool ContainsCell() const;
 
-	RGBColor TerrainColor() override;
-	RGBColor MineralsColor() override;
-	RGBColor GenerationsColor() override;
-	RGBColor RationColor() override;
-	RGBColor EnergyColor() override;
-	RGBColor SpeciesColor() override;
-	RGBColor AgeColor() override;
-	RGBColor HpColor() override;
-	RGBColor SurvivalColor() override;
+	RGBColor Color();
 
-	bool Outline(view_settings vs) override;
-	
 	void SetFood(Minerals f);
 	void SetFood(unsigned short energy);
 	void DelFood();

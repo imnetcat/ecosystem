@@ -2,19 +2,37 @@
 #include <array>
 #include <ctime>
 #include <sstream>
+#include <map>
 #include <vector>
-#include "object.h"
 #include "Gen.h"
+
+struct RGBColor
+{
+	unsigned char r = 0;
+	unsigned char g = 0;
+	unsigned char b = 0;
+};
+
+enum class Ration
+{
+	cells,
+	light,
+	minerals
+};
 
 class Genome
 {
 public:
 
-	explicit Genome(std::vector<Gen> d, float mh, size_t g)
-		: generation(g), mutationChance(mh), data(d), hash(Hashing()), index(0) {};
+	explicit Genome(std::vector<Gen> d, double mh, size_t g)
+		: generation(g), mutationChance(mh), data(d), index(0) 
+	{
+		hash = Hashing();
+		RationHashing();
+	}
 
 	explicit Genome()
-		: generation(1), mutationChance((rand() % 100) / float(100)), index(0)
+		: generation(1), mutationChance(0.0), index(0)
 	{
 		auto size = static_cast<int>(Trigger::Count);
 		data.resize(size);
@@ -24,6 +42,7 @@ public:
 			data[i].args = rand() % 256;
 		}
 		hash = Hashing();
+		RationHashing();
 	};
 
 	Genome& operator = (const Genome& genome)
@@ -31,17 +50,23 @@ public:
 		generation = genome.generation;
 		mutationChance = genome.mutationChance;
 		data = genome.data;
+		hash = genome.hash;
+		ration_map = genome.ration_map;
 		index = genome.index;
 		return *this;
 	}
 
 	size_t generation;
-	float mutationChance;
+	double mutationChance;
 	std::vector<Gen> data;
 
-	RGBColor Hash()
+	const RGBColor& Hash() const
 	{
 		return hash;
+	}
+	const std::map<Ration, bool>& RationMap() const
+	{
+		return ration_map;
 	}
 
 	Gen Read()
@@ -58,11 +83,10 @@ public:
 		return gen;
 	}
 
-	Genome Replicate(float mutationChance_koef)
+	Genome Replicate(double mutationChance_koef)
 	{
-		srand(time(0) + rand());
 		auto new_genom = data;
-		float mt = (rand() % 100) / (float)100;
+		double mt = (rand() % 100) / (double)100;
 		// is mutation be
 		if (mt < mutationChance)
 		{
@@ -74,7 +98,7 @@ public:
 
 			// rare mutation
 			// add or remove gen from genome
-			mt = (rand() % 100) / (float)100;
+			mt = (rand() % 100) / (double)100;
 			if (mt < (mutationChance / 2))
 			{
 				int t = mt * 100;
@@ -93,7 +117,7 @@ public:
 			}
 		}
 
-		float new_mutationChance = mutationChance + mutationChance_koef;
+		double new_mutationChance = mutationChance + mutationChance_koef;
 		if (new_mutationChance > 1) new_mutationChance = 1;
 		if (new_mutationChance < 0) new_mutationChance = 0;
 
@@ -114,17 +138,41 @@ private:
 		}
 		for (const auto& g : data)
 		{
-			auto gen = static_cast<unsigned int>(g.args);
-			rs << (gen * data.size()) % 255;
-			gs << (gen % data.size()) % 255;
-			bs << ((gen ^ (gen * gen)) % data.size()) % 255;
+			//auto gen = static_cast<unsigned int>(g.args);
+			//rs << (gen * data.size()) % 255;
+			//gs << (gen % data.size()) % 255;
+			//bs << ((gen ^ (gen * gen)) % data.size()) % 255;
 		}
 		unsigned char r = std::hash<std::string>{}(rs.str()) % 255;
 		unsigned char g = std::hash<std::string>{}(gs.str()) % 255;
 		unsigned char b = std::hash<std::string>{}(bs.str()) % 255;
 		return { r, g, b };
 	}
+	void RationHashing()
+	{
+		ration_map[Ration::cells] = false;
+		ration_map[Ration::light] = false;
+		ration_map[Ration::minerals] = false;
+		for (const auto& g : data)
+		{
+			switch (g.trigger)
+			{
+			case Trigger::Carnivorous:
+				ration_map[Ration::cells] = true;
+				break;
+			case Trigger::Photosyntesis:
+				ration_map[Ration::light] = true;
+				break;
+			case Trigger::Mineraleon:
+				ration_map[Ration::minerals] = true;
+				break;
+			}
+			if (ration_map[Ration::cells] && ration_map[Ration::light] && ration_map[Ration::minerals])
+				break;
+		}
+	}
 	RGBColor hash;
+	std::map<Ration, bool> ration_map;
 
 	size_t index = 0;
 };

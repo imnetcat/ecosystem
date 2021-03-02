@@ -1,6 +1,6 @@
 #include "sfml_button.h"
 #include "sfml_box.h"
-#include "environment.h"
+#include "Ecosystem.h"
 #include "config.h"
 
 #include <iostream>
@@ -217,7 +217,7 @@ int main()
 	
 	ter_view_btn.Disable(true);
 
-	Environment environment;
+	Ecosystem ecosystem;
 
 	bool turn_on_info_block = false;
 	bool pause = false;
@@ -251,7 +251,7 @@ int main()
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
 						generation_view_btn.Disable(true);
-						environment.SetView(view_settings::generations);
+						ecosystem.SetView(view_settings::generations);
 					}
 
 					if (age_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -266,7 +266,7 @@ int main()
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
 						generation_view_btn.Disable(false);
-						environment.SetView(view_settings::age);
+						ecosystem.SetView(view_settings::age);
 					}
 
 					if (ter_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -281,7 +281,7 @@ int main()
 						age_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
 						generation_view_btn.Disable(false);
-						environment.SetView(view_settings::terrain);
+						ecosystem.SetView(view_settings::terrain);
 					}
 
 					if (species_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -296,7 +296,7 @@ int main()
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
 						generation_view_btn.Disable(false);
-						environment.SetView(view_settings::species);
+						ecosystem.SetView(view_settings::species);
 					}
 
 					if (energy_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -311,7 +311,7 @@ int main()
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
 						generation_view_btn.Disable(false);
-						environment.SetView(view_settings::energy);
+						ecosystem.SetView(view_settings::energy);
 					}
 
 					if (minerals_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -326,7 +326,7 @@ int main()
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
 						generation_view_btn.Disable(false);
-						environment.SetView(view_settings::minerals);
+						ecosystem.SetView(view_settings::minerals);
 					}
 
 					if (ration_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -341,7 +341,7 @@ int main()
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(false);
 						generation_view_btn.Disable(false);
-						environment.SetView(view_settings::ration);
+						ecosystem.SetView(view_settings::ration);
 					}
 
 					if (hp_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -356,7 +356,7 @@ int main()
 						hp_view_btn.Disable(true);
 						survival_view_btn.Disable(false);
 						generation_view_btn.Disable(false);
-						environment.SetView(view_settings::hp);
+						ecosystem.SetView(view_settings::hp);
 					}
 
 					if (survival_view_btn.IsClicked(settings_event.mouseButton.x,
@@ -371,7 +371,7 @@ int main()
 						hp_view_btn.Disable(false);
 						survival_view_btn.Disable(true);
 						generation_view_btn.Disable(false);
-						environment.SetView(view_settings::survival);
+						ecosystem.SetView(view_settings::survival);
 					}
 				}
 			}
@@ -397,7 +397,7 @@ int main()
 			{
 				if (main_event.mouseButton.button == sf::Mouse::Left)
 				{
-					auto info = environment.GetInfo(main_event.mouseButton.x, main_event.mouseButton.y);
+					auto info = ecosystem.GetInfo(main_event.mouseButton.x, main_event.mouseButton.y);
 					turn_on_info_block = true;
 					cell_ico.Color({ info.color.r, info.color.g, info.color.b });
 					field_title.setString("Structure");
@@ -472,9 +472,9 @@ int main()
 		{
 			// clear the window and draw background with background color
 			window.clear();
-			// update environment and draw sprites
-			environment.Update();
-			environment.Draw(window);
+			// update ecosystem and draw sprites
+			ecosystem.Update();
+			ecosystem.Draw(window);
 			// display 
 			window.display();
 		}

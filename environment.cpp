@@ -1,87 +1,10 @@
 #include "environment.h"
+#include "config.h"
 
-// organelles
-#include "map_terrain.h"
-#include "separationing.h"
-#include "carnivorousing.h"
-#include "mineraling.h"
-#include "birthing.h"
-#include "photosynthesing.h"
-#include "moving.h"
-#include "staying.h"
-#include "turning.h"
-static const std::map<Trigger, Organelle> ORGANELLES = {
-	{Trigger::Stay, Staying},
-
-	{Trigger::Birth, Birthing},
-	{Trigger::Separate, Separationing},
-
-	{Trigger::Photosyntesis, Photosynthesing},
-	{Trigger::Carnivorous, Carnivorousing},
-	{Trigger::Mineraleon, Mineraling},
-
-	{Trigger::Move, Moving},
-	{Trigger::Turn, Turning}
-};
-
-static array<array<sf::RectangleShape, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> sprites;
-
-void Environment::Draw(sf::RenderWindow& window)
-{
-	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
-	{
-		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
-		{
-			RGBColor color;
-			switch (view)
-			{
-			case view_settings::terrain:
-				color = terrain[y][x].TerrainColor();
-				break;
-			case view_settings::minerals:
-				color = terrain[y][x].MineralsColor();
-				break;
-			case view_settings::ration:
-				color = terrain[y][x].RationColor();
-				break;
-			case view_settings::energy:
-				color = terrain[y][x].EnergyColor();
-				break;
-			case view_settings::species:
-				color = terrain[y][x].SpeciesColor();
-				break;
-			case view_settings::age:
-				color = terrain[y][x].AgeColor();
-				break;
-			case view_settings::hp:
-				color = terrain[y][x].HpColor();
-				break;
-			case view_settings::survival:
-				color = terrain[y][x].SurvivalColor();
-				break;
-			case view_settings::generations:
-				color = terrain[y][x].GenerationsColor();
-				break;
-			}
-
-			if (terrain[y][x].Outline(view))
-			{
-				sprites[y][x].setSize(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-				sprites[y][x].setOutlineThickness(OUTLINE);
-			}
-			else
-			{
-				sprites[y][x].setSize(sf::Vector2f(CELL_OUTLINE, CELL_OUTLINE));
-				sprites[y][x].setOutlineThickness(0);
-			}
-
-			sprites[y][x].setOutlineColor({ 0, 0, 0 });
-			sprites[y][x].setFillColor({ color.r, color.g, color.b });
-
-			window.draw(sprites[y][x]);
-		}
-	}
-}
+size_t Environment::cells_count = 0;
+size_t Environment::max_generation = 1;
+std::array<std::array<Structure, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> Environment::terrain;
+std::array<Cell*, ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y> Environment::cells;
 
 Environment::Environment()
 {
@@ -103,7 +26,9 @@ Environment::Environment()
 			}
 
 			// put first cells
-			if (((rand() % 100) < 1) && cells_count < CELL_START_COUNT)
+			if (((rand() % 100) < 30) && cells_count < CELL_START_COUNT)
+				//&& y > (ENVIRONMENT_SIZE_Y / 3) && y < (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 3)
+				//&& x > (ENVIRONMENT_SIZE_X / 3) && x < (ENVIRONMENT_SIZE_X - ENVIRONMENT_SIZE_X / 3))
 			{
 				terrain[y][x].SetCell();
 				cells[cells_count] = &terrain[y][x].GetCell();
@@ -125,16 +50,82 @@ Environment::Environment()
 				cells_count++;
 			}
 
-			// init map sprites positions
-			sf::RectangleShape cell;
-			sf::Vector2f vec;
-			vec.x = x * CELL_OUTLINE;
-			vec.y = y * CELL_OUTLINE;
-			cell.setPosition(vec);
-			sprites[y][x] = cell;
-
 			index++;
 		}
+	}
+}
+void Environment::Shift(size_t i)
+{
+	size_t index;
+	for (index = i + 1; index < cells.size(); index++)
+	{
+		cells[index - 1] = cells[index];
+		if (!cells[index]) break;
+	}
+	if (cells_count)
+	{
+		cells_count--;
+	}
+}
+
+void Environment::CellDie(size_t index, size_t x, size_t y)
+{
+	if (terrain[y][x].IsContainsFood())
+		terrain[y][x].GetFood().Put(cells[index]->Energy() + 100);
+	else
+		terrain[y][x].SetFood(cells[index]->Energy() + 100);
+
+	terrain[y][x].DelCell();
+	Shift(index);
+}
+void Environment::CellDie(size_t x, size_t y)
+{
+	size_t index;
+	for (index = 0; index < cells.size(); index++)
+	{
+		if (cells[index]->GetX() == x &&
+			cells[index]->GetY() == y)
+			break;
+	}
+
+	if (index == cells.size()) return;
+
+	if (terrain[y][x].IsContainsFood())
+		terrain[y][x].GetFood().Put(cells[index]->Energy() + 100);
+	else
+		terrain[y][x].SetFood(cells[index]->Energy() + 100);
+
+	terrain[y][x].DelCell();
+	Shift(index);
+}
+void Environment::Separationing(size_t x, size_t y)
+{
+	if (terrain[y][x].GetCell().Energy() < terrain[y][x].GetCell().ReprodutionCost())
+		return;
+
+	Position new_position = GetInvertedViewedPosition(terrain[y][x].GetCell().GetView(), { x,y });
+
+	if (terrain[new_position.y][new_position.x].IsWalkable())
+	{
+		terrain[new_position.y][new_position.x].SetCell();
+		if (terrain[y][x].GetCell().Reproduction(terrain[new_position.y][new_position.x].GetCell()) > max_generation)
+			max_generation++;
+
+		terrain[y][x].GetCell().DecreaceEnergy(terrain[y][x].GetCell().ReprodutionCost());
+		unsigned short hlph = terrain[y][x].GetCell().Energy() / 2;
+		terrain[y][x].GetCell().DecreaceEnergy(hlph);
+		terrain[new_position.y][new_position.x].GetCell().IncreaceEnergy(hlph);
+		cells[cells_count] = &terrain[new_position.y][new_position.x].GetCell();
+		cells[cells_count]->SetPosition(new_position.x, new_position.y);
+
+		size_t cost = 0;
+		for (const Gen& gen : cells[cells_count]->GetGenome().data)
+		{
+			cost += CREATION_COST.at(gen.trigger);
+		}
+		cells[cells_count]->ReproductionCost(100 + cost);
+
+		cells_count++;
 	}
 }
 
@@ -157,72 +148,304 @@ void Environment::Update()
 
 			Gen& gen = cells[index]->GetGenome().Read();
 			cells[index]->DecreaceEnergy(MAINTENANACE_COST.at(gen.trigger));
-			ORGANELLES.at(gen.trigger)(gen.args, x, y);
+			switch (gen.trigger)
+			{
+			case Trigger::Separate:
+				Separationing(x, y);
+				break;
+			case Trigger::Birth:
+				Birthing(x, y);
+				break;
+			case Trigger::Carnivorous:
+				Carnivorousing(x, y);
+				break;
+			case Trigger::Mineraleon:
+				Mineraling(x, y);
+				break;
+			case Trigger::Photosyntesis:
+				Photosynthesing(x, y);
+				break;
+			case Trigger::Stay:
+				Staying();
+				break;
+			case Trigger::Turn:
+				Turning(gen.args, x, y);
+				break;
+			}
 		}
 	}
 }
 
-Info Environment::GetInfo(size_t x_px, size_t y_px)
+bool operator == (const Position& lhs, const Position& rhs)
 {
-	size_t x = x_px / CELL_OUTLINE;
-	size_t y = y_px / CELL_OUTLINE;
-	Info info;
+	return lhs.x == rhs.x && lhs.y == rhs.y;
+}
 
+Position Environment::GetViewedPosition(view_side view, Position init)
+{
+	auto maxX = ENVIRONMENT_SIZE_X - 1;
+	auto maxY = ENVIRONMENT_SIZE_Y - 1;
+
+	Position viewed_position = init;
 	switch (view)
 	{
-	case view_settings::terrain:
-		info.color = terrain[y][x].TerrainColor();
-		break;
-	case view_settings::minerals:
-		info.color = terrain[y][x].MineralsColor();
-		break;
-	case view_settings::ration:
-		info.color = terrain[y][x].RationColor();
-		break;
-	case view_settings::energy:
-		info.color = terrain[y][x].EnergyColor();
-		break;
-	case view_settings::species:
-		info.color = terrain[y][x].SpeciesColor();
-		break;
-	case view_settings::age:
-		info.color = terrain[y][x].AgeColor();
-		break;
-	case view_settings::hp:
-		info.color = terrain[y][x].HpColor();
-		break;
-	case view_settings::survival:
-		info.color = terrain[y][x].SurvivalColor();
-		break;
-	}
-
-	info.light_power = LIGHT_POWER;
-	if (terrain[y][x].ContainsCell())
-	{
-		info.age.curr = terrain[y][x].GetCell().Age();
-		info.age.max = terrain[y][x].GetCell().MaxAge();
-		auto& data = terrain[y][x].GetCell().GetGenome().data;
-		for (unsigned int i = 0; i < data.size(); i++)
+	case view_side::left:
+		if (init.x > 0)
 		{
-			info.genom.push_back(static_cast<int>(data[i].trigger));
+			viewed_position.x--;
 		}
-		info.generation = terrain[y][x].GetCell().GetGenome().generation;
-		info.hp = terrain[y][x].GetCell().Hp();
-		info.ch_of_mut = terrain[y][x].GetCell().GetGenome().mutationChance;
-		info.energy = terrain[y][x].GetCell().Energy();
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = maxX;
+		}
+		break;
+	case view_side::right:
+		if (init.x < maxX)
+		{
+			viewed_position.x++;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = 0;
+		}
+		break;
+	case view_side::bottom:
+		if (init.y > 0)
+		{
+			viewed_position.y--;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.y = maxY;
+		}
+		break;
+	case view_side::top:
+		if (init.y < maxY)
+		{
+			viewed_position.y++;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.y = 0;
+		}
+		break;
+	case view_side::left_bottom:
+		if (init.x > 0 && init.y < maxY)
+		{
+			viewed_position.x--;
+			viewed_position.y++;
+		}
+		else if (init.y < maxY && LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = maxX;
+			viewed_position.y++;
+		}
+		else if (LOOPED_ENVIRONMENT && init.x > 0)
+		{
+			viewed_position.x--;
+			viewed_position.y = 0;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = maxX;
+			viewed_position.y = 0;
+		}
+		break;
+	case view_side::left_top:
+		if (init.x > 0 && init.y > 0)
+		{
+			viewed_position.x--;
+			viewed_position.y--;
+		}
+		else if (init.y > 0 && LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = maxX;
+			viewed_position.y--;
+		}
+		else if (LOOPED_ENVIRONMENT && init.x > 0)
+		{
+			viewed_position.x--;
+			viewed_position.y = maxY;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = maxX;
+			viewed_position.y = maxY;
+		}
+		break;
+	case view_side::right_bottom:
+		if (init.y < maxY && init.x < maxX)
+		{
+			viewed_position.x++;
+			viewed_position.y++;
+		}
+		else if (init.y < maxY && LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = 0;
+			viewed_position.y++;
+		}
+		else if (LOOPED_ENVIRONMENT && init.x < maxX)
+		{
+			viewed_position.x++;
+			viewed_position.y = 0;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = 0;
+			viewed_position.y = 0;
+		}
+		break;
+	case view_side::right_top:
+		if (init.y > 0 && init.x < maxX)
+		{
+			viewed_position.x++;
+			viewed_position.y--;
+		}
+		else if (init.y > 0 && LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = 0;
+			viewed_position.y--;
+		}
+		else if (LOOPED_ENVIRONMENT && init.x < maxX)
+		{
+			viewed_position.x++;
+			viewed_position.y = maxY;
+		}
+		else if (LOOPED_ENVIRONMENT)
+		{
+			viewed_position.x = 0;
+			viewed_position.y = maxY;
+		}
+		break;
 	}
-	if (terrain[y][x].IsContainsFood())
-	{
-		info.food_power = terrain[y][x].GetFood().Get();
-	}
-	return info;
+	return viewed_position;
 }
 
-view_settings Environment::GetView()
+Position Environment::GetInvertedViewedPosition(view_side view, Position init)
 {
-	return view;
+	switch (view)
+	{
+	case view_side::top:
+		return GetViewedPosition(view_side::bottom, init);
+	case view_side::right_top:
+		return GetViewedPosition(view_side::left_bottom, init);
+	case view_side::right:
+		return GetViewedPosition(view_side::left, init);
+	case view_side::right_bottom:
+		return GetViewedPosition(view_side::left_top, init);
+	case view_side::bottom:
+		return GetViewedPosition(view_side::top, init);
+	case view_side::left_bottom:
+		return GetViewedPosition(view_side::right_top, init);
+	case view_side::left:
+		return GetViewedPosition(view_side::right, init);
+	case view_side::left_top:
+		return GetViewedPosition(view_side::right_bottom, init);
+	default:
+		return GetViewedPosition(view_side::top, init);
+	}
 }
-void Environment::SetView(view_settings new_val)
+void Environment::Birthing(size_t x, size_t y)
 {
-	view = new_val;
+	if (terrain[y][x].GetCell().Energy() < (terrain[y][x].GetCell().ReprodutionCost() / 2))
+		return;
+
+	Position new_position = GetInvertedViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
+
+	if (terrain[new_position.y][new_position.x].IsWalkable())
+	{
+		terrain[new_position.y][new_position.x].SetCell();
+		terrain[y][x].GetCell().DecreaceEnergy(terrain[y][x].GetCell().ReprodutionCost() / 2);
+		if (terrain[y][x].GetCell().Reproduction(terrain[new_position.y][new_position.x].GetCell()) > max_generation)
+			max_generation++;
+		cells[cells_count] = &terrain[new_position.y][new_position.x].GetCell();
+		cells[cells_count]->SetPosition(new_position.x, new_position.y);
+
+		size_t cost = 0;
+		for (const Gen& gen : cells[cells_count]->GetGenome().data)
+		{
+			cost += CREATION_COST.at(gen.trigger);
+		}
+		cells[cells_count]->ReproductionCost(100 + cost);
+
+		cells_count++;
+	}
+}
+void Environment::Carnivorousing(size_t x, size_t y)
+{
+	Position viewed_position = GetViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
+
+	if (viewed_position == Position{ x, y })
+		return;
+
+	auto& viewed_point = terrain[viewed_position.y][viewed_position.x];
+
+	if (viewed_point.ContainsCell())
+	{
+		if (!viewed_point.GetCell().IsFriendly(terrain[y][x].GetCell()))
+		{
+			if (!viewed_point.GetCell().Defencing(terrain[y][x].GetCell().Attack()))
+			{
+				CellDie(x, y);
+				terrain[y][x].GetCell().AttackUp();
+				auto e = viewed_point.GetCell().Energy();
+				if (e > MAX_MEAT_TO_EAT)
+					terrain[y][x].GetCell().IncreaceEnergy(MAX_MEAT_TO_EAT);
+				else
+					terrain[y][x].GetCell().IncreaceEnergy(e);
+			}
+		}
+	}
+}
+void Environment::Mineraling(size_t x, size_t y)
+{
+	auto e = terrain[y][x].GetFood().Eat(MAX_MINERALS_TO_EAT);
+	if (e)
+	{
+		terrain[y][x].GetCell().IncreaceEnergy(e);
+	}
+}
+void Environment::Moving(size_t x, size_t y)
+{
+	Position new_position = GetViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
+
+	if (new_position == Position{ x, y })
+		return;
+
+	if (terrain[new_position.y][new_position.x].IsWalkable())
+	{
+		size_t index;
+		for (index = 0; index < cells.size(); index++)
+		{
+			if (cells[index]->GetX() == x &&
+				cells[index]->GetY() == y)
+			{
+				cells[index] = &terrain[new_position.y][new_position.x].GetCell();
+				break;
+			}
+		}
+		terrain[y][x].GetCell().SetPosition(new_position.x, new_position.y);
+		terrain[new_position.y][new_position.x].SetCell(terrain[y][x].GetCell());
+
+		terrain[y][x].DelCell();
+	}
+}
+void Environment::Photosynthesing(size_t x, size_t y)
+{
+	terrain[y][x].GetCell().IncreaceEnergy(LIGHT_POWER);
+}
+void Environment::Staying() {}
+void Environment::Turning(int args, size_t x, size_t y)
+{
+	unsigned short old_side = static_cast<unsigned short>(terrain[y][x].GetCell().GetView());
+	view_side new_side;
+	if (args % 2)
+	{
+		new_side = static_cast<view_side>(old_side == 0 ? 7 : old_side - 1);
+	}
+	else
+	{
+		new_side = static_cast<view_side>(old_side == 7 ? 0 : old_side + 1);
+	}
+	terrain[y][x].GetCell().SetView(new_side);
 }

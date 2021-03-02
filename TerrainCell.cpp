@@ -4,11 +4,6 @@ Entity& TerrainCell::GetEntity()
 {
 	return entity;
 }
-void TerrainCell::SetEntity(const Entity& c)
-{
-	entity = c;
-	has_entity = true;
-}
 void TerrainCell::SetEntity()
 {
 	has_entity = true;
@@ -22,33 +17,25 @@ bool TerrainCell::ContainsEntity() const
 	return has_entity;
 }
 
-void TerrainCell::SetFood(Minerals obj)
+void TerrainCell::SetFood(size_t value)
 {
-	food.Put(obj.Get());
-}
-void TerrainCell::SetFood(unsigned short energy)
-{
-	food.Put(energy);
+	organic += value;
 }
 void TerrainCell::DelFood()
 {
-	food.Clear();
+	organic = 0;
 }
-Minerals& TerrainCell::GetFood()
+size_t TerrainCell::GetFood() const
 {
-	return food;
-}
-const Minerals& TerrainCell::GetFood() const
-{
-	return food;
+	return organic;
 }
 
 bool TerrainCell::IsWalkable()
 {
-	return material.IsWalkable() && !ContainsEntity();
+	return material.Walkable() && !ContainsEntity();
 }
 
 bool TerrainCell::IsContainsFood()
 {
-	return !food.Empty();
+	return organic;
 }

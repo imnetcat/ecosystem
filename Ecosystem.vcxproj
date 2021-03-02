@@ -125,6 +125,7 @@
     <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="TerrainCell.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -132,10 +133,10 @@
     <ClInclude Include="Ecosystem.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="genome.h" />
-    <ClInclude Include="item.h" />
-    <ClInclude Include="minerals.h" />
+    <ClInclude Include="Organic.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="Gen.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />
     <ClInclude Include="sfml_button.h" />

@@ -118,5 +118,4 @@ public:
 		good
 	};
 	Success SuccessRule();
-protected:
 };

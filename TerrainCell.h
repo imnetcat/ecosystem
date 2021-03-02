@@ -1,6 +1,7 @@
 #pragma once
-#include "minerals.h"
-#include "entity.h"
+#include "Water.h"
+#include "Organic.h"
+#include "Entity.h"
 #include "Material.h"
 #include <memory>
 #include <map>
@@ -8,14 +9,13 @@
 class TerrainCell
 {
 protected:
-	Minerals food;
+	size_t organic;
 	Entity entity;
 	Material material;
 	bool has_entity = false;
 public:
-	TerrainCell(Material material) : material(material) {}
+	TerrainCell() : material(Water()) {}
 
-	void SetEntity(const Entity& c);
 	void SetEntity();
 	void DelEntity();
 	Entity& GetEntity();
@@ -23,11 +23,9 @@ public:
 
 	RGBColor Color();
 
-	void SetFood(Minerals f);
-	void SetFood(unsigned short energy);
+	void SetFood(size_t organic);
 	void DelFood();
-	Minerals& GetFood();
-	const Minerals& GetFood() const;
+	size_t GetFood() const;
 
 	void Walkable(bool val);
 	bool IsWalkable();

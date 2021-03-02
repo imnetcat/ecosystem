@@ -5,7 +5,7 @@ Entity::Entity()
 	:
 	x(0),
 	y(0),
-	view(static_cast<view_side>(rand() % 8)),
+	view(view_side::top),
 	age(0),
 	max_age(0),
 	hp(0),

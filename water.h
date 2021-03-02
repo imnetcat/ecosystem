@@ -5,5 +5,5 @@ class Water : public Material
 {
 public:
 	Water() 
-		: Material({ 0, 121, 235 }, true, 0.99) {}
+		: Material({ 0, 121, 235 }, true, 0.99, GravityEffect::None) {}
 };

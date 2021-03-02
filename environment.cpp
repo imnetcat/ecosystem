@@ -1,26 +1,20 @@
 #include "environment.h"
 #include "config.h"
-
-size_t Environment::cells_count = 0;
-size_t Environment::max_generation = 1;
-std::array<std::array<Cell, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> Environment::terrain;
-std::array<Cell*, ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y> Environment::entities;
+#include "Water.h"
 
 Environment::Environment()
+	: cells_count(0)
+	, max_generation(1)
+	, entities(ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y)
 {
 	size_t index = 0;
-	srand(time(0) + rand());
+	srand(time(0));
 	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 	{
 		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 		{
-			// fill of water
-			terrain[y][x] = Water();
-			// fill of nullptr
-			cells[index] = nullptr;
-
-			// put minerals
-			if (((rand() % 100) < 25))
+			// put food
+			if (((rand() % 100) < 30))
 			{
 				terrain[y][x].SetFood(100);
 			}

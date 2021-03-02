@@ -3,31 +3,30 @@
 #include "Organic.h"
 #include "Entity.h"
 #include "Material.h"
+#include "config.h"
 #include <memory>
 #include <map>
+#include <array>
 
 class TerrainCell
 {
 protected:
 	size_t organic;
-	Entity entity;
+	EntityIterator entity;
 	Material material;
 	bool has_entity = false;
 public:
-	TerrainCell() : material(Water()) {}
+	TerrainCell() : organic(0), material(Water()) {}
 
-	void SetEntity();
+	void SetEntity(EntityIterator);
 	void DelEntity();
-	Entity& GetEntity();
+	EntityIterator GetEntity();
 	bool ContainsEntity() const;
-
-	RGBColor Color();
 
 	void SetFood(size_t organic);
 	void DelFood();
 	size_t GetFood() const;
 
-	void Walkable(bool val);
 	bool IsWalkable();
 
 	bool IsContainsFood();

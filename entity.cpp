@@ -1,5 +1,6 @@
-#include "entity.h"
+#include "Entity.h"
 #include "config.h"
+#include <array>
 
 Entity::Entity()
 	:
@@ -239,7 +240,7 @@ bool Entity::IsDead()
 	return !hp || age > max_age;
 }
 
-size_t Entity::ReprodutionCost()
+size_t Entity::ReproductionCost()
 {
 	return reproduction_cost;
 }
@@ -253,29 +254,6 @@ Genome& Entity::GetGenome()
 	return genom;
 }
 
-bool Entity::IsFriendly(const Entity& cell)
-{
-	const unsigned short BORDER = 8;
-	size_t count_of_non_equal = 0;
-	auto lhs_genom = GetGenome().data;
-	auto rhs_genom = cell.GetGenome().data;
-
-	if (lhs_genom.size() != rhs_genom.size())
-		return false;
-
-	for (size_t index = 0; index < lhs_genom.size(); index++)
-	{
-		if (lhs_genom[index].trigger != rhs_genom[index].trigger && 
-			lhs_genom[index].args != rhs_genom[index].args)
-			count_of_non_equal++;
-
-		if (count_of_non_equal > BORDER)
-			return false;
-	}
-
-	return true;
-}
-
 void Entity::Tic()
 {
 	age++;
@@ -284,55 +262,6 @@ void Entity::Tic()
 RGBColor Entity::Species()
 {
 	return genom.Hash();
-}
-size_t Entity::Reproduction(Entity& new_cell)
-{
-	Success isSuccess = SuccessRule();
-	double newMutationChanceK = 0;
-	switch (isSuccess)
-	{
-	case Entity::Success::fail:
-		newMutationChanceK = 0.01;
-		break;
-	case Entity::Success::good:
-		newMutationChanceK = -0.01;
-		break;
-	}
-	Genome new_genom = genom.Replicate(newMutationChanceK);
-
-	short max_age_koef = 0;
-	switch (isSuccess)
-	{
-	case Entity::Success::fail:
-		max_age_koef = -1;
-		break;
-	case Entity::Success::good:
-		max_age_koef = 1;
-		break;
-	}
-
-	unsigned short new_max_age = max_age + max_age_koef;
-	if (new_max_age > 1000) new_max_age = 1000;
-	if (new_max_age < 2) new_max_age = 2;
-
-	new_cell.SetPosition(x, y);
-	new_cell.Energy(100);
-	new_cell.Age(0);
-	new_cell.MaxAge(new_max_age);
-	new_cell.ReproductionCost(reproduction_cost);
-	new_cell.Defence(defence);
-	new_cell.Attack(attack);
-	new_cell.SetGenome(new_genom);
-	new_cell.Hp(MAX_HP);
-
-	return new_genom.generation;
-}
-
-Entity::Success Entity::SuccessRule()
-{
-	unsigned int success_border = MAX_ENERGY * (double(age) / (max_age));
-	return (energy > success_border) ? Success::good :
-		(energy > (success_border / 2) ? Success::normal : Success::fail);
 }
 
 void Entity::SetGenome(Genome value)

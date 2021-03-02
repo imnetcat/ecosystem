@@ -1,5 +1,6 @@
 #pragma once
 #include "genome.h"
+#include "config.h"
 
 #include <iostream>
 #include <memory>
@@ -73,16 +74,12 @@ public:
 
 	bool IsDead();
 
-	size_t ReprodutionCost();
+	size_t ReproductionCost();
 
 	const Genome& GetGenome() const;
 	Genome& GetGenome();
 	
-	bool IsFriendly(const Entity& cell);
-
 	RGBColor Species();
-
-	size_t Reproduction(Entity&);
 
 	void Tic();
 
@@ -110,12 +107,6 @@ public:
 	void View(view_side);
 	void Energy(unsigned short);
 	void Hp(unsigned short);
-
-	enum class Success
-	{
-		fail,
-		normal,
-		good
-	};
-	Success SuccessRule();
 };
+
+using EntityIterator = std::array<Entity, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X>::iterator;

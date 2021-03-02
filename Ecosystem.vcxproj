@@ -119,17 +119,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="entity.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Ecosystem.cpp" />
     <ClCompile Include="environment.cpp" />
-    <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="TerrainCell.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="entity.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Ecosystem.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="genome.h" />

@@ -1,11 +1,12 @@
 #include "TerrainCell.h"
 
-Entity& TerrainCell::GetEntity()
+EntityIterator TerrainCell::GetEntity()
 {
 	return entity;
 }
-void TerrainCell::SetEntity()
+void TerrainCell::SetEntity(EntityIterator value)
 {
+	entity = value;
 	has_entity = true;
 }
 void TerrainCell::DelEntity()
@@ -19,7 +20,7 @@ bool TerrainCell::ContainsEntity() const
 
 void TerrainCell::SetFood(size_t value)
 {
-	organic += value;
+	organic = value;
 }
 void TerrainCell::DelFood()
 {

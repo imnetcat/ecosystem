@@ -28,27 +28,36 @@ class Environment
 public:
 	explicit Environment();
 	void Update();
+
+	enum class Success
+	{
+		fail,
+		normal,
+		good
+	};
+	static Success SuccessRule(EntityIterator);
 protected:
 
-	size_t cells_count;
+	size_t shift_count;
+
+	size_t entities_count;
 	size_t max_generation;
 	TerrainCell terrain[ENVIRONMENT_SIZE_Y][ENVIRONMENT_SIZE_X];
-	std::list<Entity> entities;
+	std::array<Entity, ENVIRONMENT_SIZE_Y * ENVIRONMENT_SIZE_X> entities;
 
 private:
-	void Shift(size_t i);
-	void CellDie(size_t index, size_t x, size_t y);
-	void CellDie(size_t x, size_t y);
+	void EntityDie(EntityIterator);
 
-	Position GetViewedPosition(view_side view, Position init);
-	Position GetInvertedViewedPosition(view_side view, Position init);
-private:
-	void Separationing(size_t x, size_t y);
-	void Birthing(size_t x, size_t y);
-	void Carnivorousing(size_t x, size_t y);
-	void Mineraling(size_t x, size_t y);
-	void Moving(size_t x, size_t y);
-	void Photosynthesing(size_t x, size_t y);
+	Position GetViewedPosition(view_side view, size_t x, size_t y);
+	Position GetInvertedViewedPosition(view_side view, size_t x, size_t y);
+
+	size_t Reproduction(EntityIterator parent_entity, EntityIterator new_entity);
+	void Separationing(EntityIterator);
+	void Birthing(EntityIterator);
+	void Carnivorousing(EntityIterator);
+	void Mineraling(EntityIterator);
+	void Moving(EntityIterator);
+	void Photosynthesing(EntityIterator);
 	void Staying();
-	void Turning(int args, size_t x, size_t y);
+	void Turning(int args, EntityIterator);
 };

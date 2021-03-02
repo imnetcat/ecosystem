@@ -1,4 +1,5 @@
 #include "Ecosystem.h"
+#include "Environment.h"
 #include "config.h"
 
 static array<array<sf::RectangleShape, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> sprites;
@@ -33,7 +34,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 			return { 209, 209, 209 };
 		case view_settings::ration:
 		{
-			const auto& rationmap = terrain[y][x].GetEntity().GetGenome().RationMap();
+			const auto& rationmap = terrain[y][x].GetEntity()->GetGenome().RationMap();
 			if (rationmap.at(Ration::cells) && rationmap.at(Ration::minerals) && rationmap.at(Ration::light))
 			{
 				return { 0, 0, 0 };
@@ -70,44 +71,44 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 		}
 		case view_settings::energy:
 		{
-			if (terrain[y][x].GetEntity().Energy() < (MAX_ENERGY / 2))
+			if (terrain[y][x].GetEntity()->Energy() < (MAX_ENERGY / 2))
 			{
-				return { 255, static_cast<unsigned char>(255 * (terrain[y][x].GetEntity().Energy() / (double)(MAX_ENERGY / 2))), 0 };
+				return { 255, static_cast<unsigned char>(255 * (terrain[y][x].GetEntity()->Energy() / (double)(MAX_ENERGY / 2))), 0 };
 			}
 			else
 			{
-				return { static_cast<unsigned char>(255 - 255 * (terrain[y][x].GetEntity().Energy() / (double)MAX_ENERGY)), 255, 0 };
+				return { static_cast<unsigned char>(255 - 255 * (terrain[y][x].GetEntity()->Energy() / (double)MAX_ENERGY)), 255, 0 };
 			}
 		}
 		case view_settings::species:
-			return terrain[y][x].GetEntity().Species();
+			return terrain[y][x].GetEntity()->Species();
 		case view_settings::age:
 		{
-			unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)terrain[y][x].GetEntity().Age() / terrain[y][x].GetEntity().MaxAge()));
+			unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)terrain[y][x].GetEntity()->Age() / terrain[y][x].GetEntity()->MaxAge()));
 			return { c, c, c };
 		}
 		case view_settings::hp:
 		{
-			if (terrain[y][x].GetEntity().Hp() < (MAX_HP / 2))
+			if (terrain[y][x].GetEntity()->Hp() < (MAX_HP / 2))
 			{
-				return { 191, static_cast<unsigned char>(191 * (terrain[y][x].GetEntity().Hp() / (double)(MAX_HP / 2))), 0 };
+				return { 191, static_cast<unsigned char>(191 * (terrain[y][x].GetEntity()->Hp() / (double)(MAX_HP / 2))), 0 };
 			}
 			else
 			{
-				return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / terrain[y][x].GetEntity().Hp())), 191, 0 };
+				return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / terrain[y][x].GetEntity()->Hp())), 191, 0 };
 			}
 		}
 		case view_settings::survival:
 		{
-			switch (terrain[y][x].GetEntity().SuccessRule())
+			switch (Environment::SuccessRule(terrain[y][x].GetEntity()))
 			{
-			case Entity::Success::fail:
+			case Environment::Success::fail:
 				return { 255, 21, 0 };
 				break;
-			case Entity::Success::normal:
+			case Environment::Success::normal:
 				return { 255, 225, 0 };
 				break;
-			case Entity::Success::good:
+			case Environment::Success::good:
 				return { 0, 194, 0 };
 				break;
 			default:
@@ -117,7 +118,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 		}
 		case view_settings::generations:
 		{
-			unsigned char c = static_cast<unsigned char>(255 * ((double)terrain[y][x].GetEntity().GetGenome().generation) / max_generation);
+			unsigned char c = static_cast<unsigned char>(255 * ((double)terrain[y][x].GetEntity()->GetGenome().generation) / max_generation);
 			return { c, c, c }; }
 		}
 	}
@@ -126,7 +127,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 		return	{ 0, 171, 209 };
 	}
 
-	return terrain[y][x].Color();
+	return { 141, 219, 255 };
 }
 
 void Ecosystem::Draw(sf::RenderWindow& window)
@@ -167,17 +168,17 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	info.light_power = LIGHT_POWER;
 	if (terrain[y][x].ContainsEntity())
 	{
-		info.age.curr = terrain[y][x].GetEntity().Age();
-		info.age.max = terrain[y][x].GetEntity().MaxAge();
-		auto& data = terrain[y][x].GetEntity().GetGenome().data;
+		info.age.curr = terrain[y][x].GetEntity()->Age();
+		info.age.max = terrain[y][x].GetEntity()->MaxAge();
+		auto& data = terrain[y][x].GetEntity()->GetGenome().data;
 		for (unsigned int i = 0; i < data.size(); i++)
 		{
 			info.genom.push_back(static_cast<int>(data[i].trigger));
 		}
-		info.generation = terrain[y][x].GetEntity().GetGenome().generation;
-		info.hp = terrain[y][x].GetEntity().Hp();
-		info.ch_of_mut = terrain[y][x].GetEntity().GetGenome().mutationChance;
-		info.energy = terrain[y][x].GetEntity().Energy();
+		info.generation = terrain[y][x].GetEntity()->GetGenome().generation;
+		info.hp = terrain[y][x].GetEntity()->Hp();
+		info.ch_of_mut = terrain[y][x].GetEntity()->GetGenome().mutationChance;
+		info.energy = terrain[y][x].GetEntity()->Energy();
 	}
 	if (terrain[y][x].IsContainsFood())
 	{

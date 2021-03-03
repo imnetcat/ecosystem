@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include "Gen.h"
+#include "Random.h"
 
 struct RGBColor
 {
@@ -22,43 +23,46 @@ enum class Ration
 
 class Genome
 {
+private:
+	Random random; 
+	std::map<Ration, bool> ration_map;
+	size_t index = 0;
+	RGBColor hash;
 public:
-
-	explicit Genome(std::vector<Gen> d, double mh, size_t g)
-		: generation(g), mutationChance(mh), data(d), index(0) 
-	{
-		hash = Hashing();
-		RationHashing();
-	}
-
-	explicit Genome()
-		: generation(1), mutationChance(0.0), index(0)
-	{
-		auto size = static_cast<int>(Trigger::Count);
-		data.resize(size);
-		for (int i = 0; i < size; i++)
-		{
-			data[i].trigger = static_cast<Trigger>(rand() % size);
-			data[i].args = rand() % 256;
-		}
-		hash = Hashing();
-		RationHashing();
-	};
-
-	Genome& operator = (const Genome& genome)
-	{
-		generation = genome.generation;
-		mutationChance = genome.mutationChance;
-		data = genome.data;
-		hash = genome.hash;
-		ration_map = genome.ration_map;
-		index = genome.index;
-		return *this;
-	}
 
 	size_t generation;
 	double mutationChance;
 	std::vector<Gen> data;
+
+	Genome() : generation(1), mutationChance(0.0), index(0){};
+
+	Genome(std::vector<Gen> data, double mutationChance, size_t generation)
+		: generation(generation), mutationChance(mutationChance), data(data), index(0)
+	{
+		hash = Hashing();
+		RationHashing();
+	}
+
+	Genome(const Genome& obj)
+		: generation(obj.generation)
+		, mutationChance(obj.mutationChance)
+		, index(obj.index)
+		, hash(obj.hash)
+		, data(obj.data)
+		, ration_map(obj.ration_map) {}
+
+	Genome(Genome&&) = default;
+	Genome& operator = (const Genome& obj)
+	{
+		generation = obj.generation;
+		mutationChance = obj.mutationChance;
+		index = obj.index;
+		hash = obj.hash;
+		data = obj.data;
+		ration_map = obj.ration_map;
+		return *this;
+	}
+	Genome& operator = (Genome&&) = default;
 
 	const RGBColor& Hash() const
 	{
@@ -86,32 +90,29 @@ public:
 	Genome Replicate(double mutationChance_koef)
 	{
 		auto new_genom = data;
-		double mt = (rand() % 100) / (double)100;
 		// is mutation be
-		if (mt < mutationChance)
+		if (random.Chance(mutationChance))
 		{
 			// common mutation
 			// one of gen in genome changed
-			size_t index = rand() % new_genom.size();
-			new_genom[index].trigger = static_cast<Trigger>(rand() % static_cast<int>(Trigger::Count));
-			new_genom[index].args = rand() % 256;
+			size_t index = random.Generate(new_genom.size());
+			new_genom[index].trigger = static_cast<Trigger>(random.Generate(static_cast<int>(Trigger::Count)));
+			new_genom[index].args = random.Generate(256);
 
 			// rare mutation
 			// add or remove gen from genome
-			mt = (rand() % 100) / (double)100;
-			if (mt < (mutationChance / 2))
+			if (random.Chance(mutationChance / 2))
 			{
-				int t = mt * 100;
-				if (t % 2)
+				if (random.Generate(2))
 				{
-					size_t index = rand() % new_genom.size();
+					size_t index = random.Generate(new_genom.size());
 					new_genom.erase(new_genom.begin() + index);
 				}
 				else
 				{
 					Gen gen;
-					gen.trigger = static_cast<Trigger>(rand() % static_cast<int>(Trigger::Count));
-					gen.args = rand() % 256;
+					gen.trigger = static_cast<Trigger>(random.Generate(static_cast<int>(Trigger::Count)));
+					gen.args = random.Generate(256);
 					new_genom.push_back(gen);
 				}
 			}
@@ -121,7 +122,7 @@ public:
 		if (new_mutationChance > 1) new_mutationChance = 1;
 		if (new_mutationChance < 0) new_mutationChance = 0;
 
-		return Genome(new_genom, new_mutationChance, generation + 1);
+		return { new_genom, new_mutationChance, generation + 1 };
 	}
 private:
 	RGBColor Hashing()
@@ -171,8 +172,4 @@ private:
 				break;
 		}
 	}
-	RGBColor hash;
-	std::map<Ration, bool> ration_map;
-
-	size_t index = 0;
 };

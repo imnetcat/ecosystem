@@ -28,7 +28,7 @@ Entity::Entity(
 	:
 	x(x),
 	y(y),
-	view(static_cast<view_side>(rand() % 8)),
+	view(view_side::top),
 	age(0),
 	max_age(max_age),
 	hp(MAX_HP),

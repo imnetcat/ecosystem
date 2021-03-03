@@ -1,6 +1,6 @@
 #pragma once
-const int ENVIRONMENT_SIZE_X = 80;
-const int ENVIRONMENT_SIZE_Y = 50;
+const int ENVIRONMENT_SIZE_X = 100;
+const int ENVIRONMENT_SIZE_Y = 40;
 
 const short OUTLINE = 1;
 const short CELL_SIZE = 10;

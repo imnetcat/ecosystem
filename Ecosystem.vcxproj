@@ -136,6 +136,7 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="Gen.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />
     <ClInclude Include="sfml_button.h" />

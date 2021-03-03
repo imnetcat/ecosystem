@@ -8,19 +8,19 @@ Environment::Environment()
 	, max_generation(1)
 {
 	size_t index = 0;
-	srand(time(0));
+	Random random;
 	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 	{
 		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 		{
 			// put food
-			if (((rand() % 100) < 30))
+			if (random.Chance(0.3))
 			{
 				terrain[y][x].SetFood(100);
 			}
 
 			// put first entities
-			if (((rand() % 100) < 15) && entities_count < CELL_START_COUNT)
+			if (random.Chance(0.1) && entities_count < CELL_START_COUNT)
 			{
 				terrain[y][x].SetEntity(entities.begin() + entities_count);
 				entities[entities_count].SetPosition(x, y);
@@ -29,7 +29,14 @@ Environment::Environment()
 				entities[entities_count].Defence(0.01);
 				entities[entities_count].Hp(MAX_HP);
 				entities[entities_count].Attack(0.01);
-				entities[entities_count].SetGenome(Genome());
+				entities[entities_count].SetGenome({ vector<Gen>{
+					{Trigger::Separate, 34},
+					{Trigger::Photosyntesis, 89},
+					{Trigger::Photosyntesis, 0},
+					{Trigger::Photosyntesis, 1},
+					{Trigger::Photosyntesis, 1090},
+					{Trigger::Photosyntesis, 46423}
+				}, 0.3, 1 });
 
 				size_t cost = 0;
 				for (const Gen& gen : entities[entities_count].GetGenome().data)

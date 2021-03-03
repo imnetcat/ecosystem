@@ -20,7 +20,7 @@ Environment::Environment()
 			}
 
 			// put first entities
-			if (((rand() % 100) < 30) && entities_count < CELL_START_COUNT)
+			if (((rand() % 100) < 15) && entities_count < CELL_START_COUNT)
 			{
 				terrain[y][x].SetEntity(entities.begin() + entities_count);
 				entities[entities_count].SetPosition(x, y);
@@ -36,7 +36,7 @@ Environment::Environment()
 				{
 					cost += CREATION_COST.at(gen.trigger);
 				}
-				entities[entities_count].ReproductionCost(100 + cost);
+				entities[entities_count].ReproductionCost(cost);
 
 				entities_count++;
 			}
@@ -55,7 +55,7 @@ void Environment::EntityDie(EntityIterator entity_iterator)
 
 	auto x = entity_iterator->GetX();
 	auto y = entity_iterator->GetY();
-	terrain[y][x].SetFood((size_t)entity_iterator->Energy() + 100);
+	terrain[y][x].SetFood(terrain[y][x].GetFood() + entity_iterator->Energy() + 100);
 	terrain[y][x].DelEntity();
 	shift_count++;
 }
@@ -67,13 +67,11 @@ void Environment::Update()
 	while (i < entities_count)
 	{
 		auto entity = entities.begin() + i;
-		i++;
-		size_t x = entity->GetX();
-		size_t y = entity->GetY();
 		if (entity->IsDead())
 			// remove cell if it is dead
 		{
 			EntityDie(entity);
+			i++;
 			continue;
 		}
 		else
@@ -112,6 +110,8 @@ void Environment::Update()
 		{
 			entities[i - shift_count] = entities[i];
 		}
+
+		i++;
 	}
 
 	entities_count -= shift_count;
@@ -336,7 +336,7 @@ size_t Environment::Reproduction(EntityIterator parent_entity, EntityIterator ne
 	return new_genom.generation;
 }
 void Environment::Birthing(EntityIterator entity)
-{/*
+{
 	if (entity->Energy() < (entity->ReproductionCost() / 2))
 		return;
 
@@ -356,14 +356,14 @@ void Environment::Birthing(EntityIterator entity)
 		{
 			cost += CREATION_COST.at(gen.trigger);
 		}
-		entities[entities_count].ReproductionCost(100 + cost);
+		entities[entities_count].ReproductionCost(cost);
 
 		entities_count++;
-	}*/
+	}
 }
 
 void Environment::Separationing(EntityIterator entity)
-{/*
+{
 	if (entity->Energy() < entity->ReproductionCost())
 		return;
 
@@ -386,14 +386,14 @@ void Environment::Separationing(EntityIterator entity)
 		{
 			cost += CREATION_COST.at(gen.trigger);
 		}
-		entities[entities_count].ReproductionCost(100 + cost);
+		entities[entities_count].ReproductionCost(cost);
 
 		entities_count++;
-	}*/
+	}
 }
 
 void Environment::Carnivorousing(EntityIterator entity)
-{/*
+{
 	Position viewed_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
 
 	auto& viewed_point = terrain[viewed_position.y][viewed_position.x];
@@ -428,7 +428,7 @@ void Environment::Carnivorousing(EntityIterator entity)
 			else
 				entity->IncreaceEnergy(e);
 		}
-	}*/
+	}
 }
 void Environment::Mineraling(EntityIterator entity)
 {
@@ -450,9 +450,9 @@ void Environment::Moving(EntityIterator entity)
 
 	if (terrain[new_position.y][new_position.x].IsWalkable())
 	{
-		//terrain[entity->GetY()][entity->GetX()].DelEntity();
-		//entity->SetPosition(new_position.x, new_position.y);
-		//terrain[new_position.y][new_position.x].SetEntity(entity);
+		terrain[entity->GetY()][entity->GetX()].DelEntity();
+		entity->SetPosition(new_position.x, new_position.y);
+		terrain[new_position.y][new_position.x].SetEntity(entity);
 	}
 }
 void Environment::Photosynthesing(EntityIterator entity)

@@ -16,16 +16,20 @@ struct RGBColor
 
 enum class Ration
 {
-	cells,
+	omnivorous,
+	entities,
 	light,
-	minerals
+	organic,
+	entites_organic,
+	entites_light,
+	light_organic
 };
 
 class Genome
 {
 private:
 	Random random; 
-	std::map<Ration, bool> ration_map;
+	Ration ration;
 	size_t index = 0;
 	RGBColor hash;
 public:
@@ -39,6 +43,7 @@ public:
 	Genome(std::vector<Gen> data, double mutationChance, size_t generation)
 		: generation(generation), mutationChance(mutationChance), data(data), index(0)
 	{
+		sizeof(Genome);
 		hash = Hashing();
 		RationHashing();
 	}
@@ -49,7 +54,7 @@ public:
 		, index(obj.index)
 		, hash(obj.hash)
 		, data(obj.data)
-		, ration_map(obj.ration_map) {}
+		, ration(obj.ration) {}
 
 	Genome(Genome&&) = default;
 	Genome& operator = (const Genome& obj)
@@ -59,7 +64,7 @@ public:
 		index = obj.index;
 		hash = obj.hash;
 		data = obj.data;
-		ration_map = obj.ration_map;
+		ration = obj.ration;
 		return *this;
 	}
 	Genome& operator = (Genome&&) = default;
@@ -68,9 +73,9 @@ public:
 	{
 		return hash;
 	}
-	const std::map<Ration, bool>& RationMap() const
+	Ration Ration() const
 	{
-		return ration_map;
+		return ration;
 	}
 
 	Gen Read()
@@ -101,6 +106,7 @@ public:
 
 			// rare mutation
 			// add or remove gen from genome
+			/*
 			if (random.Chance(mutationChance / 2))
 			{
 				if (random.Generate(2))
@@ -116,6 +122,7 @@ public:
 					new_genom.push_back(gen);
 				}
 			}
+			*/
 		}
 
 		double new_mutationChance = mutationChance + mutationChance_koef;
@@ -151,25 +158,54 @@ private:
 	}
 	void RationHashing()
 	{
-		ration_map[Ration::cells] = false;
-		ration_map[Ration::light] = false;
-		ration_map[Ration::minerals] = false;
+		// Acummulate
+		bool Carnivorous = false;
+		bool Photosyntesis = false;
+		bool Organic = false;
 		for (const auto& g : data)
 		{
 			switch (g.trigger)
 			{
 			case Trigger::Carnivorous:
-				ration_map[Ration::cells] = true;
+				Carnivorous = true;
 				break;
 			case Trigger::Photosyntesis:
-				ration_map[Ration::light] = true;
+				Photosyntesis = true;
 				break;
 			case Trigger::Mineraleon:
-				ration_map[Ration::minerals] = true;
+				Organic = true;
 				break;
 			}
-			if (ration_map[Ration::cells] && ration_map[Ration::light] && ration_map[Ration::minerals])
+
+			if (Carnivorous && Photosyntesis && Organic)
 				break;
+		}
+
+		ration = Ration::omnivorous;
+		// Define ration
+		if (Carnivorous && Photosyntesis)
+		{
+			ration = Ration::entites_light;
+		}
+		else if (Carnivorous && Organic)
+		{
+			ration = Ration::entites_organic;
+		}
+		else if (Photosyntesis && Organic)
+		{
+			ration = Ration::light_organic;
+		}
+		else if (Photosyntesis)
+		{
+			ration = Ration::light;
+		}
+		else if (Organic)
+		{
+			ration = Ration::organic;
+		}
+		else if (Carnivorous)
+		{
+			ration = Ration::entities;
 		}
 	}
 };

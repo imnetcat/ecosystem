@@ -34,37 +34,24 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 			return { 209, 209, 209 };
 		case view_settings::ration:
 		{
-			const auto& rationmap = terrain[y][x].GetEntity()->GetGenome().RationMap();
-			if (rationmap.at(Ration::cells) && rationmap.at(Ration::minerals) && rationmap.at(Ration::light))
+			Ration ration = terrain[y][x].GetEntity()->GetGenome().Ration();
+			switch (ration)
 			{
-				return { 0, 0, 0 };
-			}
-			else if (rationmap.at(Ration::cells) && rationmap.at(Ration::minerals))
-			{
-				return { 50, 255, 30 };
-			}
-			else if (rationmap.at(Ration::light) && rationmap.at(Ration::minerals))
-			{
-				return { 30, 255, 248 };
-			}
-			else if (rationmap.at(Ration::light) && rationmap.at(Ration::cells))
-			{
-				return { 255, 160, 30 };
-			}
-			else if (rationmap.at(Ration::cells))
-			{
+			case Ration::entities:
 				return { 255, 51, 51 };
-			}
-			else if (rationmap.at(Ration::light))
-			{
+			case Ration::light:
 				return { 255, 245, 30 };
-			}
-			else if (rationmap.at(Ration::minerals))
-			{
+			case Ration::organic:
 				return { 37, 53, 217 };
-			}
-			else
-			{
+			case Ration::entites_organic:
+				return { 50, 255, 30 };
+			case Ration::entites_light:
+				return { 255, 160, 30 };
+			case Ration::light_organic:
+				return { 30, 255, 248 };
+			case Ration::omnivorous:
+				return { 0, 0, 0 };
+			default:
 				return { 0, 0, 0 };
 			}
 			break;

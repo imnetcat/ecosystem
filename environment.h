@@ -35,29 +35,26 @@ public:
 		normal,
 		good
 	};
-	static Success SuccessRule(EntityIterator);
+	static Success SuccessRule(EntitiesIterator);
 protected:
 
-	size_t shift_count;
-
-	size_t entities_count;
 	size_t max_generation;
 	TerrainCell terrain[ENVIRONMENT_SIZE_Y][ENVIRONMENT_SIZE_X];
-	std::array<Entity, ENVIRONMENT_SIZE_Y * ENVIRONMENT_SIZE_X> entities;
+	ListPool<Entity, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X> entities;
 
 private:
-	void EntityDie(EntityIterator);
+	EntitiesIterator EntityDie(EntitiesIterator);
 
 	Position GetViewedPosition(view_side view, size_t x, size_t y);
 	Position GetInvertedViewedPosition(view_side view, size_t x, size_t y);
 
-	size_t Reproduction(EntityIterator parent_entity, EntityIterator new_entity);
-	void Separationing(EntityIterator);
-	void Birthing(EntityIterator);
-	void Carnivorousing(EntityIterator);
-	void Mineraling(EntityIterator);
-	void Moving(EntityIterator);
-	void Photosynthesing(EntityIterator);
+	EntitiesIterator Reproduction(EntitiesIterator parent_entity, size_t x, size_t y, view_side view);
+	void Separationing(EntitiesIterator);
+	void Birthing(EntitiesIterator);
+	void Carnivorousing(EntitiesIterator);
+	void Mineraling(EntitiesIterator);
+	void Moving(EntitiesIterator);
+	void Photosynthesing(EntitiesIterator);
 	void Staying();
-	void Turning(int args, EntityIterator);
+	void Turning(int args, EntitiesIterator);
 };

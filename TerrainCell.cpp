@@ -1,10 +1,10 @@
 #include "TerrainCell.h"
 
-EntityIterator TerrainCell::GetEntity()
+EntitiesIterator TerrainCell::GetEntity()
 {
 	return entity;
 }
-void TerrainCell::SetEntity(EntityIterator value)
+void TerrainCell::SetEntity(EntitiesIterator value)
 {
 	entity = value;
 	has_entity = true;

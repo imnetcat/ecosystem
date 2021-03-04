@@ -3,12 +3,20 @@
 #include "Water.h"
 
 Environment::Environment()
-	: shift_count(0)
-	, entities_count(0)
-	, max_generation(1)
+	: max_generation(1)
 {
 	size_t index = 0;
 	Random random;
+
+	Genome startGenome = { vector<Gen>{
+					{Trigger::Separate, 34},
+					{Trigger::Photosyntesis, 89},
+					{Trigger::Photosyntesis, 0},
+					{Trigger::Photosyntesis, 1},
+					{Trigger::Photosyntesis, 1090},
+					{Trigger::Photosyntesis, 46423}
+				}, 0.3, 1 };
+
 	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 	{
 		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
@@ -20,32 +28,17 @@ Environment::Environment()
 			}
 
 			// put first entities
-			if (random.Chance(0.1) && entities_count < CELL_START_COUNT)
+			if (random.Chance(0.1) && entities.size() < CELL_START_COUNT)
 			{
-				terrain[y][x].SetEntity(entities.begin() + entities_count);
-				entities[entities_count].SetPosition(x, y);
-				entities[entities_count].Energy(100);
-				entities[entities_count].MaxAge(100);
-				entities[entities_count].Defence(0.01);
-				entities[entities_count].Hp(MAX_HP);
-				entities[entities_count].Attack(0.01);
-				entities[entities_count].SetGenome({ vector<Gen>{
-					{Trigger::Separate, 34},
-					{Trigger::Photosyntesis, 89},
-					{Trigger::Photosyntesis, 0},
-					{Trigger::Photosyntesis, 1},
-					{Trigger::Photosyntesis, 1090},
-					{Trigger::Photosyntesis, 46423}
-				}, 0.3, 1 });
-
-				size_t cost = 0;
-				for (const Gen& gen : entities[entities_count].GetGenome().data)
-				{
-					cost += CREATION_COST.at(gen.trigger);
-				}
-				entities[entities_count].ReproductionCost(cost);
-
-				entities_count++;
+				terrain[y][x].SetEntity(entities.Add({ 
+					x, y,
+					view_side::top,
+					100,
+					100,
+					0.01,
+					0.01,
+					startGenome
+				}));
 			}
 
 			index++;
@@ -53,32 +46,24 @@ Environment::Environment()
 	}
 }
 
-void Environment::EntityDie(EntityIterator entity_iterator)
+EntitiesIterator Environment::EntityDie(EntitiesIterator entity_iterator)
 {
-	if (!entities_count)
-	{
-		return;
-	}
-
 	auto x = entity_iterator->GetX();
 	auto y = entity_iterator->GetY();
 	terrain[y][x].SetFood(terrain[y][x].GetFood() + entity_iterator->Energy() + 100);
 	terrain[y][x].DelEntity();
-	shift_count++;
+	return entities.Del(entity_iterator);
 }
 
 void Environment::Update()
 {
-	size_t i = 0;
-	shift_count = 0;
-	while (i < entities_count)
+	auto entity = entities.begin();
+	while (entity != entities.end())
 	{
-		auto entity = entities.begin() + i;
 		if (entity->IsDead())
 			// remove cell if it is dead
 		{
-			EntityDie(entity);
-			i++;
+			entity = EntityDie(entity);
 			continue;
 		}
 		else
@@ -112,16 +97,8 @@ void Environment::Update()
 				break;
 			}
 		}
-
-		if (shift_count)
-		{
-			entities[i - shift_count] = entities[i];
-		}
-
-		i++;
+		entity++;
 	}
-
-	entities_count -= shift_count;
 }
 
 bool operator == (const Position& lhs, const Position& rhs)
@@ -294,14 +271,14 @@ Position Environment::GetInvertedViewedPosition(view_side view, size_t x, size_t
 }
 
 
-Environment::Success Environment::SuccessRule(EntityIterator entity)
+Environment::Success Environment::SuccessRule(EntitiesIterator entity)
 {
 	unsigned int success_border = MAX_ENERGY * (double(entity->Age()) / (entity->MaxAge()));
 	return (entity->Energy() > success_border) ? Success::good :
 		(entity->Energy() > (success_border / 2) ? Success::normal : Success::fail);
 }
 
-size_t Environment::Reproduction(EntityIterator parent_entity, EntityIterator new_entity)
+EntitiesIterator Environment::Reproduction(EntitiesIterator parent_entity, size_t x, size_t y, view_side view)
 {
 	Success isSuccess = SuccessRule(parent_entity);
 	double newMutationChanceK = 0;
@@ -331,18 +308,25 @@ size_t Environment::Reproduction(EntityIterator parent_entity, EntityIterator ne
 	if (new_max_age > 1000) new_max_age = 1000;
 	if (new_max_age < 2) new_max_age = 2;
 
-	new_entity->Energy(100);
-	new_entity->Age(0);
-	new_entity->MaxAge(new_max_age);
-	new_entity->ReproductionCost(parent_entity->ReproductionCost());
-	new_entity->Defence(parent_entity->Defence());
-	new_entity->Attack(parent_entity->Attack());
-	new_entity->SetGenome(new_genom);
-	new_entity->Hp(MAX_HP);
+	parent_entity->DecreaceEnergy(parent_entity->ReproductionCost());
 
-	return new_genom.generation;
+	terrain[y][x].SetEntity(entities.Add({
+		x, y,
+		view,
+		100,
+		new_max_age,
+		parent_entity->Defence(),
+		parent_entity->Attack(),
+		new_genom
+	}));
+
+	if (new_genom.generation > max_generation)
+		max_generation = new_genom.generation;
+
+	return terrain[y][x].GetEntity();
 }
-void Environment::Birthing(EntityIterator entity)
+
+void Environment::Birthing(EntitiesIterator entity)
 {
 	if (entity->Energy() < (entity->ReproductionCost() / 2))
 		return;
@@ -351,25 +335,11 @@ void Environment::Birthing(EntityIterator entity)
 
 	if (terrain[new_position.y][new_position.x].IsWalkable())
 	{
-		if (Reproduction(entity, entities.begin() + entities_count) > max_generation)
-			max_generation++;
-
-		entity->DecreaceEnergy(entity->ReproductionCost());
-		entities[entities_count].SetPosition(new_position.x, new_position.y);
-		terrain[new_position.y][new_position.x].SetEntity(entities.begin() + entities_count);
-
-		size_t cost = 0;
-		for (const Gen& gen : entities[entities_count].GetGenome().data)
-		{
-			cost += CREATION_COST.at(gen.trigger);
-		}
-		entities[entities_count].ReproductionCost(cost);
-
-		entities_count++;
+		Reproduction(entity, new_position.x, new_position.y, view_side::top);
 	}
 }
 
-void Environment::Separationing(EntityIterator entity)
+void Environment::Separationing(EntitiesIterator entity)
 {
 	if (entity->Energy() < entity->ReproductionCost())
 		return;
@@ -378,28 +348,15 @@ void Environment::Separationing(EntityIterator entity)
 
 	if (terrain[new_position.y][new_position.x].IsWalkable())
 	{
-		if (Reproduction(entity, entities.begin() + entities_count) > max_generation)
-			max_generation++;
+		EntitiesIterator nEntity = Reproduction(entity, new_position.x, new_position.y, view_side::top);
 
-		entity->DecreaceEnergy(entity->ReproductionCost());
 		unsigned short hlph = entity->Energy() / 2;
 		entity->DecreaceEnergy(hlph);
-		entities[entities_count].IncreaceEnergy(hlph);
-		entities[entities_count].SetPosition(new_position.x, new_position.y);
-		terrain[new_position.y][new_position.x].SetEntity(entities.begin() + entities_count);
-
-		size_t cost = 0;
-		for (const Gen& gen : entities[entities_count].GetGenome().data)
-		{
-			cost += CREATION_COST.at(gen.trigger);
-		}
-		entities[entities_count].ReproductionCost(cost);
-
-		entities_count++;
+		nEntity->IncreaceEnergy(hlph);
 	}
 }
 
-void Environment::Carnivorousing(EntityIterator entity)
+void Environment::Carnivorousing(EntitiesIterator entity)
 {
 	Position viewed_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
 
@@ -437,7 +394,7 @@ void Environment::Carnivorousing(EntityIterator entity)
 		}
 	}
 }
-void Environment::Mineraling(EntityIterator entity)
+void Environment::Mineraling(EntitiesIterator entity)
 {
 	auto e = terrain[entity->GetY()][entity->GetX()].GetFood();
 	if (e >= MAX_MINERALS_TO_EAT)
@@ -451,7 +408,7 @@ void Environment::Mineraling(EntityIterator entity)
 		terrain[entity->GetY()][entity->GetX()].DelFood();
 	}
 }
-void Environment::Moving(EntityIterator entity)
+void Environment::Moving(EntitiesIterator entity)
 {
 	Position new_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
 
@@ -462,12 +419,12 @@ void Environment::Moving(EntityIterator entity)
 		terrain[new_position.y][new_position.x].SetEntity(entity);
 	}
 }
-void Environment::Photosynthesing(EntityIterator entity)
+void Environment::Photosynthesing(EntitiesIterator entity)
 {
 	entity->IncreaceEnergy(LIGHT_POWER);
 }
 void Environment::Staying() {}
-void Environment::Turning(int args, EntityIterator entity)
+void Environment::Turning(int args, EntitiesIterator entity)
 {
 	unsigned short old_side = static_cast<unsigned short>(entity->GetView());
 	view_side new_side;

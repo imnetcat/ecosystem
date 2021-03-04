@@ -12,15 +12,15 @@ class TerrainCell
 {
 protected:
 	size_t organic;
-	EntityIterator entity;
+	EntitiesIterator entity;
 	Material material;
 	bool has_entity = false;
 public:
 	TerrainCell() : organic(0), material(Water()) {}
 
-	void SetEntity(EntityIterator);
+	void SetEntity(EntitiesIterator);
 	void DelEntity();
-	EntityIterator GetEntity();
+	EntitiesIterator GetEntity();
 	bool ContainsEntity() const;
 
 	void SetFood(size_t organic);

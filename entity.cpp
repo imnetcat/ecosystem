@@ -19,16 +19,16 @@ Entity::Entity()
 Entity::Entity(
 	size_t x,
 	size_t y,
+	view_side view,
 	unsigned short energy,
 	unsigned short max_age,
-	size_t repr_cost,
 	double defence,
 	double attack,
 	Genome g)
 	:
 	x(x),
 	y(y),
-	view(view_side::top),
+	view(view),
 	age(0),
 	max_age(max_age),
 	hp(MAX_HP),
@@ -36,8 +36,13 @@ Entity::Entity(
 	defence(defence),
 	attack(attack),
 	genom(g),
-	reproduction_cost(repr_cost)
-{}
+	reproduction_cost(0)
+{
+	for (const Gen& gen : genom.data)
+	{
+		reproduction_cost += CREATION_COST.at(gen.trigger);
+	}
+}
 
 Entity::Entity(Entity&& cell)
 {

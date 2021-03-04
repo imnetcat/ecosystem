@@ -1,6 +1,7 @@
 #pragma once
 #include "genome.h"
 #include "config.h"
+#include "ListPool.h"
 
 #include <iostream>
 #include <memory>
@@ -56,9 +57,9 @@ public:
 	Entity(
 		size_t x,
 		size_t y,
+		view_side view,
 		unsigned short energy,
 		unsigned short max_age,
-		size_t repr_cost,
 		double defence,
 		double attack,
 		Genome g
@@ -109,4 +110,4 @@ public:
 	void Hp(unsigned short);
 };
 
-using EntityIterator = std::array<Entity, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X>::iterator;
+using EntitiesIterator = ListPool<Entity, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X>::iterator;

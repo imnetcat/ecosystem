@@ -12,8 +12,7 @@ Entity::Entity()
 	hp(0),
 	energy(0),
 	defence(0),
-	attack(0),
-	reproduction_cost(0)
+	attack(0)
 {}
 
 Entity::Entity(
@@ -35,14 +34,8 @@ Entity::Entity(
 	energy(energy),
 	defence(defence),
 	attack(attack),
-	genom(g),
-	reproduction_cost(0)
-{
-	for (const Gen& gen : genom.data)
-	{
-		reproduction_cost += CREATION_COST.at(gen.trigger);
-	}
-}
+	genom(g)
+{}
 
 Entity::Entity(Entity&& cell)
 {
@@ -57,7 +50,6 @@ Entity::Entity(Entity&& cell)
 	attack = cell.attack;
 
 	genom = cell.genom;
-	reproduction_cost = cell.reproduction_cost;
 }
 Entity::Entity(const Entity& cell)
 {
@@ -72,7 +64,6 @@ Entity::Entity(const Entity& cell)
 	attack = cell.attack;
 
 	genom = cell.genom;
-	reproduction_cost = cell.reproduction_cost;
 }
 Entity& Entity::operator = (const Entity& cell)
 {
@@ -87,7 +78,6 @@ Entity& Entity::operator = (const Entity& cell)
 	attack = cell.attack;
 
 	genom = cell.genom;
-	reproduction_cost = cell.reproduction_cost;
 	return *this;
 }
 Entity& Entity::operator = (Entity&& cell)
@@ -103,7 +93,6 @@ Entity& Entity::operator = (Entity&& cell)
 	attack = cell.attack;
 
 	genom = cell.genom;
-	reproduction_cost = cell.reproduction_cost;
 	return *this;
 }
 
@@ -247,7 +236,7 @@ bool Entity::IsDead()
 
 size_t Entity::ReproductionCost()
 {
-	return reproduction_cost;
+	return genom.ReplicateCost();
 }
 
 const Genome& Entity::GetGenome() const
@@ -264,18 +253,9 @@ void Entity::Tic()
 	age++;
 }
 
-RGBColor Entity::Species()
-{
-	return genom.Hash();
-}
-
 void Entity::SetGenome(Genome value)
 {
 	genom = value;
-}
-void Entity::ReproductionCost(size_t value)
-{
-	reproduction_cost = value;
 }
 void Entity::Defence(double value)
 {

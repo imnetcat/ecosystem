@@ -29,13 +29,7 @@ public:
 	explicit Environment();
 	void Update();
 
-	enum class Success
-	{
-		fail,
-		normal,
-		good
-	};
-	static Success SuccessRule(EntitiesIterator);
+	static Coefficient SuccessRule(EntitiesIterator);
 protected:
 
 	size_t max_generation;

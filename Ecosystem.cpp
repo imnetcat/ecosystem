@@ -35,6 +35,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 		case view_settings::ration:
 		{
 			Ration ration = terrain[y][x].GetEntity()->GetGenome().Ration();
+
 			switch (ration)
 			{
 			case Ration::entities:
@@ -68,7 +69,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 			}
 		}
 		case view_settings::species:
-			return terrain[y][x].GetEntity()->Species();
+			return terrain[y][x].GetEntity()->GetGenome().Species();
 		case view_settings::age:
 		{
 			unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)terrain[y][x].GetEntity()->Age() / terrain[y][x].GetEntity()->MaxAge()));
@@ -89,13 +90,13 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 		{
 			switch (Environment::SuccessRule(terrain[y][x].GetEntity()))
 			{
-			case Environment::Success::fail:
+			case Coefficient::reduce:
 				return { 255, 21, 0 };
 				break;
-			case Environment::Success::normal:
+				case Coefficient::unchanged:
 				return { 255, 225, 0 };
 				break;
-			case Environment::Success::good:
+				case Coefficient::enlarge:
 				return { 0, 194, 0 };
 				break;
 			default:
@@ -105,7 +106,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 		}
 		case view_settings::generations:
 		{
-			unsigned char c = static_cast<unsigned char>(255 * ((double)terrain[y][x].GetEntity()->GetGenome().generation) / max_generation);
+			unsigned char c = static_cast<unsigned char>(255 * ((double)terrain[y][x].GetEntity()->GetGenome().Generation()) / max_generation);
 			return { c, c, c }; }
 		}
 	}
@@ -157,14 +158,10 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	{
 		info.age.curr = terrain[y][x].GetEntity()->Age();
 		info.age.max = terrain[y][x].GetEntity()->MaxAge();
-		auto& data = terrain[y][x].GetEntity()->GetGenome().data;
-		for (unsigned int i = 0; i < data.size(); i++)
-		{
-			info.genom.push_back(static_cast<int>(data[i].trigger));
-		}
-		info.generation = terrain[y][x].GetEntity()->GetGenome().generation;
+		info.genome = terrain[y][x].GetEntity()->GetGenome().Data();
+		info.generation = terrain[y][x].GetEntity()->GetGenome().Generation();
 		info.hp = terrain[y][x].GetEntity()->Hp();
-		info.ch_of_mut = terrain[y][x].GetEntity()->GetGenome().mutationChance;
+		info.ch_of_mut = terrain[y][x].GetEntity()->GetGenome().MutationChance();
 		info.energy = terrain[y][x].GetEntity()->Energy();
 	}
 	if (terrain[y][x].IsContainsFood())

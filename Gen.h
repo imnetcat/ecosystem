@@ -17,7 +17,7 @@ enum class Trigger
 struct Gen
 {
 	Trigger trigger;
-	int args;
+	unsigned __int8 args;
 };
 
 const std::map<Trigger, unsigned int> CREATION_COST = {

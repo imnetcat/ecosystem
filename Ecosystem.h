@@ -9,7 +9,7 @@ struct Info
 		size_t curr = 0;
 		size_t max = 0;
 	} age;
-	std::vector<int> genom;
+	unsigned __int64 genome;
 	unsigned short hp = 0;
 	size_t energy = 0;
 	size_t generation = 0;

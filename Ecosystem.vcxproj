@@ -122,9 +122,11 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Ecosystem.cpp" />
     <ClCompile Include="environment.cpp" />
+    <ClCompile Include="Genome.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Random.cpp" />
     <ClCompile Include="TerrainCell.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -132,7 +134,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Ecosystem.h" />
     <ClInclude Include="environment.h" />
-    <ClInclude Include="genome.h" />
+    <ClInclude Include="Genome.h" />
     <ClInclude Include="Organic.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="Gen.h" />

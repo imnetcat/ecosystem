@@ -4,14 +4,15 @@
 #include <sstream>
 #include <map>
 #include <vector>
+#include <limits>
 #include "Gen.h"
 #include "Random.h"
 
 struct RGBColor
 {
-	unsigned char r = 0;
-	unsigned char g = 0;
-	unsigned char b = 0;
+	unsigned __int8 r = 0;
+	unsigned __int8 g = 0;
+	unsigned __int8 b = 0;
 };
 
 enum class Ration
@@ -25,187 +26,55 @@ enum class Ration
 	light_organic
 };
 
-class Genome
+enum class Coefficient
+{
+	enlarge,
+	reduce,
+	unchanged
+};
+
+class Genome // 16 bytes
 {
 private:
-	Random random; 
+
+	unsigned __int64 genom;		// 8 bytes
+	unsigned __int32 props;		// 4 bytes
+	unsigned __int16 reserved;	// 2 bytes
+	unsigned __int8 args;		// 1 byte
+	unsigned __int8 cursor;		// 1 byte
+
+	unsigned __int64 generation;
+	unsigned __int8 mutationChance;
 	Ration ration;
-	size_t index = 0;
-	RGBColor hash;
+	RGBColor species;
+	static Random random;
+	unsigned __int16 replicate_cost;
+
+	constexpr static const unsigned __int8 genom_size = sizeof(genom) * 8;
+	constexpr static const unsigned __int8 args_size = sizeof(args) * 8;
+	constexpr static const unsigned __int8 trigger_max = static_cast<unsigned __int8>(Trigger::Count);
+	constexpr static const unsigned __int8 args_max = std::numeric_limits<unsigned __int8>().max();
+
+	void Initializing();
 public:
+	Genome();
 
-	size_t generation;
-	double mutationChance;
-	std::vector<Gen> data;
+	// mutationChance must be from 0 to 100
+	Genome(
+		unsigned __int64 genom,
+		unsigned __int8 args, 
+		unsigned __int64 generation,
+		unsigned __int8 mutationChance
+	);
 
-	Genome() : generation(1), mutationChance(0.0), index(0){};
+	Gen Read();
+	unsigned __int64 Data() const;
+	unsigned __int64 Generation() const;
+	double MutationChance() const;
+	inline unsigned __int8 Size() const;
+	const RGBColor& Species() const;
+	Ration Ration() const;
+	unsigned __int16 ReplicateCost() const;
 
-	Genome(std::vector<Gen> data, double mutationChance, size_t generation)
-		: generation(generation), mutationChance(mutationChance), data(data), index(0)
-	{
-		sizeof(Genome);
-		hash = Hashing();
-		RationHashing();
-	}
-
-	Genome(const Genome& obj)
-		: generation(obj.generation)
-		, mutationChance(obj.mutationChance)
-		, index(obj.index)
-		, hash(obj.hash)
-		, data(obj.data)
-		, ration(obj.ration) {}
-
-	Genome(Genome&&) = default;
-	Genome& operator = (const Genome& obj)
-	{
-		generation = obj.generation;
-		mutationChance = obj.mutationChance;
-		index = obj.index;
-		hash = obj.hash;
-		data = obj.data;
-		ration = obj.ration;
-		return *this;
-	}
-	Genome& operator = (Genome&&) = default;
-
-	const RGBColor& Hash() const
-	{
-		return hash;
-	}
-	Ration Ration() const
-	{
-		return ration;
-	}
-
-	Gen Read()
-	{
-		Gen gen;
-		if ((index + 1) == data.size())
-		{
-			index = 0;
-			gen = data[data.size() - 1];
-		}
-		else
-			gen = data[index++];
-
-		return gen;
-	}
-
-	Genome Replicate(double mutationChance_koef)
-	{
-		auto new_genom = data;
-		// is mutation be
-		if (random.Chance(mutationChance))
-		{
-			// common mutation
-			// one of gen in genome changed
-			size_t index = random.Generate(new_genom.size());
-			new_genom[index].trigger = static_cast<Trigger>(random.Generate(static_cast<int>(Trigger::Count)));
-			new_genom[index].args = random.Generate(256);
-
-			// rare mutation
-			// add or remove gen from genome
-			/*
-			if (random.Chance(mutationChance / 2))
-			{
-				if (random.Generate(2))
-				{
-					size_t index = random.Generate(new_genom.size());
-					new_genom.erase(new_genom.begin() + index);
-				}
-				else
-				{
-					Gen gen;
-					gen.trigger = static_cast<Trigger>(random.Generate(static_cast<int>(Trigger::Count)));
-					gen.args = random.Generate(256);
-					new_genom.push_back(gen);
-				}
-			}
-			*/
-		}
-
-		double new_mutationChance = mutationChance + mutationChance_koef;
-		if (new_mutationChance > 1) new_mutationChance = 1;
-		if (new_mutationChance < 0) new_mutationChance = 0;
-
-		return { new_genom, new_mutationChance, generation + 1 };
-	}
-private:
-	RGBColor Hashing()
-	{
-		std::stringstream rs;
-		std::stringstream gs;
-		std::stringstream bs;
-		for (const auto& g : data)
-		{
-			auto gen = static_cast<unsigned int>(g.trigger);
-			rs << (gen * data.size()) % 255;
-			gs << (gen % data.size()) % 255;
-			bs << ((gen ^ (gen * gen)) % data.size()) % 255;
-		}
-		for (const auto& g : data)
-		{
-			//auto gen = static_cast<unsigned int>(g.args);
-			//rs << (gen * data.size()) % 255;
-			//gs << (gen % data.size()) % 255;
-			//bs << ((gen ^ (gen * gen)) % data.size()) % 255;
-		}
-		unsigned char r = std::hash<std::string>{}(rs.str()) % 255;
-		unsigned char g = std::hash<std::string>{}(gs.str()) % 255;
-		unsigned char b = std::hash<std::string>{}(bs.str()) % 255;
-		return { r, g, b };
-	}
-	void RationHashing()
-	{
-		// Acummulate
-		bool Carnivorous = false;
-		bool Photosyntesis = false;
-		bool Organic = false;
-		for (const auto& g : data)
-		{
-			switch (g.trigger)
-			{
-			case Trigger::Carnivorous:
-				Carnivorous = true;
-				break;
-			case Trigger::Photosyntesis:
-				Photosyntesis = true;
-				break;
-			case Trigger::Mineraleon:
-				Organic = true;
-				break;
-			}
-
-			if (Carnivorous && Photosyntesis && Organic)
-				break;
-		}
-
-		ration = Ration::omnivorous;
-		// Define ration
-		if (Carnivorous && Photosyntesis)
-		{
-			ration = Ration::entites_light;
-		}
-		else if (Carnivorous && Organic)
-		{
-			ration = Ration::entites_organic;
-		}
-		else if (Photosyntesis && Organic)
-		{
-			ration = Ration::light_organic;
-		}
-		else if (Photosyntesis)
-		{
-			ration = Ration::light;
-		}
-		else if (Organic)
-		{
-			ration = Ration::organic;
-		}
-		else if (Carnivorous)
-		{
-			ration = Ration::entities;
-		}
-	}
+	Genome Replicate(Coefficient coef);
 };

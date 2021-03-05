@@ -48,7 +48,6 @@ protected:
 	double defence;
 	double attack;
 	Genome genom;
-	size_t reproduction_cost;
 	unsigned char carnivorousing = 0;
 	unsigned char fotosintesis = 0;
 	unsigned char mineraling = 0;
@@ -80,8 +79,6 @@ public:
 	const Genome& GetGenome() const;
 	Genome& GetGenome();
 	
-	RGBColor Species();
-
 	void Tic();
 
 	bool Defencing(double);
@@ -100,7 +97,6 @@ public:
 	unsigned short Hp();
 
 	void SetGenome(Genome value);
-	void ReproductionCost(size_t);
 	void Defence(double);
 	void Attack(double);
 	void Age(unsigned short);

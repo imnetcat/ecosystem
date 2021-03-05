@@ -10,23 +10,10 @@ public:
 	Random() : mt(rd()) {}
 
 	// Calculate success of chance
-	bool Chance(float chance)
-	{
-		std::uniform_real_distribution<float> dist(0, 1);
-		return dist(mt) < chance;
-	}
+	bool Chance(float chance);
 
 	// Return random numbers in range [0, max)
-	int Generate(int max)
-	{
-		if (!max) return 0;
-		std::uniform_int_distribution<int> dist(0, max - 1);
-		return dist(mt);
-	}
-	size_t Generate(size_t max)
-	{
-		if (!max) return 0;
-		std::uniform_int_distribution<size_t> dist(0, max - 1);
-		return dist(mt);
-	}
+	unsigned __int8 Generate(unsigned __int8 max);
+	int Generate(int max);
+	size_t Generate(size_t max);
 };

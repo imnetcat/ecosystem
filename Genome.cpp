@@ -1,7 +1,5 @@
 #include "Genome.h"
 
-Random Genome::random;
-
 Genome::Genome()
 	: genom(random.Generate(genom_size))
 	, props(0)

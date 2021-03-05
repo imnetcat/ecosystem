@@ -4,10 +4,8 @@
 class Random 
 {
 private:
-	std::random_device rd;
-	std::mt19937 mt;
+	static std::mt19937 engine;
 public:
-	Random() : mt(rd()) {}
 
 	// Calculate success of chance
 	bool Chance(float chance);

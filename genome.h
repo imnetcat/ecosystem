@@ -47,7 +47,7 @@ private:
 	unsigned __int8 mutationChance;
 	Ration ration;
 	RGBColor species;
-	static Random random;
+	Random random;
 	unsigned __int16 replicate_cost;
 
 	constexpr static const unsigned __int8 genom_size = sizeof(genom) * 8;

@@ -1,6 +1,6 @@
 #pragma once
-const int ENVIRONMENT_SIZE_X = 100;
-const int ENVIRONMENT_SIZE_Y = 40;
+const int ENVIRONMENT_SIZE_X = 80;
+const int ENVIRONMENT_SIZE_Y = 60;
 
 const short OUTLINE = 1;
 const short CELL_SIZE = 10;
@@ -14,4 +14,4 @@ const unsigned int MAX_HP = 100;
 
 const bool LOOPED_ENVIRONMENT = true;
 
-const int CELL_START_COUNT = 50;
+const int CELL_START_COUNT = (ENVIRONMENT_SIZE_X * ENVIRONMENT_SIZE_Y) * 0.01;

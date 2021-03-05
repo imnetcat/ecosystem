@@ -1,17 +1,15 @@
 #pragma once
 #include <random>
+#include <chrono>
 
-class Random 
+class Random
 {
 private:
-	static std::mt19937 engine;
+	static std::mt19937_64 engine;
+	static std::uniform_int_distribution<unsigned __int64> distributor;
 public:
 
-	// Calculate success of chance
-	bool Chance(float chance);
-
 	// Return random numbers in range [0, max)
-	unsigned __int8 Generate(unsigned __int8 max);
 	int Generate(int max);
 	size_t Generate(size_t max);
 };

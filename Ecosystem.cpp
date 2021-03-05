@@ -154,6 +154,7 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	info.color = ObtainColor(x, y);
 
 	info.light_power = LIGHT_POWER;
+	info.contains_entity = terrain[y][x].ContainsEntity();
 	if (terrain[y][x].ContainsEntity())
 	{
 		info.age.curr = terrain[y][x].GetEntity()->Age();

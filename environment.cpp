@@ -13,13 +13,14 @@ Environment::Environment()
 		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 		{
 			// put food
-			if (random.Chance(0.3))
+			auto rand = random.Generate(101);
+			if (rand < 30)
 			{
 				terrain[y][x].SetFood(100);
 			}
-
+			auto i = random.Generate(1265798679);
 			// put first entities
-			if (random.Chance(0.05) && entities.size() < CELL_START_COUNT)
+			if (rand < 1 && entities.size() < CELL_START_COUNT)
 			{
 				terrain[y][x].SetEntity(entities.Add({ 
 					x, y,
@@ -66,7 +67,7 @@ void Environment::Update()
 			switch (gen.trigger)
 			{
 			case Trigger::Separate:
-				Separationing(entity);
+				//Separationing(entity);
 				break;
 			case Trigger::Birth:
 				Birthing(entity);

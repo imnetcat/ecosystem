@@ -1,10 +1,12 @@
 #include "Genome.h"
 
+unsigned __int64 Genome::xr = std::hash<unsigned __int64>{}(args_max ^ genom_size);
+
 Genome::Genome()
-	: genom(random.Generate(genom_size))
+	: genom(random.Generate(genome_max))
 	, props(0)
 	, reserved(0)
-	, args(random.Generate(args_size))
+	, args(random.Generate(args_max))
 	, cursor(0)
 	, generation(1)
 	, replicate_cost(0)
@@ -36,14 +38,25 @@ Gen Genome::Read()
 		cursor = 0;
 	}
 
-	unsigned __int8 xr = std::hash<unsigned __int8>{}(cursor ^ args_max);
 	bool bit = (genom >> (genom_size - cursor - 1)) & 1;
 
-	Trigger current_trigger = static_cast<Trigger>((xr * (bit ? 1 : 2)) % trigger_max);
+	Trigger current_trigger = static_cast<Trigger>(
+		(
+			(
+				xr ^ ((unsigned __int64)cursor * (bit ? 1 : 2))
+				) ^ genom
+			) % trigger_max
+		);
+
 
 	bit = (args >> (args_size - cursor - 1)) & 1;
-	unsigned __int8 current_arg = (xr * (bit ? 1 : 2)) % args_max;
-	
+
+	unsigned __int8 current_arg = (
+		(
+			xr ^ ((unsigned __int64)cursor * (bit ? 1 : 2))
+			) ^ args
+		) % args_max;
+
 	cursor++;
 	return { current_trigger, current_arg };
 }
@@ -55,7 +68,7 @@ unsigned __int64 Genome::Generation() const
 {
 	return generation;
 }
-double Genome::MutationChance() const
+unsigned __int8 Genome::MutationChance() const
 {
 	return mutationChance;
 }
@@ -94,10 +107,10 @@ Genome Genome::Replicate(Coefficient coef)
 	switch (coef)
 	{
 	case Coefficient::enlarge:
-		if (new_mutationChance < 100) new_mutationChance++;
+		if (new_mutationChance > 0) new_mutationChance--;
 		break;
 	case Coefficient::reduce:
-		if (new_mutationChance > 0) new_mutationChance--;
+		if (new_mutationChance < 100) new_mutationChance++;
 		break;
 	case Coefficient::unchanged:
 	default:
@@ -113,7 +126,7 @@ void Genome::Initializing()
 	bool Photosyntesis = false;
 	bool Organic = false;
 
-	for (unsigned __int8 i = 0; i < args_size; i++)
+	for (unsigned __int8 i = 0; i < genom_size; i++)
 	{
 		Gen gen = Read();
 

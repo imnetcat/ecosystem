@@ -161,10 +161,10 @@ Button info_clear_rect_btn(font, "clear",
 	CLEAR_INFO_SIZE_X,
 	CLEAR_INFO_SIZE_Y, 12);
 
-Ecosystem ecosystem;
-
 int main()
 {
+	Ecosystem ecosystem;
+
 	window.setPosition(sf::Vector2i(WINDOW_POS_X, WINDOW_POS_Y));
 
 	setting_window.setPosition(sf::Vector2i(WINDOW_POS_X + ENVIRONMENT_SIZE_X * CELL_OUTLINE + 15, WINDOW_POS_Y));
@@ -405,22 +405,10 @@ int main()
 					turn_on_info_block = true;
 					cell_ico.Color({ info.color.r, info.color.g, info.color.b });
 					field_title.setString("Structure");
-					string genom = "\n";
-					if (info.genom.size())
+					if (info.contains_entity)
 					{
-						field_title.setString("Cell");
-						size_t ndl = 0;
-						for (auto command : info.genom)
-						{
-							genom += to_string(static_cast<unsigned int>(command)) + ' ';
-							ndl++;
-							if (ndl == 11)
-							{
-								ndl = 0;
-								genom += '\n';
-							}
-						}
-						cell_genom.setString("Genom: " + genom);
+						field_title.setString("Entity");
+						cell_genom.setString("Genom: " + to_string(info.genome));
 						cell_generation.setString("Generation: " + to_string(info.generation));
 						cell_age.setString("Age: " + to_string(info.age.curr) + "/" + to_string(info.age.max));
 						cell_mutant_chance.setString("Chance of mutation: " + to_string(info.ch_of_mut).substr(0, 4));

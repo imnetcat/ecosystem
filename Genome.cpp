@@ -10,7 +10,7 @@ Genome::Genome()
 	, cursor(0)
 	, generation(1)
 	, replicate_cost(0)
-	, mutationChance(0)
+	, mutationChance(10)
 	, ration(Ration::omnivorous)
 {
 	Initializing();
@@ -95,11 +95,55 @@ Genome Genome::Replicate(Coefficient coef)
 	auto new_args = args;
 
 	unsigned __int8 rand = random.Generate(100);
-	// common mutation
-	// one bit in genome inverted
+	// Is mutation be
 	if (rand < mutationChance)
 	{
-		new_genom ^= (1ull << (rand % genom_size));
+		// Define mutation type
+		switch (rand % 10)
+		{
+		case 0:
+			// Invert bit in genome
+			new_genom ^= (1ull << (rand % genom_size));
+			break;
+		case 1:
+			// Invert bit in args
+			new_args ^= (1ull << (rand % args_size));
+			break;
+		case 2:
+			// Left bitwise shift genome
+			new_genom = new_genom << 1;
+			break;
+		case 3:
+			// Right bitwise shift genome
+			new_genom = new_genom >> 1;
+			break;
+		case 4:
+			// Left bitwise shift args
+			new_args = new_args << 1;
+			break;
+		case 5:
+			// Right bitwise shift args
+			new_args = new_args >> 1;
+			break;
+		case 6:
+			// Write 1 to the bit in genom
+			new_genom |= (1ull << (rand % genom_size));
+			break;
+		case 7:
+			// Write 1 to the bit in args
+			new_args |= (1ull << (rand % genom_size));
+			break;
+		case 8:
+			// Write 0 to the bit in genom
+			new_genom &= ~(1ull << (rand % genom_size));
+			break;
+		case 9:
+			// Write 0 to the bit in args
+			new_args &= ~(1ull << (rand % genom_size));
+			break;
+		default:
+			break;
+		}
 	}
 
 	unsigned __int8 new_mutationChance = mutationChance;

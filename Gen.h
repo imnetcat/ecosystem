@@ -14,6 +14,15 @@ enum class Trigger
 	Count
 };
 
+/*
+*	Gen structure:
+* 
+*	Trigger - defines the operation that the gen encodes
+* 
+*	args - number, every bit of which defines arguments for
+*	 operation accordingly, for each operation, there can
+*	 be as many arguments as there are bits in the number
+*/
 struct Gen
 {
 	Trigger trigger;

@@ -18,7 +18,6 @@ Environment::Environment()
 			{
 				terrain[y][x].SetFood(100);
 			}
-			auto i = random.Generate(1265798679);
 			// put first entities
 			if (rand < 1 && entities.size() < CELL_START_COUNT)
 			{
@@ -66,11 +65,13 @@ void Environment::Update()
 			entity->DecreaceEnergy(MAINTENANACE_COST.at(gen.trigger));
 			switch (gen.trigger)
 			{
+			case Trigger::Stay:
+				break;
 			case Trigger::Separate:
-				//Separationing(entity);
+				Separationing(gen.args, entity);
 				break;
 			case Trigger::Birth:
-				Birthing(entity);
+				Birthing(gen.args, entity);
 				break;
 			case Trigger::Carnivorous:
 				Carnivorousing(entity);
@@ -80,9 +81,6 @@ void Environment::Update()
 				break;
 			case Trigger::Photosyntesis:
 				Photosynthesing(entity);
-				break;
-			case Trigger::Stay:
-				Staying();
 				break;
 			case Trigger::Turn:
 				Turning(gen.args, entity);
@@ -237,31 +235,36 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 	return { x, y };
 }
 
-Position Environment::GetInvertedViewedPosition(view_side view, size_t x, size_t y)
+view_side Environment::GetViewSide(unsigned __int8 arg)
 {
-	switch (view)
+	// Define view side
+	/*
+		0 1 2
+		7   3
+		6 5	4
+	*/
+	switch (arg % 8)
 	{
-	case view_side::top:
-		return GetViewedPosition(view_side::bottom, x, y);
-	case view_side::right_top:
-		return GetViewedPosition(view_side::left_bottom, x, y);
-	case view_side::right:
-		return GetViewedPosition(view_side::left, x, y);
-	case view_side::right_bottom:
-		return GetViewedPosition(view_side::left_top, x, y);
-	case view_side::bottom:
-		return GetViewedPosition(view_side::top, x, y);
-	case view_side::left_bottom:
-		return GetViewedPosition(view_side::right_top, x, y);
-	case view_side::left:
-		return GetViewedPosition(view_side::right, x, y);
-	case view_side::left_top:
-		return GetViewedPosition(view_side::right_bottom, x, y);
+	case 0:
+		return view_side::left_top;
+	case 1:
+		return view_side::top;
+	case 2:
+		return view_side::right_top;
+	case 3:
+		return view_side::right;
+	case 4:
+		return view_side::right_bottom;
+	case 5:
+		return view_side::bottom;
+	case 6:
+		return view_side::left_bottom;
+	case 7:
+		return view_side::left;
 	default:
-		return GetViewedPosition(view_side::top, x, y);
+		return view_side::left;
 	}
 }
-
 
 Coefficient Environment::SuccessRule(EntitiesIterator entity)
 {
@@ -309,12 +312,12 @@ EntitiesIterator Environment::Reproduction(EntitiesIterator parent_entity, size_
 	return terrain[y][x].GetEntity();
 }
 
-void Environment::Birthing(EntitiesIterator entity)
+void Environment::Birthing(unsigned __int8 args, EntitiesIterator entity)
 {
 	if (entity->Energy() < (entity->ReproductionCost() / 2))
 		return;
 
-	Position new_position = GetInvertedViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
+	Position new_position = GetViewedPosition(GetViewSide(args), entity->GetX(), entity->GetY());
 
 	if (terrain[new_position.y][new_position.x].IsWalkable())
 	{
@@ -322,12 +325,12 @@ void Environment::Birthing(EntitiesIterator entity)
 	}
 }
 
-void Environment::Separationing(EntitiesIterator entity)
+void Environment::Separationing(unsigned __int8 args, EntitiesIterator entity)
 {
 	if (entity->Energy() < entity->ReproductionCost())
 		return;
 
-	Position new_position = GetInvertedViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
+	Position new_position = GetViewedPosition(GetViewSide(args), entity->GetX(), entity->GetY());
 
 	if (terrain[new_position.y][new_position.x].IsWalkable())
 	{
@@ -394,18 +397,8 @@ void Environment::Photosynthesing(EntitiesIterator entity)
 {
 	entity->IncreaceEnergy(LIGHT_POWER);
 }
-void Environment::Staying() {}
-void Environment::Turning(int args, EntitiesIterator entity)
+void Environment::Turning(unsigned __int8 args, EntitiesIterator entity)
 {
-	unsigned short old_side = static_cast<unsigned short>(entity->GetView());
-	view_side new_side;
-	if (args % 2)
-	{
-		new_side = static_cast<view_side>(old_side == 0 ? 7 : old_side - 1);
-	}
-	else
-	{
-		new_side = static_cast<view_side>(old_side == 7 ? 0 : old_side + 1);
-	}
-	entity->SetView(new_side);
+	// Set up new side of view for entity
+	entity->SetView(GetViewSide(args));
 }

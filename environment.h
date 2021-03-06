@@ -40,15 +40,15 @@ private:
 	EntitiesIterator EntityDie(EntitiesIterator);
 
 	Position GetViewedPosition(view_side view, size_t x, size_t y);
-	Position GetInvertedViewedPosition(view_side view, size_t x, size_t y);
+
+	view_side GetViewSide(unsigned __int8 arg);
 
 	EntitiesIterator Reproduction(EntitiesIterator parent_entity, size_t x, size_t y, view_side view);
-	void Separationing(EntitiesIterator);
-	void Birthing(EntitiesIterator);
+	void Separationing(unsigned __int8 args, EntitiesIterator);
+	void Birthing(unsigned __int8 args, EntitiesIterator);
 	void Carnivorousing(EntitiesIterator);
 	void Mineraling(EntitiesIterator);
 	void Moving(EntitiesIterator);
 	void Photosynthesing(EntitiesIterator);
-	void Staying();
-	void Turning(int args, EntitiesIterator);
+	void Turning(unsigned __int8 args, EntitiesIterator);
 };

@@ -1,5 +1,8 @@
 #pragma once
 #include "genome.h"
+#include "Object.h"
+#include "config.h"
+#include "ListPool.h"
 
 #include <iostream>
 #include <memory>
@@ -33,11 +36,9 @@ enum class view_settings
 	generations
 };
 
-class Cell
+class Entity : public Object
 {
 protected:
-	size_t x;
-	size_t y;
 	view_side view;
 	unsigned short age;
 	unsigned short max_age;
@@ -46,44 +47,30 @@ protected:
 	double defence;
 	double attack;
 	Genome genom;
-	size_t reproduction_cost;
 	unsigned char carnivorousing = 0;
 	unsigned char fotosintesis = 0;
 	unsigned char mineraling = 0;
 public:
-	Cell();
-	Cell(
+	Entity();
+	Entity(
 		size_t x,
 		size_t y,
+		view_side view,
 		unsigned short energy,
 		unsigned short max_age,
-		size_t repr_cost,
 		double defence,
 		double attack,
 		Genome g
 	);
-	Cell(Cell&& cell);
-	Cell(const Cell& cell);
-	Cell& operator = (const Cell& cell);
-	Cell& operator = (Cell&& cell);
 
-	size_t GetX() const;
-	size_t GetY() const;
-	void SetPosition(size_t nx, size_t ny);
 
 	bool IsDead();
 
-	size_t ReprodutionCost();
+	size_t ReproductionCost();
 
 	const Genome& GetGenome() const;
 	Genome& GetGenome();
 	
-	bool IsFriendly(const Cell& cell);
-
-	RGBColor Species();
-
-	size_t Reproduction(Cell&);
-
 	void Tic();
 
 	bool Defencing(double);
@@ -102,7 +89,6 @@ public:
 	unsigned short Hp();
 
 	void SetGenome(Genome value);
-	void ReproductionCost(size_t);
 	void Defence(double);
 	void Attack(double);
 	void Age(unsigned short);
@@ -110,13 +96,6 @@ public:
 	void View(view_side);
 	void Energy(unsigned short);
 	void Hp(unsigned short);
-
-	enum class Success
-	{
-		fail,
-		normal,
-		good
-	};
-	Success SuccessRule();
-protected:
 };
+
+using EntitiesIterator = ListPool<Entity, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X>::iterator;

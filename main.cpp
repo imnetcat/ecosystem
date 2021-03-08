@@ -3,6 +3,9 @@
 #include "Ecosystem.h"
 #include "config.h"
 
+#include <chrono> 
+using namespace std::chrono;
+
 #include <iostream>
 #include <string>
 
@@ -75,149 +78,153 @@ const int CLEAR_INFO_POS_Y = INFO_RECT_POS_Y + INFO_RECT_SIZE_Y - 10;
 const int CLEAR_INFO_SIZE_X = 50;
 const int CLEAR_INFO_SIZE_Y = 20;
 
+RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X* CELL_OUTLINE, ENVIRONMENT_SIZE_Y* CELL_OUTLINE), "Ecosystem | Map");
+RenderWindow setting_window(VideoMode(200, ENVIRONMENT_SIZE_Y* CELL_OUTLINE), "Ecosystem | Settings", sf::Style::Titlebar);
+
+sf::RectangleShape setting_background(sf::Vector2f(setting_window.getSize().x, setting_window.getSize().y));
+
+sf::Font font;
+
+Box view_rect(font, "view",
+	VIEW_RECT_POS_X,
+	VIEW_RECT_POS_Y,
+	VIEW_RECT_SIZE_X,
+	VIEW_RECT_SIZE_Y, 16);
+
+Button ter_view_btn(font, "terrain",
+	DEFAULT_BTN_POS_X,
+	DEFAULT_BTN_POS_Y,
+	DEFAULT_BTN_SIZE_X,
+	DEFAULT_BTN_SIZE_Y, 14);
+
+Button energy_view_btn(font, "energy",
+	ENERGY_BTN_POS_X,
+	ENERGY_BTN_POS_Y,
+	ENERGY_BTN_SIZE_X,
+	ENERGY_BTN_SIZE_Y, 14);
+
+Button minerals_view_btn(font, "minerals",
+	MINERALS_BTN_POS_X,
+	MINERALS_BTN_POS_Y,
+	MINERALS_BTN_SIZE_X,
+	MINERALS_BTN_SIZE_Y, 14);
+
+Button species_view_btn(font, "species",
+	SPECIES_BTN_POS_X,
+	SPECIES_BTN_POS_Y,
+	SPECIES_BTN_SIZE_X,
+	SPECIES_BTN_SIZE_Y, 14);
+
+Button age_view_btn(font, "age",
+	AGE_BTN_POS_X,
+	AGE_BTN_POS_Y,
+	AGE_BTN_SIZE_X,
+	AGE_BTN_SIZE_Y, 14);
+
+Button ration_view_btn(font, "ration",
+	RATION_BTN_POS_X,
+	RATION_BTN_POS_Y,
+	RATION_BTN_SIZE_X,
+	RATION_BTN_SIZE_Y, 14);
+
+Button hp_view_btn(font, "hp",
+	HP_BTN_POS_X,
+	HP_BTN_POS_Y,
+	HP_BTN_SIZE_X,
+	HP_BTN_SIZE_Y, 14);
+
+Button survival_view_btn(font, "survival",
+	SURVIVAL_BTN_POS_X,
+	SURVIVAL_BTN_POS_Y,
+	SURVIVAL_BTN_SIZE_X,
+	SURVIVAL_BTN_SIZE_Y, 14);
+
+Button generation_view_btn(font, "generation",
+	GENERATION_BTN_POS_X,
+	GENERATION_BTN_POS_Y,
+	GENERATION_BTN_SIZE_X,
+	GENERATION_BTN_SIZE_Y, 14);
+
+Box info_rect(font, "info", INFO_RECT_POS_X, INFO_RECT_POS_Y, INFO_RECT_SIZE_X, INFO_RECT_SIZE_Y, 16);
+Box cell_ico(font, "", 10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 30, 50, 50, 16);
+
+sf::Text field_title;
+sf::Text cell_generation;
+sf::Text cell_age;
+sf::Text cell_mutant_chance;
+sf::Text cell_energy;
+sf::Text cell_hp;
+sf::Text field_food;
+sf::Text field_light;
+sf::Text cell_genom;
+
+Button info_clear_rect_btn(font, "clear",
+	CLEAR_INFO_POS_X,
+	CLEAR_INFO_POS_Y,
+	CLEAR_INFO_SIZE_X,
+	CLEAR_INFO_SIZE_Y, 12);
+
 int main()
 {
-	RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X * CELL_OUTLINE, ENVIRONMENT_SIZE_Y * CELL_OUTLINE), "Ecosystem | Map");
+	Ecosystem ecosystem;
+
 	window.setPosition(sf::Vector2i(WINDOW_POS_X, WINDOW_POS_Y));
 
-	RenderWindow setting_window(VideoMode(200, ENVIRONMENT_SIZE_Y * CELL_OUTLINE), "Ecosystem | Settings", sf::Style::Titlebar);
 	setting_window.setPosition(sf::Vector2i(WINDOW_POS_X + ENVIRONMENT_SIZE_X * CELL_OUTLINE + 15, WINDOW_POS_Y));
 	
-	sf::RectangleShape setting_background(sf::Vector2f(setting_window.getSize().x, setting_window.getSize().y));
 	setting_background.setFillColor({ 230, 230, 230 });
 
-	sf::Font font;
 	if (!font.loadFromFile(FONT))
 	{
 		cerr << "font doesn't loaded properly..." << endl;
 	}
 
-	Box view_rect(font, "view",
-		VIEW_RECT_POS_X, 
-		VIEW_RECT_POS_Y,
-		VIEW_RECT_SIZE_X,
-		VIEW_RECT_SIZE_Y, 16);
-	
-	Button ter_view_btn(font, "terrain", 
-		DEFAULT_BTN_POS_X, 
-		DEFAULT_BTN_POS_Y, 
-		DEFAULT_BTN_SIZE_X, 
-		DEFAULT_BTN_SIZE_Y, 14);
-
-	Button energy_view_btn(font, "energy",
-		ENERGY_BTN_POS_X,
-		ENERGY_BTN_POS_Y,
-		ENERGY_BTN_SIZE_X,
-		ENERGY_BTN_SIZE_Y, 14);
-
-	Button minerals_view_btn(font, "minerals",
-		MINERALS_BTN_POS_X,
-		MINERALS_BTN_POS_Y,
-		MINERALS_BTN_SIZE_X,
-		MINERALS_BTN_SIZE_Y, 14);
-
-	Button species_view_btn(font, "species",
-		SPECIES_BTN_POS_X,
-		SPECIES_BTN_POS_Y,
-		SPECIES_BTN_SIZE_X,
-		SPECIES_BTN_SIZE_Y, 14);
-
-	Button age_view_btn(font, "age",
-		AGE_BTN_POS_X,
-		AGE_BTN_POS_Y,
-		AGE_BTN_SIZE_X,
-		AGE_BTN_SIZE_Y, 14);
-
-	Button ration_view_btn(font, "ration",
-		RATION_BTN_POS_X,
-		RATION_BTN_POS_Y,
-		RATION_BTN_SIZE_X,
-		RATION_BTN_SIZE_Y, 14);
-
-	Button hp_view_btn(font, "hp",
-		HP_BTN_POS_X,
-		HP_BTN_POS_Y,
-		HP_BTN_SIZE_X,
-		HP_BTN_SIZE_Y, 14);
-
-	Button survival_view_btn(font, "survival",
-		SURVIVAL_BTN_POS_X,
-		SURVIVAL_BTN_POS_Y,
-		SURVIVAL_BTN_SIZE_X,
-		SURVIVAL_BTN_SIZE_Y, 14);
-
-	Button generation_view_btn(font, "generation",
-		GENERATION_BTN_POS_X,
-		GENERATION_BTN_POS_Y,
-		GENERATION_BTN_SIZE_X,
-		GENERATION_BTN_SIZE_Y, 14);
-
-	Box info_rect(font, "info", INFO_RECT_POS_X, INFO_RECT_POS_Y, INFO_RECT_SIZE_X, INFO_RECT_SIZE_Y, 16);
-	Box cell_ico(font, "", 10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 30, 50, 50, 16);
-	
-	sf::Text field_title;
 	field_title.setFont(font);
 	field_title.setCharacterSize(12);
 	field_title.setPosition(85, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 45);
 	field_title.setFillColor(sf::Color::Black);
-	
-	sf::Text cell_generation;
+
 	cell_generation.setFont(font);
 	cell_generation.setCharacterSize(12);
 	cell_generation.setPosition(65, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 60);
 	cell_generation.setFillColor(sf::Color::Black);
 
-	sf::Text cell_age;
 	cell_age.setFont(font);
 	cell_age.setCharacterSize(12);
 	cell_age.setPosition(65, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 75);
 	cell_age.setFillColor(sf::Color::Black);
 
-	sf::Text cell_mutant_chance;
 	cell_mutant_chance.setFont(font);
 	cell_mutant_chance.setCharacterSize(12);
 	cell_mutant_chance.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 90);
 	cell_mutant_chance.setFillColor(sf::Color::Black);
 
-	sf::Text cell_energy;
 	cell_energy.setFont(font);
 	cell_energy.setCharacterSize(12);
 	cell_energy.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 105);
 	cell_energy.setFillColor(sf::Color::Black);
 
-	sf::Text cell_hp;
 	cell_hp.setFont(font);
 	cell_hp.setCharacterSize(12);
 	cell_hp.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 120);
 	cell_hp.setFillColor(sf::Color::Black);
 
-	sf::Text field_food;
 	field_food.setFont(font);
 	field_food.setCharacterSize(12);
 	field_food.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 135);
 	field_food.setFillColor(sf::Color::Black);
 
-	sf::Text field_light;
 	field_light.setFont(font);
 	field_light.setCharacterSize(12);
 	field_light.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 150);
 	field_light.setFillColor(sf::Color::Black);
 
-	sf::Text cell_genom;
 	cell_genom.setFont(font);
 	cell_genom.setCharacterSize(12);
 	cell_genom.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 165);
 	cell_genom.setFillColor(sf::Color::Black);
 
-	Button info_clear_rect_btn(font, "clear",
-		CLEAR_INFO_POS_X,
-		CLEAR_INFO_POS_Y,
-		CLEAR_INFO_SIZE_X,
-		CLEAR_INFO_SIZE_Y, 12);
-	
 	ter_view_btn.Disable(true);
-
-	Ecosystem ecosystem;
 
 	bool turn_on_info_block = false;
 	bool pause = false;
@@ -401,22 +408,10 @@ int main()
 					turn_on_info_block = true;
 					cell_ico.Color({ info.color.r, info.color.g, info.color.b });
 					field_title.setString("Structure");
-					string genom = "\n";
-					if (info.genom.size())
+					if (info.contains_entity)
 					{
-						field_title.setString("Cell");
-						size_t ndl = 0;
-						for (auto command : info.genom)
-						{
-							genom += to_string(static_cast<unsigned int>(command)) + ' ';
-							ndl++;
-							if (ndl == 11)
-							{
-								ndl = 0;
-								genom += '\n';
-							}
-						}
-						cell_genom.setString("Genom: " + genom);
+						field_title.setString("Entity");
+						cell_genom.setString("Genom: " + to_string(info.genome));
 						cell_generation.setString("Generation: " + to_string(info.generation));
 						cell_age.setString("Age: " + to_string(info.age.curr) + "/" + to_string(info.age.max));
 						cell_mutant_chance.setString("Chance of mutation: " + to_string(info.ch_of_mut).substr(0, 4));
@@ -473,7 +468,13 @@ int main()
 			// clear the window and draw background with background color
 			window.clear();
 			// update ecosystem and draw sprites
+
+			//auto start = high_resolution_clock::now();
 			ecosystem.Update();
+			//auto stop = high_resolution_clock::now();
+			//auto duration = duration_cast<std::chrono::microseconds>(stop - start);
+			//cout << "Environment update: \t" << duration.count() << " ms" << endl;
+
 			ecosystem.Draw(window);
 			// display 
 			window.display();

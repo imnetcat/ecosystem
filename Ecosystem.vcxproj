@@ -119,27 +119,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cell.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Ecosystem.cpp" />
     <ClCompile Include="environment.cpp" />
-    <ClCompile Include="item.cpp" />
+    <ClCompile Include="Genome.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="structure.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Organic.cpp" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="TerrainCell.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cell.h" />
+    <ClInclude Include="ListPool.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Ecosystem.h" />
     <ClInclude Include="environment.h" />
-    <ClInclude Include="genome.h" />
-    <ClInclude Include="item.h" />
-    <ClInclude Include="minerals.h" />
+    <ClInclude Include="Genome.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Organic.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="Gen.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />
     <ClInclude Include="sfml_button.h" />
-    <ClInclude Include="structure.h" />
-    <ClInclude Include="water.h" />
+    <ClInclude Include="TerrainCell.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,13 +9,14 @@ struct Info
 		size_t curr = 0;
 		size_t max = 0;
 	} age;
-	std::vector<int> genom;
+	bool contains_entity;
+	unsigned __int64 genome;
 	unsigned short hp = 0;
 	size_t energy = 0;
 	size_t generation = 0;
 	size_t light_power = 0;
 	size_t food_power = 0;
-	float ch_of_mut;
+	unsigned __int8 ch_of_mut;
 };
 
 class Ecosystem : public Environment
@@ -28,5 +29,5 @@ public:
 	void SetView(view_settings new_val);
 private:
 	RGBColor ObtainColor(size_t x, size_t y);
-	view_settings view = view_settings::terrain;
+	view_settings view;
 };

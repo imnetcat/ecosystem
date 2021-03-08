@@ -1,178 +1,117 @@
 #include "environment.h"
 #include "config.h"
 
-size_t Environment::cells_count = 0;
-size_t Environment::max_generation = 1;
-std::array<std::array<Structure, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> Environment::terrain;
-std::array<Cell*, ENVIRONMENT_SIZE_X* ENVIRONMENT_SIZE_Y> Environment::cells;
-
 Environment::Environment()
+	: max_generation(1)
 {
 	size_t index = 0;
-	srand(time(0) + rand());
+	Random random;
+
 	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 	{
 		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 		{
-			// fill of water
-			terrain[y][x] = Water();
-			// fill of nullptr
-			cells[index] = nullptr;
-
-			// put minerals
-			if (((rand() % 100) < 25))
+			// put first entities
+			if (random.Generate(101) < 1 && entities.size() < CELL_START_COUNT)
 			{
-				terrain[y][x].SetFood(100);
-			}
-
-			// put first cells
-			if (((rand() % 100) < 30) && cells_count < CELL_START_COUNT)
-				//&& y > (ENVIRONMENT_SIZE_Y / 3) && y < (ENVIRONMENT_SIZE_Y - ENVIRONMENT_SIZE_Y / 3)
-				//&& x > (ENVIRONMENT_SIZE_X / 3) && x < (ENVIRONMENT_SIZE_X - ENVIRONMENT_SIZE_X / 3))
-			{
-				terrain[y][x].SetCell();
-				cells[cells_count] = &terrain[y][x].GetCell();
-				cells[cells_count]->SetPosition(x, y);
-				cells[cells_count]->Energy(100);
-				cells[cells_count]->MaxAge(100);
-				cells[cells_count]->Defence(0.01);
-				cells[cells_count]->Hp(MAX_HP);
-				cells[cells_count]->Attack(0.01);
-				cells[cells_count]->SetGenome(Genome());
-
-				size_t cost = 0;
-				for (const Gen& gen : cells[cells_count]->GetGenome().data)
-				{
-					cost += CREATION_COST.at(gen.trigger);
-				}
-				cells[cells_count]->ReproductionCost(100 + cost);
-
-				cells_count++;
+				terrain[y][x].SetEntity(entities.Add({ 
+					x, y,
+					view_side::top,
+					100,
+					100,
+					0.01,
+					0.01,
+					Genome()
+				}));
 			}
 
 			index++;
 		}
 	}
 }
-void Environment::Shift(size_t i)
-{
-	size_t index;
-	for (index = i + 1; index < cells.size(); index++)
-	{
-		cells[index - 1] = cells[index];
-		if (!cells[index]) break;
-	}
-	if (cells_count)
-	{
-		cells_count--;
-	}
-}
 
-void Environment::CellDie(size_t index, size_t x, size_t y)
+EntitiesIterator Environment::EntityDie(EntitiesIterator entity_iterator)
 {
-	if (terrain[y][x].IsContainsFood())
-		terrain[y][x].GetFood().Put(cells[index]->Energy() + 100);
+	auto x = entity_iterator->GetX();
+	auto y = entity_iterator->GetY();
+	if (terrain[y][x].IsContainsOrganic())
+	{
+		terrain[y][x].AddOrganic(entity_iterator->Energy() + 100ull);
+	}
 	else
-		terrain[y][x].SetFood(cells[index]->Energy() + 100);
-
-	terrain[y][x].DelCell();
-	Shift(index);
-}
-void Environment::CellDie(size_t x, size_t y)
-{
-	size_t index;
-	for (index = 0; index < cells.size(); index++)
 	{
-		if (cells[index]->GetX() == x &&
-			cells[index]->GetY() == y)
-			break;
+		terrain[y][x].SetOrganic(organic.Add({ x, y, entity_iterator->Energy() + 100ull }));
 	}
-
-	if (index == cells.size()) return;
-
-	if (terrain[y][x].IsContainsFood())
-		terrain[y][x].GetFood().Put(cells[index]->Energy() + 100);
-	else
-		terrain[y][x].SetFood(cells[index]->Energy() + 100);
-
-	terrain[y][x].DelCell();
-	Shift(index);
-}
-void Environment::Separationing(size_t x, size_t y)
-{
-	if (terrain[y][x].GetCell().Energy() < terrain[y][x].GetCell().ReprodutionCost())
-		return;
-
-	Position new_position = GetInvertedViewedPosition(terrain[y][x].GetCell().GetView(), { x,y });
-
-	if (terrain[new_position.y][new_position.x].IsWalkable())
-	{
-		terrain[new_position.y][new_position.x].SetCell();
-		if (terrain[y][x].GetCell().Reproduction(terrain[new_position.y][new_position.x].GetCell()) > max_generation)
-			max_generation++;
-
-		terrain[y][x].GetCell().DecreaceEnergy(terrain[y][x].GetCell().ReprodutionCost());
-		unsigned short hlph = terrain[y][x].GetCell().Energy() / 2;
-		terrain[y][x].GetCell().DecreaceEnergy(hlph);
-		terrain[new_position.y][new_position.x].GetCell().IncreaceEnergy(hlph);
-		cells[cells_count] = &terrain[new_position.y][new_position.x].GetCell();
-		cells[cells_count]->SetPosition(new_position.x, new_position.y);
-
-		size_t cost = 0;
-		for (const Gen& gen : cells[cells_count]->GetGenome().data)
-		{
-			cost += CREATION_COST.at(gen.trigger);
-		}
-		cells[cells_count]->ReproductionCost(100 + cost);
-
-		cells_count++;
-	}
+	terrain[y][x].DelEntity();
+	return entities.Del(entity_iterator);
 }
 
 void Environment::Update()
 {
-	for (size_t index = 0; index < cells.size(); index++)
+	// Update gravity
+	auto object = organic.begin();
+	while (object != organic.end())
 	{
-		if (!cells[index]) break;
-
-		size_t x = cells[index]->GetX();
-		size_t y = cells[index]->GetY();
-		if (cells[index]->IsDead())
-			// remove cell if it is dead
+		auto x = object->GetX();
+		auto y = object->GetY();
+		if (y == (ENVIRONMENT_SIZE_Y - 1))
 		{
-			CellDie(index, x, y);
+			object++;
+			continue;
+		}
+		if (terrain[y + 1][x].IsContainsOrganic())
+		{
+			object++;
+			continue;
+		}
+		terrain[y][x].DelOrganic();
+		y++;
+		object->SetY(y);
+		terrain[y][x].SetOrganic(object);
+		object++;
+	}
+
+	// Update entities
+	auto entity = entities.begin();
+	while (entity != entities.end())
+	{
+		if (entity->IsDead())
+			// remove entity if it is dead
+		{
+			entity = EntityDie(entity);
+			continue;
 		}
 		else
 		{
-			cells[index]->Tic();
+			entity->Tic();
 
-			Gen& gen = cells[index]->GetGenome().Read();
-			cells[index]->DecreaceEnergy(MAINTENANACE_COST.at(gen.trigger));
+			Gen gen = entity->GetGenome().Read();
+			entity->DecreaceEnergy(MAINTENANACE_COST.at(gen.trigger));
 			switch (gen.trigger)
 			{
+			case Trigger::Stay:
+				break;
 			case Trigger::Separate:
-				Separationing(x, y);
+				Separationing(gen.args, entity);
 				break;
 			case Trigger::Birth:
-				Birthing(x, y);
+				Birthing(gen.args, entity);
 				break;
 			case Trigger::Carnivorous:
-				Carnivorousing(x, y);
+				Carnivorousing(entity);
 				break;
 			case Trigger::Mineraleon:
-				Mineraling(x, y);
+				EatOrganic(entity);
 				break;
 			case Trigger::Photosyntesis:
-				Photosynthesing(x, y);
-				break;
-			case Trigger::Stay:
-				Staying();
+				Photosynthesing(entity);
 				break;
 			case Trigger::Turn:
-				Turning(gen.args, x, y);
+				Turning(gen.args, entity);
 				break;
 			}
 		}
+		entity++;
 	}
 }
 
@@ -181,271 +120,276 @@ bool operator == (const Position& lhs, const Position& rhs)
 	return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
-Position Environment::GetViewedPosition(view_side view, Position init)
+Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 {
 	auto maxX = ENVIRONMENT_SIZE_X - 1;
 	auto maxY = ENVIRONMENT_SIZE_Y - 1;
 
-	Position viewed_position = init;
 	switch (view)
 	{
 	case view_side::left:
-		if (init.x > 0)
+		if (x > 0)
 		{
-			viewed_position.x--;
+			x--;
 		}
-		else if (LOOPED_ENVIRONMENT)
+		else
 		{
-			viewed_position.x = maxX;
+			x = maxX;
 		}
 		break;
 	case view_side::right:
-		if (init.x < maxX)
+		if (x < maxX)
 		{
-			viewed_position.x++;
+			x++;
 		}
-		else if (LOOPED_ENVIRONMENT)
+		else
 		{
-			viewed_position.x = 0;
+			x = 0;
 		}
 		break;
 	case view_side::bottom:
-		if (init.y > 0)
+		if (y > 0)
 		{
-			viewed_position.y--;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			viewed_position.y = maxY;
+			y--;
 		}
 		break;
 	case view_side::top:
-		if (init.y < maxY)
+		if (y < maxY)
 		{
-			viewed_position.y++;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			viewed_position.y = 0;
+			y++;
 		}
 		break;
 	case view_side::left_bottom:
-		if (init.x > 0 && init.y < maxY)
+		if (x > 0 && y < maxY)
 		{
-			viewed_position.x--;
-			viewed_position.y++;
+			x--;
+			y++;
 		}
-		else if (init.y < maxY && LOOPED_ENVIRONMENT)
+		else if (y < maxY)
 		{
-			viewed_position.x = maxX;
-			viewed_position.y++;
-		}
-		else if (LOOPED_ENVIRONMENT && init.x > 0)
-		{
-			viewed_position.x--;
-			viewed_position.y = 0;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			viewed_position.x = maxX;
-			viewed_position.y = 0;
+			x = maxX;
+			y++;
 		}
 		break;
 	case view_side::left_top:
-		if (init.x > 0 && init.y > 0)
+		if (x > 0 && y > 0)
 		{
-			viewed_position.x--;
-			viewed_position.y--;
+			x--;
+			y--;
 		}
-		else if (init.y > 0 && LOOPED_ENVIRONMENT)
+		else if (y > 0)
 		{
-			viewed_position.x = maxX;
-			viewed_position.y--;
-		}
-		else if (LOOPED_ENVIRONMENT && init.x > 0)
-		{
-			viewed_position.x--;
-			viewed_position.y = maxY;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			viewed_position.x = maxX;
-			viewed_position.y = maxY;
+			x = maxX;
+			y--;
 		}
 		break;
 	case view_side::right_bottom:
-		if (init.y < maxY && init.x < maxX)
+		if (y < maxY && x < maxX)
 		{
-			viewed_position.x++;
-			viewed_position.y++;
+			x++;
+			y++;
 		}
-		else if (init.y < maxY && LOOPED_ENVIRONMENT)
+		else if (y < maxY)
 		{
-			viewed_position.x = 0;
-			viewed_position.y++;
-		}
-		else if (LOOPED_ENVIRONMENT && init.x < maxX)
-		{
-			viewed_position.x++;
-			viewed_position.y = 0;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			viewed_position.x = 0;
-			viewed_position.y = 0;
+			x = 0;
+			y++;
 		}
 		break;
 	case view_side::right_top:
-		if (init.y > 0 && init.x < maxX)
+		if (y > 0 && x < maxX)
 		{
-			viewed_position.x++;
-			viewed_position.y--;
+			x++;
+			y--;
 		}
-		else if (init.y > 0 && LOOPED_ENVIRONMENT)
+		else if (y > 0)
 		{
-			viewed_position.x = 0;
-			viewed_position.y--;
-		}
-		else if (LOOPED_ENVIRONMENT && init.x < maxX)
-		{
-			viewed_position.x++;
-			viewed_position.y = maxY;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			viewed_position.x = 0;
-			viewed_position.y = maxY;
+			x = 0;
+			y--;
 		}
 		break;
 	}
-	return viewed_position;
+	return { x, y };
 }
 
-Position Environment::GetInvertedViewedPosition(view_side view, Position init)
+view_side Environment::GetViewSide(unsigned __int8 arg)
 {
-	switch (view)
+	// Define view side
+	/*
+		0 1 2
+		7   3
+		6 5	4
+	*/
+	switch (arg % 8)
 	{
-	case view_side::top:
-		return GetViewedPosition(view_side::bottom, init);
-	case view_side::right_top:
-		return GetViewedPosition(view_side::left_bottom, init);
-	case view_side::right:
-		return GetViewedPosition(view_side::left, init);
-	case view_side::right_bottom:
-		return GetViewedPosition(view_side::left_top, init);
-	case view_side::bottom:
-		return GetViewedPosition(view_side::top, init);
-	case view_side::left_bottom:
-		return GetViewedPosition(view_side::right_top, init);
-	case view_side::left:
-		return GetViewedPosition(view_side::right, init);
-	case view_side::left_top:
-		return GetViewedPosition(view_side::right_bottom, init);
+	case 0:
+		return view_side::left_top;
+	case 1:
+		return view_side::top;
+	case 2:
+		return view_side::right_top;
+	case 3:
+		return view_side::right;
+	case 4:
+		return view_side::right_bottom;
+	case 5:
+		return view_side::bottom;
+	case 6:
+		return view_side::left_bottom;
+	case 7:
+		return view_side::left;
 	default:
-		return GetViewedPosition(view_side::top, init);
+		return view_side::left;
 	}
 }
-void Environment::Birthing(size_t x, size_t y)
+
+Coefficient Environment::SuccessRule(EntitiesIterator entity)
 {
-	if (terrain[y][x].GetCell().Energy() < (terrain[y][x].GetCell().ReprodutionCost() / 2))
+	unsigned int success_border = MAX_ENERGY * (double(entity->Age()) / (entity->MaxAge()));
+	return (entity->Energy() > success_border) ? Coefficient::enlarge :
+		(entity->Energy() > (success_border / 2) ? Coefficient::unchanged : Coefficient::reduce);
+}
+
+EntitiesIterator Environment::Reproduction(EntitiesIterator parent_entity, size_t x, size_t y, view_side view)
+{
+	Coefficient coef = SuccessRule(parent_entity);
+	
+	Genome new_genom = parent_entity->GetGenome().Replicate(coef);
+
+	unsigned short new_max_age = parent_entity->MaxAge();
+
+	switch (coef)
+	{
+	case Coefficient::enlarge:
+		if (new_max_age < 1000) new_max_age++;
+		break;
+	case Coefficient::reduce:
+		if (new_max_age > 0) new_max_age--;
+		break;
+	case Coefficient::unchanged:
+	default:
+		break;
+	}
+	
+	parent_entity->DecreaceEnergy(parent_entity->ReproductionCost());
+
+	terrain[y][x].SetEntity(entities.Add({
+		x, y,
+		view,
+		100,
+		new_max_age,
+		parent_entity->Defence(),
+		parent_entity->Attack(),
+		new_genom
+	}));
+
+	if (new_genom.Generation() > max_generation)
+		max_generation = new_genom.Generation();
+
+	return terrain[y][x].GetEntity();
+}
+
+void Environment::Birthing(unsigned __int8 args, EntitiesIterator entity)
+{
+	if (entity->Energy() < (entity->ReproductionCost() / 2))
 		return;
 
-	Position new_position = GetInvertedViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
+	Position new_position = GetViewedPosition(GetViewSide(args), entity->GetX(), entity->GetY());
 
 	if (terrain[new_position.y][new_position.x].IsWalkable())
 	{
-		terrain[new_position.y][new_position.x].SetCell();
-		terrain[y][x].GetCell().DecreaceEnergy(terrain[y][x].GetCell().ReprodutionCost() / 2);
-		if (terrain[y][x].GetCell().Reproduction(terrain[new_position.y][new_position.x].GetCell()) > max_generation)
-			max_generation++;
-		cells[cells_count] = &terrain[new_position.y][new_position.x].GetCell();
-		cells[cells_count]->SetPosition(new_position.x, new_position.y);
-
-		size_t cost = 0;
-		for (const Gen& gen : cells[cells_count]->GetGenome().data)
-		{
-			cost += CREATION_COST.at(gen.trigger);
-		}
-		cells[cells_count]->ReproductionCost(100 + cost);
-
-		cells_count++;
+		Reproduction(entity, new_position.x, new_position.y, view_side::top);
 	}
 }
-void Environment::Carnivorousing(size_t x, size_t y)
-{
-	Position viewed_position = GetViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
 
-	if (viewed_position == Position{ x, y })
+void Environment::Separationing(unsigned __int8 args, EntitiesIterator entity)
+{
+	if (entity->Energy() < entity->ReproductionCost())
 		return;
+
+	Position new_position = GetViewedPosition(GetViewSide(args), entity->GetX(), entity->GetY());
+
+	if (terrain[new_position.y][new_position.x].IsWalkable())
+	{
+		EntitiesIterator nEntity = Reproduction(entity, new_position.x, new_position.y, view_side::top);
+
+		unsigned short hlph = entity->Energy() / 2;
+		entity->DecreaceEnergy(hlph);
+		nEntity->IncreaceEnergy(hlph);
+	}
+}
+
+void Environment::Carnivorousing(EntitiesIterator entity)
+{
+	Position viewed_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
 
 	auto& viewed_point = terrain[viewed_position.y][viewed_position.x];
 
-	if (viewed_point.ContainsCell())
+	if (viewed_point.ContainsEntity())
 	{
-		if (!viewed_point.GetCell().IsFriendly(terrain[y][x].GetCell()))
+		auto lhs_genom = viewed_point.GetEntity()->GetGenome().Data();
+		auto rhs_genom = viewed_point.GetEntity()->GetGenome().Data();
+
+		if (lhs_genom == rhs_genom)
+			return;
+
+		if (!viewed_point.GetEntity()->Defencing(entity->Attack()))
 		{
-			if (!viewed_point.GetCell().Defencing(terrain[y][x].GetCell().Attack()))
-			{
-				CellDie(x, y);
-				terrain[y][x].GetCell().AttackUp();
-				auto e = viewed_point.GetCell().Energy();
-				if (e > MAX_MEAT_TO_EAT)
-					terrain[y][x].GetCell().IncreaceEnergy(MAX_MEAT_TO_EAT);
-				else
-					terrain[y][x].GetCell().IncreaceEnergy(e);
-			}
+			EntityDie(viewed_point.GetEntity());
+			entity->AttackUp();
+			auto e = viewed_point.GetEntity()->Energy();
+			if (e > MAX_MEAT_TO_EAT)
+				entity->IncreaceEnergy(MAX_MEAT_TO_EAT);
+			else
+				entity->IncreaceEnergy(e);
 		}
 	}
 }
-void Environment::Mineraling(size_t x, size_t y)
+void Environment::EatOrganic(EntitiesIterator entity)
 {
-	auto e = terrain[y][x].GetFood().Eat(MAX_MINERALS_TO_EAT);
-	if (e)
+	if (!terrain[entity->GetY()][entity->GetX()].IsContainsOrganic())
 	{
-		terrain[y][x].GetCell().IncreaceEnergy(e);
-	}
-}
-void Environment::Moving(size_t x, size_t y)
-{
-	Position new_position = GetViewedPosition(terrain[y][x].GetCell().GetView(), { x, y });
-
-	if (new_position == Position{ x, y })
 		return;
-
-	if (terrain[new_position.y][new_position.x].IsWalkable())
-	{
-		size_t index;
-		for (index = 0; index < cells.size(); index++)
-		{
-			if (cells[index]->GetX() == x &&
-				cells[index]->GetY() == y)
-			{
-				cells[index] = &terrain[new_position.y][new_position.x].GetCell();
-				break;
-			}
-		}
-		terrain[y][x].GetCell().SetPosition(new_position.x, new_position.y);
-		terrain[new_position.y][new_position.x].SetCell(terrain[y][x].GetCell());
-
-		terrain[y][x].DelCell();
 	}
-}
-void Environment::Photosynthesing(size_t x, size_t y)
-{
-	terrain[y][x].GetCell().IncreaceEnergy(LIGHT_POWER);
-}
-void Environment::Staying() {}
-void Environment::Turning(int args, size_t x, size_t y)
-{
-	unsigned short old_side = static_cast<unsigned short>(terrain[y][x].GetCell().GetView());
-	view_side new_side;
-	if (args % 2)
+
+	auto o = terrain[entity->GetY()][entity->GetX()].GetOrganic();
+	auto energy = o->Energy();
+
+	if (energy >= MAX_MINERALS_TO_EAT)
 	{
-		new_side = static_cast<view_side>(old_side == 0 ? 7 : old_side - 1);
+		entity->IncreaceEnergy(MAX_MINERALS_TO_EAT);
+		o->Decreace(MAX_MINERALS_TO_EAT);
+		if (!o->Energy())
+		{
+			organic.Del(o);
+			terrain[entity->GetY()][entity->GetX()].DelOrganic();
+		}
 	}
 	else
 	{
-		new_side = static_cast<view_side>(old_side == 7 ? 0 : old_side + 1);
+		entity->IncreaceEnergy(energy);
+		organic.Del(o);
+		terrain[entity->GetY()][entity->GetX()].DelOrganic();
 	}
-	terrain[y][x].GetCell().SetView(new_side);
+}
+void Environment::Moving(EntitiesIterator entity)
+{
+	Position new_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
+
+	if (terrain[new_position.y][new_position.x].IsWalkable())
+	{
+		terrain[entity->GetY()][entity->GetX()].DelEntity();
+		entity->SetPosition(new_position.x, new_position.y);
+		terrain[new_position.y][new_position.x].SetEntity(entity);
+	}
+}
+void Environment::Photosynthesing(EntitiesIterator entity)
+{
+	entity->IncreaceEnergy(
+			(((ENVIRONMENT_SIZE_Y - (double)entity->GetY()) / ENVIRONMENT_SIZE_Y) * LIGHT_COEF) * LIGHT_POWER
+	);
+}
+void Environment::Turning(unsigned __int8 args, EntitiesIterator entity)
+{
+	// Set up new side of view for entity
+	entity->SetView(GetViewSide(args));
 }

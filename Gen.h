@@ -14,30 +14,39 @@ enum class Trigger
 	Count
 };
 
+/*
+*	Gen structure:
+* 
+*	Trigger - defines the operation that the gen encodes
+* 
+*	args - number, every bit of which defines arguments for
+*	 operation accordingly, for each operation, there can
+*	 be as many arguments as there are bits in the number
+*/
 struct Gen
 {
 	Trigger trigger;
-	int args;
+	unsigned __int8 args;
 };
 
 const std::map<Trigger, unsigned int> CREATION_COST = {
 	{Trigger::Stay, 1},
 	{Trigger::Move, 15},
-	{Trigger::Turn, 10},
-	{Trigger::Photosyntesis, 15},
+	{Trigger::Turn, 2},
+	{Trigger::Photosyntesis, 10},
 	{Trigger::Mineraleon, 15},
 	{Trigger::Carnivorous, 25},
 	{Trigger::Birth, 30},
-	{Trigger::Separate, 40}
+	{Trigger::Separate, 30}
 };
 
 const std::map<Trigger, unsigned int> MAINTENANACE_COST = {
 	{Trigger::Stay, 1},
 	{Trigger::Move, 5},
-	{Trigger::Turn, 2},
-	{Trigger::Photosyntesis, 5},
-	{Trigger::Mineraleon, 5},
-	{Trigger::Carnivorous, 10},
-	{Trigger::Birth, 12},
-	{Trigger::Separate, 15}
+	{Trigger::Turn, 1},
+	{Trigger::Photosyntesis, 1},
+	{Trigger::Mineraleon, 2},
+	{Trigger::Carnivorous, 5},
+	{Trigger::Birth, 6},
+	{Trigger::Separate, 6}
 };

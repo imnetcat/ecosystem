@@ -153,7 +153,7 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 
 	info.color = ObtainColor(x, y);
 
-	info.light_power = LIGHT_POWER;
+	info.light_power = (((ENVIRONMENT_SIZE_Y - (double)y) / ENVIRONMENT_SIZE_Y) * LIGHT_COEF) * LIGHT_POWER;
 	info.contains_entity = terrain[y][x].ContainsEntity();
 	if (terrain[y][x].ContainsEntity())
 	{

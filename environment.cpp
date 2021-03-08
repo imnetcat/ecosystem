@@ -48,6 +48,7 @@ EntitiesIterator Environment::EntityDie(EntitiesIterator entity_iterator)
 
 void Environment::Update()
 {
+	// Update gravity
 	auto object = organic.begin();
 	while (object != organic.end())
 	{
@@ -70,11 +71,12 @@ void Environment::Update()
 		object++;
 	}
 
+	// Update entities
 	auto entity = entities.begin();
 	while (entity != entities.end())
 	{
 		if (entity->IsDead())
-			// remove cell if it is dead
+			// remove entity if it is dead
 		{
 			entity = EntityDie(entity);
 			continue;
@@ -382,7 +384,9 @@ void Environment::Moving(EntitiesIterator entity)
 }
 void Environment::Photosynthesing(EntitiesIterator entity)
 {
-	entity->IncreaceEnergy(LIGHT_POWER);
+	entity->IncreaceEnergy(
+			(((ENVIRONMENT_SIZE_Y - (double)entity->GetY()) / ENVIRONMENT_SIZE_Y) * LIGHT_COEF) * LIGHT_POWER
+	);
 }
 void Environment::Turning(unsigned __int8 args, EntitiesIterator entity)
 {

@@ -9,21 +9,11 @@
 class TerrainCell
 {
 protected:
-	float transparency;
 	OrganicIterator object;
 	EntitiesIterator entity;
 	bool has_entity = false;
 	bool has_object = false;
 public:
-
-	void Transparency(float value)
-	{
-		transparency = value;
-	}
-	float Transparency()
-	{
-		return transparency;
-	}
 
 	void SetEntity(EntitiesIterator);
 	void DelEntity();

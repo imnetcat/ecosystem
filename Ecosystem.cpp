@@ -110,7 +110,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 			return { c, c, c }; }
 		}
 	}
-	else if (terrain[y][x].GetFood())
+	else if (terrain[y][x].IsContainsOrganic())
 	{
 		return	{ 0, 171, 209 };
 	}
@@ -165,9 +165,9 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 		info.ch_of_mut = terrain[y][x].GetEntity()->GetGenome().MutationChance();
 		info.energy = terrain[y][x].GetEntity()->Energy();
 	}
-	if (terrain[y][x].IsContainsFood())
+	if (terrain[y][x].IsContainsOrganic())
 	{
-		info.food_power = terrain[y][x].GetFood();
+		info.food_power = terrain[y][x].GetOrganic()->Energy();
 	}
 	return info;
 }

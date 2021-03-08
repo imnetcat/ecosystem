@@ -3,6 +3,9 @@
 #include "Ecosystem.h"
 #include "config.h"
 
+#include <chrono> 
+using namespace std::chrono;
+
 #include <iostream>
 #include <string>
 
@@ -465,7 +468,13 @@ int main()
 			// clear the window and draw background with background color
 			window.clear();
 			// update ecosystem and draw sprites
+
+			//auto start = high_resolution_clock::now();
 			ecosystem.Update();
+			//auto stop = high_resolution_clock::now();
+			//auto duration = duration_cast<std::chrono::microseconds>(stop - start);
+			//cout << "Environment update: \t" << duration.count() << " ms" << endl;
+
 			ecosystem.Draw(window);
 			// display 
 			window.display();

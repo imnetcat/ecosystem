@@ -1,6 +1,5 @@
 #include "environment.h"
 #include "config.h"
-#include "Water.h"
 
 Environment::Environment()
 	: max_generation(1)
@@ -12,14 +11,8 @@ Environment::Environment()
 	{
 		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
 		{
-			// put food
-			auto rand = random.Generate(101);
-			if (rand < 30)
-			{
-				terrain[y][x].SetFood(100);
-			}
 			// put first entities
-			if (rand < 1 && entities.size() < CELL_START_COUNT)
+			if (random.Generate(101) < 1 && entities.size() < CELL_START_COUNT)
 			{
 				terrain[y][x].SetEntity(entities.Add({ 
 					x, y,
@@ -41,13 +34,42 @@ EntitiesIterator Environment::EntityDie(EntitiesIterator entity_iterator)
 {
 	auto x = entity_iterator->GetX();
 	auto y = entity_iterator->GetY();
-	terrain[y][x].SetFood(terrain[y][x].GetFood() + entity_iterator->Energy() + 100);
+	if (terrain[y][x].IsContainsOrganic())
+	{
+		terrain[y][x].AddOrganic(entity_iterator->Energy() + 100ull);
+	}
+	else
+	{
+		terrain[y][x].SetOrganic(organic.Add({ x, y, entity_iterator->Energy() + 100ull }));
+	}
 	terrain[y][x].DelEntity();
 	return entities.Del(entity_iterator);
 }
 
 void Environment::Update()
 {
+	auto object = organic.begin();
+	while (object != organic.end())
+	{
+		auto x = object->GetX();
+		auto y = object->GetY();
+		if (y == (ENVIRONMENT_SIZE_Y - 1))
+		{
+			object++;
+			continue;
+		}
+		if (terrain[y + 1][x].IsContainsOrganic())
+		{
+			object++;
+			continue;
+		}
+		terrain[y][x].DelOrganic();
+		y++;
+		object->SetY(y);
+		terrain[y][x].SetOrganic(object);
+		object++;
+	}
+
 	auto entity = entities.begin();
 	while (entity != entities.end())
 	{
@@ -77,7 +99,7 @@ void Environment::Update()
 				Carnivorousing(entity);
 				break;
 			case Trigger::Mineraleon:
-				Mineraling(entity);
+				EatOrganic(entity);
 				break;
 			case Trigger::Photosyntesis:
 				Photosynthesing(entity);
@@ -368,18 +390,31 @@ void Environment::Carnivorousing(EntitiesIterator entity)
 		}
 	}
 }
-void Environment::Mineraling(EntitiesIterator entity)
+void Environment::EatOrganic(EntitiesIterator entity)
 {
-	auto e = terrain[entity->GetY()][entity->GetX()].GetFood();
-	if (e >= MAX_MINERALS_TO_EAT)
+	if (!terrain[entity->GetY()][entity->GetX()].IsContainsOrganic())
+	{
+		return;
+	}
+
+	auto o = terrain[entity->GetY()][entity->GetX()].GetOrganic();
+	auto energy = o->Energy();
+
+	if (energy >= MAX_MINERALS_TO_EAT)
 	{
 		entity->IncreaceEnergy(MAX_MINERALS_TO_EAT);
-		terrain[entity->GetY()][entity->GetX()].SetFood(e - MAX_MINERALS_TO_EAT);
+		o->Decreace(MAX_MINERALS_TO_EAT);
+		if (!o->Energy())
+		{
+			organic.Del(o);
+			terrain[entity->GetY()][entity->GetX()].DelOrganic();
+		}
 	}
 	else
 	{
-		entity->IncreaceEnergy(e);
-		terrain[entity->GetY()][entity->GetX()].DelFood();
+		entity->IncreaceEnergy(energy);
+		organic.Del(o);
+		terrain[entity->GetY()][entity->GetX()].DelOrganic();
 	}
 }
 void Environment::Moving(EntitiesIterator entity)

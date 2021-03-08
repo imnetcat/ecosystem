@@ -18,25 +18,30 @@ bool TerrainCell::ContainsEntity() const
 	return has_entity;
 }
 
-void TerrainCell::SetFood(size_t value)
+void TerrainCell::SetOrganic(OrganicIterator value)
 {
-	organic = value;
+	has_object = true;
+	object = value;
 }
-void TerrainCell::DelFood()
+void TerrainCell::AddOrganic(size_t value)
 {
-	organic = 0;
+	object->Increace(value);
 }
-size_t TerrainCell::GetFood() const
+void TerrainCell::DelOrganic()
 {
-	return organic;
+	has_object = false;
+}
+OrganicIterator TerrainCell::GetOrganic() const
+{
+	return object;
+}
+
+bool TerrainCell::IsContainsOrganic() const
+{
+	return has_object;
 }
 
 bool TerrainCell::IsWalkable()
 {
-	return material.Walkable() && !ContainsEntity();
-}
-
-bool TerrainCell::IsContainsFood()
-{
-	return organic;
+	return !ContainsEntity();
 }

@@ -1,45 +1,34 @@
 #include "Object.h"
 #include "config.h"
 
-Object::Object(RGBColor color, bool walkable, float transparency, GravityEffect gravity) :
-	color(color),
-	walkable(walkable),
-	transparency(transparency),
-	gravity(gravity)
+Object::Object() :
+	x(0),
+	y(0)
 { }
 
-void Object::Walkable(bool value)
-{
-	walkable = value;
-}
-bool Object::Walkable()
-{
-	return walkable;
-}
+Object::Object(size_t x, size_t y) :
+	x(x),
+	y(y)
+{ }
 
-void Object::Transparency(float value)
+size_t Object::GetX() const
 {
-	transparency = value;
+	return x;
 }
-float Object::Transparency()
+size_t Object::GetY() const
 {
-	return transparency;
+	return y;
 }
-
-void Object::Color(RGBColor value)
+void Object::SetX(size_t value)
 {
-	color = value;
+	x = value;
 }
-const RGBColor& Object::Color()
+void Object::SetY(size_t value)
 {
-	return color;
+	y = value;
 }
-
-void Object::Gravity(GravityEffect value)
+void Object::SetPosition(size_t nx, size_t ny)
 {
-	gravity = value;
-}
-Object::GravityEffect Object::Gravity()
-{
-	return gravity;
+	x = nx;
+	y = ny;
 }

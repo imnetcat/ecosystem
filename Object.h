@@ -1,30 +1,17 @@
 #pragma once
-#include "genome.h"
-
 class Object
 {
-protected:
-	RGBColor color;
-	bool walkable;
-	float transparency;
-	enum class GravityEffect {
-		Down,
-		Up,
-		None
-	} gravity;
-
+private:
+	size_t x;
+	size_t y;
 public:
-	Object(RGBColor color, bool walkable, float transparency, GravityEffect gravity);
+	Object();
+	Object(size_t x, size_t y);
 
-	void Walkable(bool);
-	bool Walkable();
+	size_t GetX() const;
+	size_t GetY() const;
+	void SetX(size_t);
+	void SetY(size_t);
 
-	void Transparency(float);
-	float Transparency();
-
-	void Color(RGBColor);
-	const RGBColor& Color();
-
-	void Gravity(GravityEffect);
-	GravityEffect Gravity();
+	void SetPosition(size_t nx, size_t ny);
 };

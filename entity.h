@@ -1,5 +1,6 @@
 #pragma once
 #include "genome.h"
+#include "Object.h"
 #include "config.h"
 #include "ListPool.h"
 
@@ -35,11 +36,9 @@ enum class view_settings
 	generations
 };
 
-class Entity
+class Entity : public Object
 {
 protected:
-	size_t x;
-	size_t y;
 	view_side view;
 	unsigned short age;
 	unsigned short max_age;
@@ -63,14 +62,7 @@ public:
 		double attack,
 		Genome g
 	);
-	Entity(Entity&& cell);
-	Entity(const Entity& cell);
-	Entity& operator = (const Entity& cell);
-	Entity& operator = (Entity&& cell);
 
-	size_t GetX() const;
-	size_t GetY() const;
-	void SetPosition(size_t nx, size_t ny);
 
 	bool IsDead();
 

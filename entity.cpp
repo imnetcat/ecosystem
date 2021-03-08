@@ -4,8 +4,7 @@
 
 Entity::Entity()
 	:
-	x(0),
-	y(0),
+	Object(0, 0),
 	view(view_side::top),
 	age(0),
 	max_age(0),
@@ -25,8 +24,7 @@ Entity::Entity(
 	double attack,
 	Genome g)
 	:
-	x(x),
-	y(y),
+	Object(x, y),
 	view(view),
 	age(0),
 	max_age(max_age),
@@ -36,79 +34,6 @@ Entity::Entity(
 	attack(attack),
 	genom(g)
 {}
-
-Entity::Entity(Entity&& cell)
-{
-	x = cell.x;
-	y = cell.y;
-	view = cell.view;
-	age = cell.age;
-	max_age = cell.max_age;
-	hp = cell.hp;
-	energy = cell.energy;
-	defence = cell.defence;
-	attack = cell.attack;
-
-	genom = cell.genom;
-}
-Entity::Entity(const Entity& cell)
-{
-	x = cell.x;
-	y = cell.y;
-	view = cell.view;
-	age = cell.age;
-	max_age = cell.max_age;
-	hp = cell.hp;
-	energy = cell.energy;
-	defence = cell.defence;
-	attack = cell.attack;
-
-	genom = cell.genom;
-}
-Entity& Entity::operator = (const Entity& cell)
-{
-	x = cell.x;
-	y = cell.y;
-	view = cell.view;
-	age = cell.age;
-	max_age = cell.max_age;
-	hp = cell.hp;
-	energy = cell.energy;
-	defence = cell.defence;
-	attack = cell.attack;
-
-	genom = cell.genom;
-	return *this;
-}
-Entity& Entity::operator = (Entity&& cell)
-{
-	x = cell.x;
-	y = cell.y;
-	view = cell.view;
-	age = cell.age;
-	max_age = cell.max_age;
-	hp = cell.hp;
-	energy = cell.energy;
-	defence = cell.defence;
-	attack = cell.attack;
-
-	genom = cell.genom;
-	return *this;
-}
-
-size_t Entity::GetX() const
-{
-	return x;
-}
-size_t Entity::GetY() const
-{
-	return y;
-}
-void Entity::SetPosition(size_t nx, size_t ny)
-{
-	x = nx;
-	y = ny;
-}
 
 unsigned short Entity::Age()
 {

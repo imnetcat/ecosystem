@@ -124,8 +124,8 @@
     <ClCompile Include="environment.cpp" />
     <ClCompile Include="Genome.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Organic.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="TerrainCell.cpp" />
   </ItemGroup>
@@ -135,17 +135,15 @@
     <ClInclude Include="Ecosystem.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="Genome.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="Organic.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="Gen.h" />
-    <ClInclude Include="Object.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="sfml.h" />
     <ClInclude Include="sfml_box.h" />
     <ClInclude Include="sfml_button.h" />
-    <ClInclude Include="Material.h" />
     <ClInclude Include="TerrainCell.h" />
-    <ClInclude Include="water.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

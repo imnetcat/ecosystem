@@ -35,6 +35,7 @@ protected:
 	size_t max_generation;
 	TerrainCell terrain[ENVIRONMENT_SIZE_Y][ENVIRONMENT_SIZE_X];
 	ListPool<Entity, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X> entities;
+	ListPool<Organic, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X> organic;
 
 private:
 	EntitiesIterator EntityDie(EntitiesIterator);
@@ -47,7 +48,7 @@ private:
 	void Separationing(unsigned __int8 args, EntitiesIterator);
 	void Birthing(unsigned __int8 args, EntitiesIterator);
 	void Carnivorousing(EntitiesIterator);
-	void Mineraling(EntitiesIterator);
+	void EatOrganic(EntitiesIterator);
 	void Moving(EntitiesIterator);
 	void Photosynthesing(EntitiesIterator);
 	void Turning(unsigned __int8 args, EntitiesIterator);

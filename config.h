@@ -12,6 +12,4 @@ const unsigned short MAX_MEAT_TO_EAT = 1000;
 const unsigned int MAX_ENERGY = 20000;
 const unsigned int MAX_HP = 100;
 
-const bool LOOPED_ENVIRONMENT = true;
-
 const int CELL_START_COUNT = (ENVIRONMENT_SIZE_X * ENVIRONMENT_SIZE_Y) * 0.01;

@@ -130,7 +130,7 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 		{
 			x--;
 		}
-		else if (LOOPED_ENVIRONMENT)
+		else
 		{
 			x = maxX;
 		}
@@ -140,7 +140,7 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 		{
 			x++;
 		}
-		else if (LOOPED_ENVIRONMENT)
+		else
 		{
 			x = 0;
 		}
@@ -150,19 +150,11 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 		{
 			y--;
 		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			y = maxY;
-		}
 		break;
 	case view_side::top:
 		if (y < maxY)
 		{
 			y++;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			y = 0;
 		}
 		break;
 	case view_side::left_bottom:
@@ -171,20 +163,10 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 			x--;
 			y++;
 		}
-		else if (y < maxY && LOOPED_ENVIRONMENT)
+		else if (y < maxY)
 		{
 			x = maxX;
 			y++;
-		}
-		else if (LOOPED_ENVIRONMENT && x > 0)
-		{
-			x--;
-			y = 0;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			x = maxX;
-			y = 0;
 		}
 		break;
 	case view_side::left_top:
@@ -193,20 +175,10 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 			x--;
 			y--;
 		}
-		else if (y > 0 && LOOPED_ENVIRONMENT)
+		else if (y > 0)
 		{
 			x = maxX;
 			y--;
-		}
-		else if (LOOPED_ENVIRONMENT && x > 0)
-		{
-			x--;
-			y = maxY;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			x = maxX;
-			y = maxY;
 		}
 		break;
 	case view_side::right_bottom:
@@ -215,20 +187,10 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 			x++;
 			y++;
 		}
-		else if (y < maxY && LOOPED_ENVIRONMENT)
+		else if (y < maxY)
 		{
 			x = 0;
 			y++;
-		}
-		else if (LOOPED_ENVIRONMENT && x < maxX)
-		{
-			x++;
-			y = 0;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			x = 0;
-			y = 0;
 		}
 		break;
 	case view_side::right_top:
@@ -237,20 +199,10 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 			x++;
 			y--;
 		}
-		else if (y > 0 && LOOPED_ENVIRONMENT)
+		else if (y > 0)
 		{
 			x = 0;
 			y--;
-		}
-		else if (LOOPED_ENVIRONMENT && x < maxX)
-		{
-			x++;
-			y = maxY;
-		}
-		else if (LOOPED_ENVIRONMENT)
-		{
-			x = 0;
-			y = maxY;
 		}
 		break;
 	}

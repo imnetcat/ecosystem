@@ -26,13 +26,13 @@ enum class view_side
 enum class view_settings
 {
 	terrain,
-	minerals,
+	organic,
 	ration,
 	energy,
 	species,
 	age,
 	hp,
-	survival,
+	success,
 	generations
 };
 

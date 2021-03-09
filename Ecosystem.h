@@ -1,5 +1,6 @@
 #pragma once
 #include "environment.h"
+#include <TGUI/TGUI.hpp>
 
 struct Info
 {
@@ -23,7 +24,7 @@ class Ecosystem : public Environment
 {
 public:
 	Ecosystem();
-	void Draw(sf::RenderWindow& window);
+	void Draw(tgui::Canvas::Ptr canvas);
 	Info GetInfo(size_t x_px, size_t y_px);
 	view_settings GetView();
 	void SetView(view_settings new_val);

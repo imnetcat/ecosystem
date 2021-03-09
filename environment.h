@@ -11,8 +11,6 @@
 #include "config.h"
 #include "TerrainCell.h"
 
-#include "sfml.h"
-
 using namespace std;
 
 struct Position

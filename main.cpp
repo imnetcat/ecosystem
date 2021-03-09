@@ -1,5 +1,3 @@
-#include "sfml_button.h"
-#include "sfml_box.h"
 #include "Ecosystem.h"
 #include "config.h"
 
@@ -8,465 +6,367 @@ using namespace std::chrono;
 
 #include <iostream>
 #include <string>
+#include <map>
 
 using namespace std;
 using namespace sf;
 
-const int SPEED = 10;
+const int WINDOW_WIDTH = 1100;
+const int WINDOW_HEIGHT = 600;
+const int MENUBAR_HEIGHT = 22;
+const int SIDEBAR_WIDTH = WINDOW_WIDTH * 0.2;
+const int MAP_WIDTH = ENVIRONMENT_SIZE_X * CELL_OUTLINE + 1;
+const int MAP_HEIGHT = ENVIRONMENT_SIZE_Y * CELL_OUTLINE + 1;
 
-const int WINDOW_POS_X = 250;
-const int WINDOW_POS_Y = 100;
-const char* FONT = "SourceCodePro-Black.ttf";
+void DisableViewMenuItem(tgui::MenuBar::Ptr menu, const tgui::String& item)
+{
+	menu->setMenuItemEnabled({ 
+		 "View", "Terrain"
+	}, true);
+	menu->setMenuItemEnabled({
+		 "View", "Energy"
+	}, true);
+	menu->setMenuItemEnabled({
+		 "View", "Organic"
+	}, true);
+	menu->setMenuItemEnabled({
+		 "View", "Species"
+	}, true);
+	menu->setMenuItemEnabled({
+		 "View", "Age"
+	}, true);
+	menu->setMenuItemEnabled({
+		 "View", "Ration"
+	}, true);
+	menu->setMenuItemEnabled({
+		 "View", "Hp"
+	}, true);
+	menu->setMenuItemEnabled({
+		 "View", "Success"
+	}, true);
+	menu->setMenuItemEnabled({
+		 "View", "Generation"
+	}, true);
 
-const int VIEW_RECT_POS_X = 5;
-const int VIEW_RECT_POS_Y = 15;
-const int VIEW_RECT_SIZE_X = 190;
-const int VIEW_RECT_SIZE_Y = 250;
-
-const int DEFAULT_BTN_POS_X = 15;
-const int DEFAULT_BTN_POS_Y = 35;
-const int DEFAULT_BTN_SIZE_X = 75;
-const int DEFAULT_BTN_SIZE_Y = 30;
-
-const int ENERGY_BTN_POS_X = 15;
-const int ENERGY_BTN_POS_Y = 70;
-const int ENERGY_BTN_SIZE_X = 75;
-const int ENERGY_BTN_SIZE_Y = 30;
-
-const int SPECIES_BTN_POS_X = 110;
-const int SPECIES_BTN_POS_Y = 35;
-const int SPECIES_BTN_SIZE_X = 75;
-const int SPECIES_BTN_SIZE_Y = 30;
-
-const int RATION_BTN_POS_X = 110;
-const int RATION_BTN_POS_Y = 70;
-const int RATION_BTN_SIZE_X = 75;
-const int RATION_BTN_SIZE_Y = 30;
-
-const int AGE_BTN_POS_X = 110;
-const int AGE_BTN_POS_Y = 105;
-const int AGE_BTN_SIZE_X = 75;
-const int AGE_BTN_SIZE_Y = 30;
-
-const int HP_BTN_POS_X = 110;
-const int HP_BTN_POS_Y = 140;
-const int HP_BTN_SIZE_X = 75;
-const int HP_BTN_SIZE_Y = 30;
-
-const int SURVIVAL_BTN_POS_X = 15;
-const int SURVIVAL_BTN_POS_Y = 140;
-const int SURVIVAL_BTN_SIZE_X = 75;
-const int SURVIVAL_BTN_SIZE_Y = 30;
-
-const int GENERATION_BTN_POS_X = 15;
-const int GENERATION_BTN_POS_Y = 185;
-const int GENERATION_BTN_SIZE_X = 75;
-const int GENERATION_BTN_SIZE_Y = 30;
-
-const int MINERALS_BTN_POS_X = 15;
-const int MINERALS_BTN_POS_Y = 105;
-const int MINERALS_BTN_SIZE_X = 75;
-const int MINERALS_BTN_SIZE_Y = 30;
-
-const int INFO_RECT_POS_X = 5;
-const int INFO_RECT_POS_Y = VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 25;
-const int INFO_RECT_SIZE_X = 190;
-const int INFO_RECT_SIZE_Y = 250;
-
-const int CLEAR_INFO_POS_X = 70;
-const int CLEAR_INFO_POS_Y = INFO_RECT_POS_Y + INFO_RECT_SIZE_Y - 10;
-const int CLEAR_INFO_SIZE_X = 50;
-const int CLEAR_INFO_SIZE_Y = 20;
-
-RenderWindow window(VideoMode(ENVIRONMENT_SIZE_X* CELL_OUTLINE, ENVIRONMENT_SIZE_Y* CELL_OUTLINE), "Ecosystem | Map");
-RenderWindow setting_window(VideoMode(200, ENVIRONMENT_SIZE_Y* CELL_OUTLINE), "Ecosystem | Settings", sf::Style::Titlebar);
-
-sf::RectangleShape setting_background(sf::Vector2f(setting_window.getSize().x, setting_window.getSize().y));
-
-sf::Font font;
-
-Box view_rect(font, "view",
-	VIEW_RECT_POS_X,
-	VIEW_RECT_POS_Y,
-	VIEW_RECT_SIZE_X,
-	VIEW_RECT_SIZE_Y, 16);
-
-Button ter_view_btn(font, "terrain",
-	DEFAULT_BTN_POS_X,
-	DEFAULT_BTN_POS_Y,
-	DEFAULT_BTN_SIZE_X,
-	DEFAULT_BTN_SIZE_Y, 14);
-
-Button energy_view_btn(font, "energy",
-	ENERGY_BTN_POS_X,
-	ENERGY_BTN_POS_Y,
-	ENERGY_BTN_SIZE_X,
-	ENERGY_BTN_SIZE_Y, 14);
-
-Button minerals_view_btn(font, "minerals",
-	MINERALS_BTN_POS_X,
-	MINERALS_BTN_POS_Y,
-	MINERALS_BTN_SIZE_X,
-	MINERALS_BTN_SIZE_Y, 14);
-
-Button species_view_btn(font, "species",
-	SPECIES_BTN_POS_X,
-	SPECIES_BTN_POS_Y,
-	SPECIES_BTN_SIZE_X,
-	SPECIES_BTN_SIZE_Y, 14);
-
-Button age_view_btn(font, "age",
-	AGE_BTN_POS_X,
-	AGE_BTN_POS_Y,
-	AGE_BTN_SIZE_X,
-	AGE_BTN_SIZE_Y, 14);
-
-Button ration_view_btn(font, "ration",
-	RATION_BTN_POS_X,
-	RATION_BTN_POS_Y,
-	RATION_BTN_SIZE_X,
-	RATION_BTN_SIZE_Y, 14);
-
-Button hp_view_btn(font, "hp",
-	HP_BTN_POS_X,
-	HP_BTN_POS_Y,
-	HP_BTN_SIZE_X,
-	HP_BTN_SIZE_Y, 14);
-
-Button survival_view_btn(font, "survival",
-	SURVIVAL_BTN_POS_X,
-	SURVIVAL_BTN_POS_Y,
-	SURVIVAL_BTN_SIZE_X,
-	SURVIVAL_BTN_SIZE_Y, 14);
-
-Button generation_view_btn(font, "generation",
-	GENERATION_BTN_POS_X,
-	GENERATION_BTN_POS_Y,
-	GENERATION_BTN_SIZE_X,
-	GENERATION_BTN_SIZE_Y, 14);
-
-Box info_rect(font, "info", INFO_RECT_POS_X, INFO_RECT_POS_Y, INFO_RECT_SIZE_X, INFO_RECT_SIZE_Y, 16);
-Box cell_ico(font, "", 10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 30, 50, 50, 16);
-
-sf::Text field_title;
-sf::Text cell_generation;
-sf::Text cell_age;
-sf::Text cell_mutant_chance;
-sf::Text cell_energy;
-sf::Text cell_hp;
-sf::Text field_food;
-sf::Text field_light;
-sf::Text cell_genom;
-
-Button info_clear_rect_btn(font, "clear",
-	CLEAR_INFO_POS_X,
-	CLEAR_INFO_POS_Y,
-	CLEAR_INFO_SIZE_X,
-	CLEAR_INFO_SIZE_Y, 12);
+	menu->setMenuItemEnabled({ "View", item }, false);
+}
 
 int main()
 {
-	Ecosystem ecosystem;
-
-	window.setPosition(sf::Vector2i(WINDOW_POS_X, WINDOW_POS_Y));
-
-	setting_window.setPosition(sf::Vector2i(WINDOW_POS_X + ENVIRONMENT_SIZE_X * CELL_OUTLINE + 15, WINDOW_POS_Y));
-	
-	setting_background.setFillColor({ 230, 230, 230 });
-
-	if (!font.loadFromFile(FONT))
-	{
-		cerr << "font doesn't loaded properly..." << endl;
-	}
-
-	field_title.setFont(font);
-	field_title.setCharacterSize(12);
-	field_title.setPosition(85, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 45);
-	field_title.setFillColor(sf::Color::Black);
-
-	cell_generation.setFont(font);
-	cell_generation.setCharacterSize(12);
-	cell_generation.setPosition(65, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 60);
-	cell_generation.setFillColor(sf::Color::Black);
-
-	cell_age.setFont(font);
-	cell_age.setCharacterSize(12);
-	cell_age.setPosition(65, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 75);
-	cell_age.setFillColor(sf::Color::Black);
-
-	cell_mutant_chance.setFont(font);
-	cell_mutant_chance.setCharacterSize(12);
-	cell_mutant_chance.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 90);
-	cell_mutant_chance.setFillColor(sf::Color::Black);
-
-	cell_energy.setFont(font);
-	cell_energy.setCharacterSize(12);
-	cell_energy.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 105);
-	cell_energy.setFillColor(sf::Color::Black);
-
-	cell_hp.setFont(font);
-	cell_hp.setCharacterSize(12);
-	cell_hp.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 120);
-	cell_hp.setFillColor(sf::Color::Black);
-
-	field_food.setFont(font);
-	field_food.setCharacterSize(12);
-	field_food.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 135);
-	field_food.setFillColor(sf::Color::Black);
-
-	field_light.setFont(font);
-	field_light.setCharacterSize(12);
-	field_light.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 150);
-	field_light.setFillColor(sf::Color::Black);
-
-	cell_genom.setFont(font);
-	cell_genom.setCharacterSize(12);
-	cell_genom.setPosition(10, VIEW_RECT_POS_Y + VIEW_RECT_SIZE_Y + 165);
-	cell_genom.setFillColor(sf::Color::Black);
-
-	ter_view_btn.Disable(true);
-
 	bool turn_on_info_block = false;
 	bool pause = false;
+	Ecosystem ecosystem;
+	Ecosystem* ecosys_ptr = &ecosystem;
 
-	while (window.isOpen())
+	sf::Clock Framerate;
+	float acu = 0;
+	float frametime = 0.03;
+
+	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem");
+	main.setPosition(sf::Vector2i(350, 250));
+
+	tgui::GuiSFML gui(main);
+	tgui::GuiSFML* gui_ptr = &gui;
+
+	tgui::MenuBar::Ptr menu = tgui::MenuBar::create();
+	menu->setHeight(MENUBAR_HEIGHT);
+	menu->addMenu("Environment");
+	menu->addMenuItem("Pause");
+	menu->addMenu("View");
+	menu->addMenuItem("Terrain");
+	menu->addMenuItem("Energy");
+	menu->addMenuItem("Organic");
+	menu->addMenuItem("Species");
+	menu->addMenuItem("Age");
+	menu->addMenuItem("Ration");
+	menu->addMenuItem("Hp");
+	menu->addMenuItem("Success");
+	menu->addMenuItem("Generation");
+	menu->setMenuItemEnabled({ "View", "Terrain" }, false);
+
+	menu->connectMenuItem({ "Environment", "Pause" }, [&pause]() {
+		pause = !pause;
+	});
+
+	menu->connectMenuItem({ "View", "Terrain" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Terrain");
+		ecosys_ptr->SetView(view_settings::terrain);
+	});
+	menu->connectMenuItem({ "View", "Energy" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Energy");
+		ecosys_ptr->SetView(view_settings::energy);
+	});
+	menu->connectMenuItem({ "View", "Organic" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Organic");
+		ecosys_ptr->SetView(view_settings::organic);
+	});
+	menu->connectMenuItem({ "View", "Species" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Species");
+		ecosys_ptr->SetView(view_settings::species);
+	});
+	menu->connectMenuItem({ "View", "Age" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Age");
+		ecosys_ptr->SetView(view_settings::age);
+	});
+	menu->connectMenuItem({ "View", "Ration" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Ration");
+		ecosys_ptr->SetView(view_settings::ration);
+	});
+	menu->connectMenuItem({ "View", "Hp" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Hp");
+		ecosys_ptr->SetView(view_settings::hp);
+	});
+	menu->connectMenuItem({ "View", "Success" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Success");
+		ecosys_ptr->SetView(view_settings::success);
+	});
+	menu->connectMenuItem({ "View", "Generation" }, [menu, ecosys_ptr]() {
+		DisableViewMenuItem(menu, "Generation");
+		ecosys_ptr->SetView(view_settings::generations);
+	});
+	gui.add(menu);
+
+	auto sidebar_layout = tgui::VerticalLayout::create();
+	auto sidebar = tgui::Panel::create();
+	sidebar->setSize("100%", "100%");
+	sidebar_layout->setPosition(0, MENUBAR_HEIGHT + 1);
+	sidebar_layout->setSize(SIDEBAR_WIDTH - 1, "100%");
+	sidebar_layout->add(sidebar);
+	gui.add(sidebar_layout);
+
+	auto map_layout = tgui::VerticalLayout::create();
+	auto map = tgui::ScrollablePanel::create();
+	auto canvas = tgui::Canvas::create();
+	map_layout->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - MENUBAR_HEIGHT);
+	map_layout->setPosition(SIDEBAR_WIDTH, MENUBAR_HEIGHT + 1);
+	map->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - MENUBAR_HEIGHT);
+	canvas->setSize(MAP_WIDTH, MAP_HEIGHT);
+	map->add(canvas);
+	map_layout->add(map);
+	gui.add(map_layout);
+
+	sf::VertexArray cell_image(sf::Quads, 4);
+	cell_image[0].position = sf::Vector2f(1, 1);
+	cell_image[1].position = sf::Vector2f(51, 1);
+	cell_image[2].position = sf::Vector2f(51, 51);
+	cell_image[3].position = sf::Vector2f(1, 51);
+
+	auto cell_image_canvas = tgui::Canvas::create({ 200, 140 });
+	cell_image_canvas->setSize(52, 52);
+	cell_image_canvas->setPosition(10, 10);
+
+	cell_image_canvas->clear();
+	cell_image_canvas->draw(cell_image);
+	cell_image_canvas->display();
+	sidebar->add(cell_image_canvas);
+
+	auto info_title = tgui::Label::create();
+	info_title->setPosition(125, 10);
+	info_title->setSize(100, 18);
+	info_title->setTextSize(13);
+	info_title->setText("cell");
+	sidebar->add(info_title);
+
+	auto label = tgui::Label::create();
+	label->setPosition(72, 28);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("age:");
+	sidebar->add(label);
+	auto info_age = tgui::Label::create();
+	info_age->setPosition(110, 28);
+	info_age->setSize(100, 18);
+	info_age->setTextSize(13);
+	sidebar->add(info_age);
+
+	label = tgui::Label::create();
+	label->setPosition(72, 46);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("hp:");
+	sidebar->add(label);
+	auto info_hp = tgui::Label::create();
+	info_hp->setPosition(110, 46);
+	info_hp->setSize(100, 18);
+	info_hp->setTextSize(13);
+	sidebar->add(info_hp);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 75);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("generation:");
+	sidebar->add(label);
+	auto info_generation = tgui::Label::create();
+	info_generation->setPosition(110, 75);
+	info_generation->setSize(100, 18);
+	info_generation->setTextSize(13);
+	sidebar->add(info_generation);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 100);
+	label->setSize(125, 18);
+	label->setTextSize(13);
+	label->setText("mutation chance:");
+	sidebar->add(label);
+	auto info_mutation_chance = tgui::Label::create();
+	info_mutation_chance->setPosition(125, 100);
+	info_mutation_chance->setSize(100, 18);
+	info_mutation_chance->setTextSize(13);
+	sidebar->add(info_mutation_chance);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 125);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("energy:");
+	sidebar->add(label);
+	auto info_energy = tgui::Label::create();
+	info_energy->setPosition(110, 125);
+	info_energy->setSize(100, 18);
+	info_energy->setTextSize(13);
+	sidebar->add(info_energy);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 150);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("organic power:");
+	sidebar->add(label);
+	auto info_organic_power = tgui::Label::create();
+	info_organic_power->setPosition(110, 150);
+	info_organic_power->setSize(100, 18);
+	info_organic_power->setTextSize(13);
+	sidebar->add(info_organic_power);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 175);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("light power:");
+	sidebar->add(label);
+	auto info_light_power = tgui::Label::create();
+	info_light_power->setPosition(110, 175);
+	info_light_power->setSize(100, 18);
+	info_light_power->setTextSize(13);
+	sidebar->add(info_light_power);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 200);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("genome:");
+	sidebar->add(label);
+	auto info_genome = tgui::Label::create();
+	info_genome->setPosition(110, 200);
+	info_genome->setSize(100, 18);
+	info_genome->setTextSize(13);
+	sidebar->add(info_genome);
+
+	auto SetInfoBox = [
+		&turn_on_info_block, ecosys_ptr, info_genome, info_light_power,
+		info_organic_power, info_mutation_chance,
+		info_energy, info_generation,
+		info_hp, info_age, info_title,
+		&cell_image, cell_image_canvas](const sf::Vector2f& mousePos)
 	{
-		setting_window.clear();
-
-		Event main_event, settings_event;
-		while (setting_window.pollEvent(settings_event))
+		auto info = ecosys_ptr->GetInfo(mousePos.x, mousePos.y);
+		turn_on_info_block = true;
+		Color color(info.color.r, info.color.g, info.color.b);
+		cell_image[0].color = color;
+		cell_image[1].color = color;
+		cell_image[2].color = color;
+		cell_image[3].color = color;
+		if (info.contains_entity)
 		{
-			if (settings_event.type == sf::Event::MouseButtonPressed)
-			{
-				if (settings_event.mouseButton.button == sf::Mouse::Left)
-				{
-					if (info_clear_rect_btn.IsClicked(settings_event.mouseButton.x, 
-						settings_event.mouseButton.y))
-					{
-						turn_on_info_block = false;
-					}
-
-					if (generation_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(false);
-						species_view_btn.Disable(false);
-						energy_view_btn.Disable(false);
-						minerals_view_btn.Disable(false);
-						ration_view_btn.Disable(false);
-						age_view_btn.Disable(false);
-						hp_view_btn.Disable(false);
-						survival_view_btn.Disable(false);
-						generation_view_btn.Disable(true);
-						ecosystem.SetView(view_settings::generations);
-					}
-
-					if (age_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(false);
-						species_view_btn.Disable(false);
-						energy_view_btn.Disable(false);
-						minerals_view_btn.Disable(false);
-						ration_view_btn.Disable(false);
-						age_view_btn.Disable(true);
-						hp_view_btn.Disable(false);
-						survival_view_btn.Disable(false);
-						generation_view_btn.Disable(false);
-						ecosystem.SetView(view_settings::age);
-					}
-
-					if (ter_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(true);
-						species_view_btn.Disable(false);
-						energy_view_btn.Disable(false);
-						minerals_view_btn.Disable(false);
-						ration_view_btn.Disable(false);
-						hp_view_btn.Disable(false);
-						age_view_btn.Disable(false);
-						survival_view_btn.Disable(false);
-						generation_view_btn.Disable(false);
-						ecosystem.SetView(view_settings::terrain);
-					}
-
-					if (species_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(false);
-						species_view_btn.Disable(true);
-						energy_view_btn.Disable(false);
-						minerals_view_btn.Disable(false);
-						ration_view_btn.Disable(false);
-						age_view_btn.Disable(false);
-						hp_view_btn.Disable(false);
-						survival_view_btn.Disable(false);
-						generation_view_btn.Disable(false);
-						ecosystem.SetView(view_settings::species);
-					}
-
-					if (energy_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(false);
-						species_view_btn.Disable(false);
-						energy_view_btn.Disable(true);
-						minerals_view_btn.Disable(false);
-						ration_view_btn.Disable(false);
-						age_view_btn.Disable(false);
-						hp_view_btn.Disable(false);
-						survival_view_btn.Disable(false);
-						generation_view_btn.Disable(false);
-						ecosystem.SetView(view_settings::energy);
-					}
-
-					if (minerals_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(false);
-						species_view_btn.Disable(false);
-						energy_view_btn.Disable(false);
-						minerals_view_btn.Disable(true);
-						ration_view_btn.Disable(false);
-						age_view_btn.Disable(false);
-						hp_view_btn.Disable(false);
-						survival_view_btn.Disable(false);
-						generation_view_btn.Disable(false);
-						ecosystem.SetView(view_settings::minerals);
-					}
-
-					if (ration_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(false);
-						species_view_btn.Disable(false);
-						energy_view_btn.Disable(false);
-						minerals_view_btn.Disable(false);
-						ration_view_btn.Disable(true);
-						age_view_btn.Disable(false);
-						hp_view_btn.Disable(false);
-						survival_view_btn.Disable(false);
-						generation_view_btn.Disable(false);
-						ecosystem.SetView(view_settings::ration);
-					}
-
-					if (hp_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(false);
-						species_view_btn.Disable(false);
-						energy_view_btn.Disable(false);
-						minerals_view_btn.Disable(false);
-						ration_view_btn.Disable(false);
-						age_view_btn.Disable(false);
-						hp_view_btn.Disable(true);
-						survival_view_btn.Disable(false);
-						generation_view_btn.Disable(false);
-						ecosystem.SetView(view_settings::hp);
-					}
-
-					if (survival_view_btn.IsClicked(settings_event.mouseButton.x,
-						settings_event.mouseButton.y))
-					{
-						ter_view_btn.Disable(false);
-						species_view_btn.Disable(false);
-						energy_view_btn.Disable(false);
-						minerals_view_btn.Disable(false);
-						ration_view_btn.Disable(false);
-						age_view_btn.Disable(false);
-						hp_view_btn.Disable(false);
-						survival_view_btn.Disable(true);
-						generation_view_btn.Disable(false);
-						ecosystem.SetView(view_settings::survival);
-					}
-				}
-			}
+			info_title->setText("Entity");
+			info_genome->setText(to_string(info.genome));
+			info_generation->setText(to_string(info.generation));
+			info_age->setText(to_string(info.age.curr) + "/" + to_string(info.age.max));
+			info_mutation_chance->setText(to_string(info.ch_of_mut));
+			info_energy->setText(to_string(info.energy) + "/" + to_string(MAX_ENERGY));
+			info_hp->setText(to_string(info.hp) + "/" + to_string(MAX_HP));
 		}
-		while (window.pollEvent(main_event))
+		else
 		{
-			if (main_event.type == Event::Closed)
+			info_title->setText("Cell");
+			info_genome->setText("-");
+			info_generation->setText("-");
+			info_age->setText("-");
+			info_mutation_chance->setText("-");
+			info_energy->setText("-");
+			info_hp->setText("-");
+		}
+		info_organic_power->setText(to_string(info.food_power));
+		info_light_power->setText(to_string(info.light_power));
+
+		cell_image_canvas->clear();
+		cell_image_canvas->draw(cell_image);
+		cell_image_canvas->display();
+	};
+
+	canvas->onClick(SetInfoBox);
+
+	auto ClearInfoBox = [
+		info_genome, info_light_power, 
+		info_organic_power, info_mutation_chance, 
+		info_energy, info_generation, 
+		info_hp, info_age, info_title,
+		&cell_image, cell_image_canvas ]()
+	{
+		cell_image[0].color = sf::Color::White;
+		cell_image[1].color = sf::Color::White;
+		cell_image[2].color = sf::Color::White;
+		cell_image[3].color = sf::Color::White;
+
+		cell_image_canvas->clear();
+		cell_image_canvas->draw(cell_image);
+		cell_image_canvas->display();
+
+		info_title->setText("Cell");
+		info_genome->setText("-");
+		info_generation->setText("-");
+		info_age->setText("-");
+		info_mutation_chance->setText("-");
+		info_energy->setText("-");
+		info_hp->setText("-");
+		info_organic_power->setText("-");
+		info_light_power->setText("-");
+	};
+
+	ClearInfoBox();
+
+	tgui::Button::Ptr info_clear_rect_btn = tgui::Button::create();
+	info_clear_rect_btn->setPosition(80, 228);
+	info_clear_rect_btn->setText("Clear");
+	info_clear_rect_btn->onPress(ClearInfoBox);
+	sidebar->add(info_clear_rect_btn, "info_clear");
+
+	while (main.isOpen())
+	{
+		acu += Framerate.restart().asSeconds();
+
+		Event event;
+		while (main.pollEvent(event))
+		{
+			gui.handleEvent(event);
+
+			if (event.type == sf::Event::Closed)
+				main.close();
+
+			if (event.type == sf::Event::KeyPressed)
 			{
-				setting_window.close();
-				window.close();
-			}
-			
-			if (main_event.type == sf::Event::KeyReleased)
-			{
-				// turn on\off pause
-				if (main_event.key.code == sf::Keyboard::P)
+				if (event.key.code == sf::Keyboard::P)
 				{
 					pause = !pause;
 				}
 			}
-
-			if (main_event.type == sf::Event::MouseButtonPressed)
-			{
-				if (main_event.mouseButton.button == sf::Mouse::Left)
-				{
-					auto info = ecosystem.GetInfo(main_event.mouseButton.x, main_event.mouseButton.y);
-					turn_on_info_block = true;
-					cell_ico.Color({ info.color.r, info.color.g, info.color.b });
-					field_title.setString("Structure");
-					if (info.contains_entity)
-					{
-						field_title.setString("Entity");
-						cell_genom.setString("Genom: " + to_string(info.genome));
-						cell_generation.setString("Generation: " + to_string(info.generation));
-						cell_age.setString("Age: " + to_string(info.age.curr) + "/" + to_string(info.age.max));
-						cell_mutant_chance.setString("Chance of mutation: " + to_string(info.ch_of_mut).substr(0, 4));
-						cell_energy.setString("Energy: " + to_string(info.energy) + "/" + to_string(MAX_ENERGY));
-						cell_hp.setString("Hp: " + to_string(info.hp) + "/" + to_string(MAX_HP));
-					}
-					else
-					{
-						cell_genom.setString("Genom: -");
-						cell_generation.setString("Generation: -");
-						cell_age.setString("Age: -");
-						cell_mutant_chance.setString("Chance of mutation: -");
-						cell_energy.setString("Energy: -");
-						cell_hp.setString("Hp: -");
-					}
-					field_food.setString("Food  power: " + to_string(info.food_power));
-					field_light.setString("Light power: " + to_string(info.light_power));
-				}
-			}
 		}
 
-		setting_window.draw(setting_background);
-
-		view_rect.Draw(setting_window);
-		ter_view_btn.Draw(setting_window);
-		energy_view_btn.Draw(setting_window);
-		minerals_view_btn.Draw(setting_window);
-		species_view_btn.Draw(setting_window);
-		age_view_btn.Draw(setting_window);
-		ration_view_btn.Draw(setting_window);
-		info_rect.Draw(setting_window);
-		hp_view_btn.Draw(setting_window);
-		survival_view_btn.Draw(setting_window);
-		generation_view_btn.Draw(setting_window);
-
-		if (turn_on_info_block)
-		{
-			cell_ico.Draw(setting_window);
-
-			setting_window.draw(field_title);
-			setting_window.draw(cell_genom);
-			setting_window.draw(cell_generation);
-			setting_window.draw(cell_age);
-			setting_window.draw(field_food);
-			setting_window.draw(field_light);
-			setting_window.draw(cell_mutant_chance);
-			setting_window.draw(cell_energy);
-			setting_window.draw(cell_hp);
-			info_clear_rect_btn.Draw(setting_window);
-		}
-
-		if (!pause)
+		// logic
+		if (acu > frametime && !pause)
 		{
 			// clear the window and draw background with background color
-			window.clear();
 			// update ecosystem and draw sprites
 
 			//auto start = high_resolution_clock::now();
@@ -474,14 +374,17 @@ int main()
 			//auto stop = high_resolution_clock::now();
 			//auto duration = duration_cast<std::chrono::microseconds>(stop - start);
 			//cout << "Environment update: \t" << duration.count() << " ms" << endl;
-
-			ecosystem.Draw(window);
-			// display 
-			window.display();
 		}
 
-		setting_window.display();
+		// Drawing
+		main.clear();
+
+		ecosystem.Draw(canvas);
+
+		gui.draw();
+		main.display();
 	}
 
 	return 0;
 }
+

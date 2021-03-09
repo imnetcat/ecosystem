@@ -1,6 +1,7 @@
 #include "Ecosystem.h"
 #include "Environment.h"
 #include "config.h"
+#include <SFML/Graphics.hpp>
 
 static array<array<sf::RectangleShape, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> sprites;
 
@@ -24,13 +25,13 @@ Ecosystem::Ecosystem()
 
 RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 {
-	if (terrain[y][x].ContainsEntity() && view != view_settings::minerals)
+	if (terrain[y][x].ContainsEntity() && view != view_settings::organic)
 	{
 		switch (view)
 		{
 		case view_settings::terrain:
 			return { 13, 168, 19 };
-		case view_settings::minerals:
+		case view_settings::organic:
 			return { 209, 209, 209 };
 		case view_settings::ration:
 		{
@@ -86,7 +87,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 				return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / terrain[y][x].GetEntity()->Hp())), 191, 0 };
 			}
 		}
-		case view_settings::survival:
+		case view_settings::success:
 		{
 			switch (Environment::SuccessRule(terrain[y][x].GetEntity()))
 			{
@@ -118,7 +119,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 	return { 141, 219, 255 };
 }
 
-void Ecosystem::Draw(sf::RenderWindow& window)
+void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 {
 	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
 	{
@@ -126,7 +127,7 @@ void Ecosystem::Draw(sf::RenderWindow& window)
 		{
 			RGBColor color = ObtainColor(x, y);
 
-			if (terrain[y][x].ContainsEntity() && view != view_settings::minerals)
+			if (terrain[y][x].ContainsEntity() && view != view_settings::organic)
 			{
 				sprites[y][x].setSize(sf::Vector2f(CELL_SIZE, CELL_SIZE));
 				sprites[y][x].setOutlineThickness(OUTLINE);
@@ -140,9 +141,10 @@ void Ecosystem::Draw(sf::RenderWindow& window)
 			sprites[y][x].setOutlineColor({ 0, 0, 0 });
 			sprites[y][x].setFillColor({ color.r, color.g, color.b });
 
-			window.draw(sprites[y][x]);
+			canvas->draw(sprites[y][x]);
 		}
 	}
+	canvas->display();
 }
 
 Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
@@ -150,6 +152,7 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	size_t x = x_px / CELL_OUTLINE;
 	size_t y = y_px / CELL_OUTLINE;
 	Info info;
+	cout << x << " " << y << endl;
 
 	info.color = ObtainColor(x, y);
 

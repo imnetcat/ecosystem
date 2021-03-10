@@ -16,4 +16,4 @@ public:
 	void Decreace(unsigned __int64 value);
 };
 
-using OrganicIterator = ListPool<Organic, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X>::iterator;
+using OrganicIterator = ListPool<Organic>::iterator;

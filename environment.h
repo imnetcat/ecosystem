@@ -11,8 +11,6 @@
 #include "config.h"
 #include "TerrainCell.h"
 
-#include "sfml.h"
-
 using namespace std;
 
 struct Position
@@ -26,16 +24,39 @@ bool operator == (const Position& lhs, const Position& rhs);
 class Environment
 {
 public:
-	explicit Environment();
+	explicit Environment(
+		unsigned int width, 
+		unsigned int height,
+		unsigned short light_power,
+		double light_coef,
+		unsigned short max_orginic_to_eat,
+		unsigned short max_entities_to_eat,
+		unsigned short max_energy,
+		unsigned short max_hp,
+		unsigned short entities_start_count
+	); 
+	~Environment();
+
 	void Update();
 
-	static Coefficient SuccessRule(EntitiesIterator);
+	Coefficient SuccessRule(EntitiesIterator);
 protected:
 
+	const unsigned int width;
+	const unsigned int height;
+
+	const unsigned short light_power;
+	const double light_coef;
+
+	const unsigned short max_organic_to_eat;
+	const unsigned short max_entities_to_eat;
+	const unsigned short max_energy;
+	const unsigned short max_hp;
+
 	size_t max_generation;
-	TerrainCell terrain[ENVIRONMENT_SIZE_Y][ENVIRONMENT_SIZE_X];
-	ListPool<Entity, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X> entities;
-	ListPool<Organic, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X> organic;
+	TerrainCell** terrain;
+	ListPool<Entity> entities;
+	ListPool<Organic> organic;
 
 private:
 	EntitiesIterator EntityDie(EntitiesIterator);

@@ -5,7 +5,7 @@
 #include <list>
 #include <stdexcept>
 
-template <class T, size_t _Size>
+template <class T>
 class ListPool
 {
 public:
@@ -71,10 +71,10 @@ public:
 		return it;
 	}
 
-	ListPool()
+	ListPool(size_t size)
 	{
-		pool = new T[_Size];
-		for (size_t i = 0; i < _Size; i++)
+		pool = new T[size];
+		for (size_t i = 0; i < size; i++)
 		{
 			free.push(&pool[i]);
 		}
@@ -85,7 +85,6 @@ public:
 	}
 
 private:
-
 	std::list<T*> delta;
 	std::queue<T*> free;
 	T* pool;

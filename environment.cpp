@@ -1,33 +1,63 @@
 #include "environment.h"
 #include "config.h"
 
-Environment::Environment()
+Environment::Environment(
+	unsigned int width,
+	unsigned int height,
+	unsigned short light_power,
+	double light_coef,
+	unsigned short max_organic_to_eat,
+	unsigned short max_entities_to_eat,
+	unsigned short max_energy,
+	unsigned short max_hp,
+	unsigned short entities_start_count
+)
 	: max_generation(1)
+	, width(width)
+	, height(height)
+	, terrain(nullptr)
+	, entities((size_t)height * width)
+	, organic((size_t)height * width)
+	, light_power(light_power)
+	, light_coef(light_coef)
+	, max_organic_to_eat(max_organic_to_eat)
+	, max_entities_to_eat(max_entities_to_eat)
+	, max_energy(max_energy)
+	, max_hp(max_hp)
 {
-	size_t index = 0;
-	Random random;
-
-	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
+	// Allocate 2d array for world map
+	terrain = new TerrainCell * [height];
+	for (size_t y = 0; y < height; y++)
 	{
-		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
-		{
-			// put first entities
-			if (random.Generate(101) < 1 && entities.size() < CELL_START_COUNT)
-			{
-				terrain[y][x].SetEntity(entities.Add({ 
-					x, y,
-					view_side::top,
-					100,
-					100,
-					0.01,
-					0.01,
-					Genome()
-				}));
-			}
-
-			index++;
-		}
+		terrain[y] = new TerrainCell[width];
 	}
+
+	Random random;
+	// Put first entities
+	while (entities_start_count--)
+	{
+		auto x = random.Generate(width);
+		auto y = random.Generate(height);
+		terrain[y][x].SetEntity(entities.Add({
+			x, y,
+			view_side::top,
+			max_hp,
+			100,
+			max_energy,
+			100,
+			0.01,
+			0.01,
+			Genome()
+		}));
+	}
+}
+Environment::~Environment()
+{
+	for (size_t y = 0; y < height; y++)
+	{
+		delete[] terrain[y];
+	}
+	delete[] terrain;
 }
 
 EntitiesIterator Environment::EntityDie(EntitiesIterator entity_iterator)
@@ -54,7 +84,7 @@ void Environment::Update()
 	{
 		auto x = object->GetX();
 		auto y = object->GetY();
-		if (y == (ENVIRONMENT_SIZE_Y - 1))
+		if (y == (height - 1))
 		{
 			object++;
 			continue;
@@ -122,8 +152,8 @@ bool operator == (const Position& lhs, const Position& rhs)
 
 Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 {
-	auto maxX = ENVIRONMENT_SIZE_X - 1;
-	auto maxY = ENVIRONMENT_SIZE_Y - 1;
+	auto maxX = width - 1;
+	auto maxY = height - 1;
 
 	switch (view)
 	{
@@ -244,7 +274,7 @@ view_side Environment::GetViewSide(unsigned __int8 arg)
 
 Coefficient Environment::SuccessRule(EntitiesIterator entity)
 {
-	unsigned int success_border = MAX_ENERGY * (double(entity->Age()) / (entity->MaxAge()));
+	unsigned int success_border = max_energy * (double(entity->Age()) / (entity->MaxAge()));
 	return (entity->Energy() > success_border) ? Coefficient::enlarge :
 		(entity->Energy() > (success_border / 2) ? Coefficient::unchanged : Coefficient::reduce);
 }
@@ -275,7 +305,9 @@ EntitiesIterator Environment::Reproduction(EntitiesIterator parent_entity, size_
 	terrain[y][x].SetEntity(entities.Add({
 		x, y,
 		view,
+		max_hp,
 		100,
+		max_energy,
 		new_max_age,
 		parent_entity->Defence(),
 		parent_entity->Attack(),
@@ -337,8 +369,8 @@ void Environment::Carnivorousing(EntitiesIterator entity)
 			EntityDie(viewed_point.GetEntity());
 			entity->AttackUp();
 			auto e = viewed_point.GetEntity()->Energy();
-			if (e > MAX_MEAT_TO_EAT)
-				entity->IncreaceEnergy(MAX_MEAT_TO_EAT);
+			if (e > max_entities_to_eat)
+				entity->IncreaceEnergy(max_entities_to_eat);
 			else
 				entity->IncreaceEnergy(e);
 		}
@@ -354,10 +386,10 @@ void Environment::EatOrganic(EntitiesIterator entity)
 	auto o = terrain[entity->GetY()][entity->GetX()].GetOrganic();
 	auto energy = o->Energy();
 
-	if (energy >= MAX_MINERALS_TO_EAT)
+	if (energy >= max_organic_to_eat)
 	{
-		entity->IncreaceEnergy(MAX_MINERALS_TO_EAT);
-		o->Decreace(MAX_MINERALS_TO_EAT);
+		entity->IncreaceEnergy(max_organic_to_eat);
+		o->Decreace(max_organic_to_eat);
 		if (!o->Energy())
 		{
 			organic.Del(o);
@@ -385,7 +417,7 @@ void Environment::Moving(EntitiesIterator entity)
 void Environment::Photosynthesing(EntitiesIterator entity)
 {
 	entity->IncreaceEnergy(
-			(((ENVIRONMENT_SIZE_Y - (double)entity->GetY()) / ENVIRONMENT_SIZE_Y) * LIGHT_COEF) * LIGHT_POWER
+			(((height - (double)entity->GetY()) / height) * light_coef) * light_power
 	);
 }
 void Environment::Turning(unsigned __int8 args, EntitiesIterator entity)

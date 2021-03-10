@@ -7,13 +7,9 @@
 #include <limits>
 #include "Gen.h"
 #include "Random.h"
+#include <SFML/Graphics/Color.hpp>
 
-struct RGBColor
-{
-	unsigned __int8 r = 0;
-	unsigned __int8 g = 0;
-	unsigned __int8 b = 0;
-};
+using RGBColor = sf::Color;
 
 enum class Ration
 {

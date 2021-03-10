@@ -26,13 +26,13 @@ enum class view_side
 enum class view_settings
 {
 	terrain,
-	minerals,
+	organic,
 	ration,
 	energy,
 	species,
 	age,
 	hp,
-	survival,
+	success,
 	generations
 };
 
@@ -43,7 +43,9 @@ protected:
 	unsigned short age;
 	unsigned short max_age;
 	unsigned short hp;
+	unsigned short max_hp;
 	unsigned short energy;
+	unsigned short max_energy;
 	double defence;
 	double attack;
 	Genome genom;
@@ -56,7 +58,9 @@ public:
 		size_t x,
 		size_t y,
 		view_side view,
+		unsigned short max_hp,
 		unsigned short energy,
+		unsigned short max_energy,
 		unsigned short max_age,
 		double defence,
 		double attack,
@@ -98,4 +102,4 @@ public:
 	void Hp(unsigned short);
 };
 
-using EntitiesIterator = ListPool<Entity, ENVIRONMENT_SIZE_Y* ENVIRONMENT_SIZE_X>::iterator;
+using EntitiesIterator = ListPool<Entity>::iterator;

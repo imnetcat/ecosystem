@@ -62,7 +62,7 @@ int main()
 	Ecosystem ecosystem(100, 51, 1000, 0.5, 1000, 2000, 20000, 100, 5);
 	Ecosystem* ecosys_ptr = &ecosystem;
 
-	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem");
+	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem", sf::Style::Titlebar | sf::Style::Close);
 	main.setPosition(sf::Vector2i(350, 250));
 
 	tgui::GuiSFML gui(main);

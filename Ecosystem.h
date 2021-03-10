@@ -28,7 +28,8 @@ public:
 	Info GetInfo(size_t x_px, size_t y_px);
 	view_settings GetView();
 	void SetView(view_settings new_val);
-private:
+	RGBColor ObtainEntityColor(EntitiesIterator entity);
 	RGBColor ObtainColor(size_t x, size_t y);
+private:
 	view_settings view;
 };

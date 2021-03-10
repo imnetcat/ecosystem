@@ -3,23 +3,93 @@
 #include "config.h"
 #include <SFML/Graphics.hpp>
 
-static array<array<sf::RectangleShape, ENVIRONMENT_SIZE_X>, ENVIRONMENT_SIZE_Y> sprites;
-
 Ecosystem::Ecosystem()
-	: view(view_settings::terrain)
+	: view(view_settings::terrain) {}
+
+RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 {
-	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
+	switch (view)
 	{
-		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
+	case view_settings::terrain:
+		return { 13, 168, 19 };
+	case view_settings::organic:
+		return { 209, 209, 209 };
+	case view_settings::ration:
+	{
+		Ration ration = entity->GetGenome().Ration();
+
+		switch (ration)
 		{
-			// init map sprites positions
-			sf::RectangleShape cell;
-			sf::Vector2f vec;
-			vec.x = x * CELL_OUTLINE;
-			vec.y = y * CELL_OUTLINE;
-			cell.setPosition(vec);
-			sprites[y][x] = cell;
+		case Ration::entities:
+			return { 255, 51, 51 };
+		case Ration::light:
+			return { 255, 245, 30 };
+		case Ration::organic:
+			return { 37, 53, 217 };
+		case Ration::entites_organic:
+			return { 50, 255, 30 };
+		case Ration::entites_light:
+			return { 255, 160, 30 };
+		case Ration::light_organic:
+			return { 30, 255, 248 };
+		case Ration::omnivorous:
+			return { 0, 0, 0 };
+		default:
+			return { 0, 0, 0 };
 		}
+		break;
+	}
+	case view_settings::energy:
+	{
+		if (entity->Energy() < (MAX_ENERGY / 2))
+		{
+			return { 255, static_cast<unsigned char>(255 * (entity->Energy() / (double)(MAX_ENERGY / 2))), 0 };
+		}
+		else
+		{
+			return { static_cast<unsigned char>(255 - 255 * (entity->Energy() / (double)MAX_ENERGY)), 255, 0 };
+		}
+	}
+	case view_settings::species:
+		return entity->GetGenome().Species();
+	case view_settings::age:
+	{
+		unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)entity->Age() / entity->MaxAge()));
+		return { c, c, c };
+	}
+	case view_settings::hp:
+	{
+		if (entity->Hp() < (MAX_HP / 2))
+		{
+			return { 191, static_cast<unsigned char>(191 * (entity->Hp() / (double)(MAX_HP / 2))), 0 };
+		}
+		else
+		{
+			return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / entity->Hp())), 191, 0 };
+		}
+	}
+	case view_settings::success:
+	{
+		switch (Environment::SuccessRule(entity))
+		{
+		case Coefficient::reduce:
+			return { 255, 21, 0 };
+			break;
+		case Coefficient::unchanged:
+			return { 255, 225, 0 };
+			break;
+		case Coefficient::enlarge:
+			return { 0, 194, 0 };
+			break;
+		default:
+			return { 255, 225, 0 };
+			break;
+		}
+	}
+	case view_settings::generations:
+	{
+		unsigned char c = static_cast<unsigned char>(255 * ((double)entity->GetGenome().Generation()) / max_generation);
+		return { c, c, c }; }
 	}
 }
 
@@ -27,89 +97,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 {
 	if (terrain[y][x].ContainsEntity() && view != view_settings::organic)
 	{
-		switch (view)
-		{
-		case view_settings::terrain:
-			return { 13, 168, 19 };
-		case view_settings::organic:
-			return { 209, 209, 209 };
-		case view_settings::ration:
-		{
-			Ration ration = terrain[y][x].GetEntity()->GetGenome().Ration();
-
-			switch (ration)
-			{
-			case Ration::entities:
-				return { 255, 51, 51 };
-			case Ration::light:
-				return { 255, 245, 30 };
-			case Ration::organic:
-				return { 37, 53, 217 };
-			case Ration::entites_organic:
-				return { 50, 255, 30 };
-			case Ration::entites_light:
-				return { 255, 160, 30 };
-			case Ration::light_organic:
-				return { 30, 255, 248 };
-			case Ration::omnivorous:
-				return { 0, 0, 0 };
-			default:
-				return { 0, 0, 0 };
-			}
-			break;
-		}
-		case view_settings::energy:
-		{
-			if (terrain[y][x].GetEntity()->Energy() < (MAX_ENERGY / 2))
-			{
-				return { 255, static_cast<unsigned char>(255 * (terrain[y][x].GetEntity()->Energy() / (double)(MAX_ENERGY / 2))), 0 };
-			}
-			else
-			{
-				return { static_cast<unsigned char>(255 - 255 * (terrain[y][x].GetEntity()->Energy() / (double)MAX_ENERGY)), 255, 0 };
-			}
-		}
-		case view_settings::species:
-			return terrain[y][x].GetEntity()->GetGenome().Species();
-		case view_settings::age:
-		{
-			unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)terrain[y][x].GetEntity()->Age() / terrain[y][x].GetEntity()->MaxAge()));
-			return { c, c, c };
-		}
-		case view_settings::hp:
-		{
-			if (terrain[y][x].GetEntity()->Hp() < (MAX_HP / 2))
-			{
-				return { 191, static_cast<unsigned char>(191 * (terrain[y][x].GetEntity()->Hp() / (double)(MAX_HP / 2))), 0 };
-			}
-			else
-			{
-				return { static_cast<unsigned char>(191 * ((double)(MAX_HP / 2) / terrain[y][x].GetEntity()->Hp())), 191, 0 };
-			}
-		}
-		case view_settings::success:
-		{
-			switch (Environment::SuccessRule(terrain[y][x].GetEntity()))
-			{
-			case Coefficient::reduce:
-				return { 255, 21, 0 };
-				break;
-				case Coefficient::unchanged:
-				return { 255, 225, 0 };
-				break;
-				case Coefficient::enlarge:
-				return { 0, 194, 0 };
-				break;
-			default:
-				return { 255, 225, 0 };
-				break;
-			}
-		}
-		case view_settings::generations:
-		{
-			unsigned char c = static_cast<unsigned char>(255 * ((double)terrain[y][x].GetEntity()->GetGenome().Generation()) / max_generation);
-			return { c, c, c }; }
-		}
+		return ObtainEntityColor(terrain[y][x].GetEntity());
 	}
 	else if (terrain[y][x].IsContainsOrganic())
 	{
@@ -121,29 +109,55 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 
 void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 {
-	for (size_t y = 0; y < ENVIRONMENT_SIZE_Y; y++)
+	canvas->clear({ 141, 219, 255 });
+
+	sf::RectangleShape sprite;
+	sprite.setOutlineThickness(0);
+	sprite.setOutlineColor({ 0, 0, 0 });
+	sf::Vector2f pos;
+	sf::Vector2f size(CELL_SIZE, CELL_SIZE);
+	sf::Vector2f osize(CELL_OUTLINE, CELL_OUTLINE);
+
+	auto object = organic.begin();
+	while (object != organic.end())
 	{
-		for (size_t x = 0; x < ENVIRONMENT_SIZE_X; x++)
-		{
-			RGBColor color = ObtainColor(x, y);
+		auto x = object->GetX();
+		auto y = object->GetY();
 
-			if (terrain[y][x].ContainsEntity() && view != view_settings::organic)
-			{
-				sprites[y][x].setSize(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-				sprites[y][x].setOutlineThickness(OUTLINE);
-			}
-			else
-			{
-				sprites[y][x].setSize(sf::Vector2f(CELL_OUTLINE, CELL_OUTLINE));
-				sprites[y][x].setOutlineThickness(0);
-			}
+		pos.x = x * CELL_OUTLINE;
+		pos.y = y * CELL_OUTLINE;
+		sprite.setPosition(pos);
+		sprite.setSize(osize);
+		sprite.setFillColor({ 0, 171, 209 });
+		canvas->draw(sprite);
 
-			sprites[y][x].setOutlineColor({ 0, 0, 0 });
-			sprites[y][x].setFillColor({ color.r, color.g, color.b });
-
-			canvas->draw(sprites[y][x]);
-		}
+		object++;
 	}
+
+	auto entity = entities.begin();
+	if (view == view_settings::organic)
+	{
+		entity = entities.end();
+	}
+
+	sprite.setOutlineThickness(OUTLINE);
+	while (entity != entities.end())
+	{
+		auto x = entity->GetX();
+		auto y = entity->GetY();
+
+		pos.x = x * (CELL_SIZE + OUTLINE);
+		pos.y = y * (CELL_SIZE + OUTLINE);
+		sprite.setPosition(pos);
+		sprite.setSize(size);
+
+		sprite.setFillColor(ObtainEntityColor(entity));
+
+		canvas->draw(sprite);
+
+		entity++;
+	}
+
 	canvas->display();
 }
 

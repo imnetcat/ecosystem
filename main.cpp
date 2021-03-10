@@ -8,6 +8,9 @@ using namespace std::chrono;
 #include <string>
 #include <map>
 
+#include <windows.h>
+#include <ShellApi.h>
+
 using namespace std;
 using namespace sf;
 
@@ -51,14 +54,13 @@ void DisableViewMenuItem(tgui::MenuBar::Ptr menu, const tgui::String& item)
 
 int main()
 {
+	int SPEED = 0;
+
 	bool turn_on_info_block = false;
 	bool pause = false;
+	bool hibernate = false;
 	Ecosystem ecosystem(100, 51, 1000, 0.5, 1000, 2000, 20000, 100, 5);
 	Ecosystem* ecosys_ptr = &ecosystem;
-
-	sf::Clock Framerate;
-	float acu = 0;
-	float frametime = 0.03;
 
 	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem");
 	main.setPosition(sf::Vector2i(350, 250));
@@ -68,8 +70,10 @@ int main()
 
 	tgui::MenuBar::Ptr menu = tgui::MenuBar::create();
 	menu->setHeight(MENUBAR_HEIGHT);
+	menu->addMenu("Help");
 	menu->addMenu("Environment");
 	menu->addMenuItem("Pause");
+	menu->addMenuItem("Hybernate");
 	menu->addMenu("View");
 	menu->addMenuItem("Terrain");
 	menu->addMenuItem("Energy");
@@ -82,8 +86,15 @@ int main()
 	menu->addMenuItem("Generation");
 	menu->setMenuItemEnabled({ "View", "Terrain" }, false);
 
-	menu->connectMenuItem({ "Environment", "Pause" }, [&pause]() {
-		pause = !pause;
+	menu->connectMenuItem({ "Help" }, []() {
+		ShellExecuteA(0, 0, "github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
+	});
+
+	menu->connectMenuItem({ "Environment", "Pause" }, [&hibernate , &pause]() {
+		if (!hibernate)
+		{
+			pause = !pause;
+		}
 	});
 
 	menu->connectMenuItem({ "View", "Terrain" }, [menu, ecosys_ptr]() {
@@ -155,48 +166,82 @@ int main()
 	label->setTextSize(13);
 	label->setText("Zoom:");
 	stats_panel->add(label);
-	auto slider = tgui::Slider::create();
-	slider->setPosition(10, 30);
-	slider->setSize(200, 18);
-	slider->setValue(1.0);
-	slider->setMaximum(1.5);
-	slider->setStep(0.1);
-	slider->setMinimum(0.1);
-
+	auto zoom_slider = tgui::Slider::create();
+	zoom_slider->setPosition(10, 30);
+	zoom_slider->setSize(200, 18);
+	zoom_slider->setValue(1.0);
+	zoom_slider->setMaximum(1.5);
+	zoom_slider->setStep(0.1);
+	zoom_slider->setMinimum(0.1);
+	stats_panel->add(zoom_slider);
 	label = tgui::Label::create();
-	label->setPosition(10, 50);
-	label->setSize(110, 18);
-	label->setTextSize(13);
-	label->setText("Max generation:");
-	stats_panel->add(label);
-	auto max_generation = tgui::Label::create();
-	max_generation->setPosition(120, 50);
-	max_generation->setSize(100, 18);
-	max_generation->setTextSize(13);
-	max_generation->setText("1");
-	stats_panel->add(max_generation);
-	label = tgui::Label::create();
-	label->setPosition(10, 70);
+	label->setPosition(10, 60);
 	label->setSize(100, 18);
 	label->setTextSize(13);
-	label->setText("Tics:");
+	label->setText("Speed:");
 	stats_panel->add(label);
-	auto tics_counter = tgui::Label::create();
-	tics_counter->setPosition(50, 70);
-	tics_counter->setSize(100, 18);
-	tics_counter->setTextSize(13);
-	tics_counter->setText("0");
-	stats_panel->add(tics_counter);
+	auto speed_slider = tgui::Slider::create();
+	speed_slider->setPosition(10, 80);
+	speed_slider->setSize(200, 18);
+	speed_slider->setValue(0);
+	speed_slider->setMaximum(50);
+	speed_slider->setStep(1);
+	speed_slider->setMinimum(0);
+	speed_slider->setInvertedDirection(true);
+	stats_panel->add(speed_slider);
+
+	menu->connectMenuItem({ "Environment", "Hybernate" }, [speed_slider, canvas, &hibernate]() {
+		hibernate = !hibernate;
+		if (hibernate)
+		{
+			canvas->clear(sf::Color::White);
+			canvas->display();
+			speed_slider->setValue(0);
+			speed_slider->setEnabled(false);
+		}
+		else
+		{
+			speed_slider->setEnabled(true);
+		}
+	});
 
 	auto Zoom = [canvas, ecosys_ptr](float scale)
 	{
 		ecosys_ptr->ScaleCellSize(scale);
 		canvas->setSize(ecosys_ptr->GetMapWidth(), ecosys_ptr->GetMapHeight());
 	};
+	auto Speed = [&SPEED](float coef)
+	{
+		SPEED = coef;
+	};
 
-	slider->onValueChange(Zoom);
+	zoom_slider->onValueChange(Zoom);
+	speed_slider->onValueChange(Speed);
 
-	stats_panel->add(slider);
+	label = tgui::Label::create();
+	label->setPosition(10, 110);
+	label->setSize(110, 18);
+	label->setTextSize(13);
+	label->setText("Max generation:");
+	stats_panel->add(label);
+	auto max_generation = tgui::Label::create();
+	max_generation->setPosition(120, 110);
+	max_generation->setSize(100, 18);
+	max_generation->setTextSize(13);
+	max_generation->setText("1");
+	stats_panel->add(max_generation);
+	label = tgui::Label::create();
+	label->setPosition(10, 130);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("Tics:");
+	stats_panel->add(label);
+	auto tics_counter = tgui::Label::create();
+	tics_counter->setPosition(50, 130);
+	tics_counter->setSize(100, 18);
+	tics_counter->setTextSize(13);
+	tics_counter->setText("0");
+	stats_panel->add(tics_counter);
 
 	sf::VertexArray cell_image(sf::Quads, 4);
 	cell_image[0].position = sf::Vector2f(1, 1);
@@ -317,12 +362,16 @@ int main()
 	info_panel->add(info_genome);
 
 	auto SetInfoBox = [
-		&turn_on_info_block, ecosys_ptr, info_genome, info_light_power,
+		&hibernate, &turn_on_info_block, ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
 		info_hp, info_age, info_title,
 		&cell_image, cell_image_canvas](const sf::Vector2f& mousePos)
 	{
+		if (hibernate)
+		{
+			return;
+		}
 		auto info = ecosys_ptr->GetInfo(mousePos.x, mousePos.y);
 		turn_on_info_block = true;
 		Color color(info.color.r, info.color.g, info.color.b);
@@ -396,10 +445,9 @@ int main()
 	info_panel->add(info_clear_rect_btn, "info_clear");
 
 	size_t tics = 0;
+	unsigned int acum = 0;
 	while (main.isOpen())
 	{
-		acu += Framerate.restart().asSeconds();
-
 		Event event;
 		while (main.pollEvent(event))
 		{
@@ -413,14 +461,17 @@ int main()
 				switch (event.key.code)
 				{
 				case sf::Keyboard::P:
-					pause = !pause;
+					if (!hibernate)
+					{
+						pause = !pause;
+					}
 					break;
 				}
 			}
 		}
 
 		// logic
-		if (acu > frametime && !pause)
+		if (acum >= SPEED && !pause)
 		{
 			// clear the window and draw background with background color
 			// update ecosystem and draw sprites
@@ -433,12 +484,21 @@ int main()
 			tics++;
 			tics_counter->setText(to_string(tics));
 			max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
+			acum = 0;
 		}
+		else
+		{
+			acum++;
+		}
+		
 
 		// Drawing
 		main.clear();
 
-		ecosystem.Draw(canvas);
+		if (!hibernate)
+		{
+			ecosystem.Draw(canvas);
+		}
 
 		gui.draw();
 		main.display();

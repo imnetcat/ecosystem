@@ -238,6 +238,10 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	return info;
 }
 
+size_t Ecosystem::GetEntitiesCount()
+{
+	return entities.size();
+}
 view_settings Ecosystem::GetView()
 {
 	return view;

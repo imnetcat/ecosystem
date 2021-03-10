@@ -48,6 +48,7 @@ public:
 	unsigned int GetMapWidth();
 	unsigned int GetMapHeight();
 	size_t GetMaxGeneration();
+	size_t GetEntitiesCount();
 
 private:
 

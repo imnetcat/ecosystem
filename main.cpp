@@ -152,12 +152,12 @@ int main()
 	gui.add(sidebar_layout);
 
 	auto stats_panel = tgui::Panel::create();
+	stats_panel->setSize("100%", 100);
 	sidebar_layout->add(stats_panel);
-	stats_panel->setSize("100%", 200);
 
 	auto info_panel = tgui::Panel::create();
-	info_panel->setPosition(0, MENUBAR_HEIGHT + 210);
-	info_panel->setSize("100%", 500);
+	info_panel->setPosition(0, 110);
+	info_panel->setSize("100%", WINDOW_HEIGHT - MENUBAR_HEIGHT - 110);
 	sidebar_layout->add(info_panel);
 
 	auto label = tgui::Label::create();
@@ -230,6 +230,7 @@ int main()
 	max_generation->setTextSize(13);
 	max_generation->setText("1");
 	stats_panel->add(max_generation);
+
 	label = tgui::Label::create();
 	label->setPosition(10, 130);
 	label->setSize(100, 18);
@@ -237,11 +238,24 @@ int main()
 	label->setText("Tics:");
 	stats_panel->add(label);
 	auto tics_counter = tgui::Label::create();
-	tics_counter->setPosition(50, 130);
-	tics_counter->setSize(100, 18);
+	tics_counter->setPosition(40, 130);
+	tics_counter->setSize(200, 18);
 	tics_counter->setTextSize(13);
 	tics_counter->setText("0");
 	stats_panel->add(tics_counter);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 150);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("Entities:");
+	stats_panel->add(label);
+	auto entities_counter = tgui::Label::create();
+	entities_counter->setPosition(65, 150);
+	entities_counter->setSize(100, 18);
+	entities_counter->setTextSize(13);
+	entities_counter->setText("0");
+	stats_panel->add(entities_counter);
 
 	sf::VertexArray cell_image(sf::Quads, 4);
 	cell_image[0].position = sf::Vector2f(1, 1);
@@ -320,7 +334,7 @@ int main()
 	label->setText("energy:");
 	info_panel->add(label);
 	auto info_energy = tgui::Label::create();
-	info_energy->setPosition(110, 125);
+	info_energy->setPosition(70, 125);
 	info_energy->setSize(100, 18);
 	info_energy->setTextSize(13);
 	info_panel->add(info_energy);
@@ -356,7 +370,7 @@ int main()
 	label->setText("genome:");
 	info_panel->add(label);
 	auto info_genome = tgui::Label::create();
-	info_genome->setPosition(110, 200);
+	info_genome->setPosition(80, 200);
 	info_genome->setSize(100, 18);
 	info_genome->setTextSize(13);
 	info_panel->add(info_genome);
@@ -484,6 +498,7 @@ int main()
 			tics++;
 			tics_counter->setText(to_string(tics));
 			max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
+			entities_counter->setText(to_string(ecosystem.GetEntitiesCount()));
 			acum = 0;
 		}
 		else
@@ -491,7 +506,6 @@ int main()
 			acum++;
 		}
 		
-
 		// Drawing
 		main.clear();
 

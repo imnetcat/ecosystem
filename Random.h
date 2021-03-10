@@ -10,6 +10,5 @@ private:
 public:
 
 	// Return random numbers in range [0, max)
-	int Generate(int max);
 	size_t Generate(size_t max);
 };

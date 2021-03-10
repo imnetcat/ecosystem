@@ -11,14 +11,18 @@ Entity::Entity()
 	hp(0),
 	energy(0),
 	defence(0),
-	attack(0)
+	attack(0),
+	max_hp(0),
+	max_energy(0)
 {}
 
 Entity::Entity(
 	size_t x,
 	size_t y,
 	view_side view,
+	unsigned short max_hp,
 	unsigned short energy,
+	unsigned short max_energy,
 	unsigned short max_age,
 	double defence,
 	double attack,
@@ -28,8 +32,10 @@ Entity::Entity(
 	view(view),
 	age(0),
 	max_age(max_age),
-	hp(MAX_HP),
+	max_hp(max_hp),
+	hp(max_hp),
 	energy(energy),
+	max_energy(max_energy),
 	defence(defence),
 	attack(attack),
 	genom(g)
@@ -89,7 +95,7 @@ void Entity::SetView(view_side val)
 
 void Entity::IncreaceEnergy(unsigned short value)
 {
-	unsigned short dif = MAX_HP - hp;
+	unsigned short dif = max_hp - hp;
 	if (dif != 0)
 	{
 		if (value > dif)
@@ -104,10 +110,10 @@ void Entity::IncreaceEnergy(unsigned short value)
 		}
 	}
 
-	if (energy + value < MAX_ENERGY)
+	if (energy + value < max_energy)
 		energy += value;
 	else
-		energy = MAX_ENERGY;
+		energy = max_energy;
 }
 
 void Entity::DecreaceEnergy(unsigned short value)
@@ -126,7 +132,7 @@ void Entity::DecreaceEnergy(unsigned short value)
 
 void Entity::IncreaceHp(unsigned short value)
 {
-	if (hp + value > MAX_HP)
+	if (hp + value > max_hp)
 		hp = 100;
 	else
 		hp += value;

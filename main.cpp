@@ -56,6 +56,7 @@ int main()
 {
 	int SPEED = 0;
 
+	bool do_tic = false;
 	bool pause = false;
 	bool hibernate = false;
 	Ecosystem ecosystem(100, 51, 1000, 0.5, 1000, 2000, 20000, 100, 5);
@@ -71,7 +72,9 @@ int main()
 	menu->setHeight(MENUBAR_HEIGHT);
 	menu->addMenu("Help");
 	menu->addMenu("Environment");
+	menu->addMenuItem("Run");
 	menu->addMenuItem("Pause");
+	menu->addMenuItem("Tic");
 	menu->addMenuItem("Hybernate");
 	menu->addMenu("View");
 	menu->addMenuItem("Terrain");
@@ -89,11 +92,27 @@ int main()
 		ShellExecuteA(0, 0, "github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
 	});
 
-	menu->connectMenuItem({ "Environment", "Pause" }, [&hibernate , &pause]() {
-		if (!hibernate)
+	menu->connectMenuItem({ "Environment", "Run" }, [&hibernate, &pause]() {
+		if (hibernate)
 		{
-			pause = !pause;
+			return;
 		}
+		pause = false;
+	});
+	menu->connectMenuItem({ "Environment", "Pause" }, [&hibernate , &pause]() {
+		if (hibernate)
+		{
+			return;
+		}
+		pause = true;
+	});
+	menu->connectMenuItem({ "Environment", "Tic" }, [&hibernate, &pause, &do_tic]() {
+		if (hibernate)
+		{
+			return;
+		}
+		pause = true;
+		do_tic = true;
 	});
 
 	menu->connectMenuItem({ "View", "Terrain" }, [menu, ecosys_ptr]() {
@@ -482,19 +501,36 @@ int main()
 			{
 				switch (event.key.code)
 				{
-				case sf::Keyboard::P:
-					if (!hibernate)
+				case sf::Keyboard::R:
+					if (hibernate)
 					{
-						pause = !pause;
+						break;
 					}
+					pause = false;
+					break;
+				case sf::Keyboard::P:
+					if (hibernate)
+					{
+						break;
+					}
+					pause = true;
+					break;
+				case sf::Keyboard::T:
+					if (hibernate)
+					{
+						break;
+					}
+					pause = true;
+					do_tic = true;
 					break;
 				}
 			}
 		}
 
 		// logic
-		if (acum >= SPEED && !pause)
+		if ((acum >= SPEED && !pause) || do_tic)
 		{
+			do_tic = false;
 			// clear the window and draw background with background color
 			// update ecosystem and draw sprites
 

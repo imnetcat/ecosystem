@@ -467,6 +467,7 @@ int main()
 
 	size_t tics = 0;
 	unsigned int acum = 0;
+	long long speedmeter = 0;
 	while (main.isOpen())
 	{
 		Event event;
@@ -497,18 +498,25 @@ int main()
 			// clear the window and draw background with background color
 			// update ecosystem and draw sprites
 
-			//auto start = high_resolution_clock::now();
+			auto start = high_resolution_clock::now();
 			ecosystem.Update();
-			//auto stop = high_resolution_clock::now();
-			//auto duration = duration_cast<std::chrono::microseconds>(stop - start);
-			//cout << "Environment update: \t" << duration.count() << " ms" << endl;
-			tics++;
-			tics_counter->setText(to_string(tics));
-			max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
-			entities_counter->setText(to_string(ecosystem.GetEntitiesCount()));
-			if (ecosystem.Observing())
+			auto stop = high_resolution_clock::now();
+			auto duration = duration_cast<std::chrono::microseconds>(stop - start);
+			if (duration.count() > speedmeter)
 			{
-				SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->GetX()), static_cast<float>(ecosystem.Observing()->GetY()));
+				speedmeter = duration.count();
+				cout << "Environment update MAX: \t" << speedmeter << " ms" << endl;
+			}
+			tics++;
+			if (!hibernate)
+			{
+				tics_counter->setText(to_string(tics));
+				max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
+				entities_counter->setText(to_string(ecosystem.GetEntitiesCount()));
+				if (ecosystem.Observing())
+				{
+					SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->GetX()), static_cast<float>(ecosystem.Observing()->GetY()));
+				}
 			}
 			acum = 0;
 		}

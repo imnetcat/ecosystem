@@ -56,7 +56,6 @@ int main()
 {
 	int SPEED = 0;
 
-	bool turn_on_info_block = false;
 	bool pause = false;
 	bool hibernate = false;
 	Ecosystem ecosystem(100, 51, 1000, 0.5, 1000, 2000, 20000, 100, 5);
@@ -190,8 +189,9 @@ int main()
 	speed_slider->setInvertedDirection(true);
 	stats_panel->add(speed_slider);
 
-	menu->connectMenuItem({ "Environment", "Hybernate" }, [speed_slider, canvas, &hibernate]() {
+	menu->connectMenuItem({ "Environment", "Hybernate" }, [&pause, speed_slider, canvas, &hibernate]() {
 		hibernate = !hibernate;
+		pause = false;
 		if (hibernate)
 		{
 			canvas->clear(sf::Color::White);
@@ -376,18 +376,16 @@ int main()
 	info_panel->add(info_genome);
 
 	auto SetInfoBox = [
-		&hibernate, &turn_on_info_block, ecosys_ptr, info_genome, info_light_power,
+		&hibernate, ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
 		info_hp, info_age, info_title,
-		&cell_image, cell_image_canvas](const sf::Vector2f& mousePos)
+		&cell_image, cell_image_canvas](const Info& info)
 	{
 		if (hibernate)
 		{
 			return;
 		}
-		auto info = ecosys_ptr->GetInfo(mousePos.x, mousePos.y);
-		turn_on_info_block = true;
 		Color color(info.color.r, info.color.g, info.color.b);
 		cell_image[0].color = color;
 		cell_image[1].color = color;
@@ -421,10 +419,19 @@ int main()
 		cell_image_canvas->display();
 	};
 
-	canvas->onClick(SetInfoBox);
+	auto SetObservedInfoByPixel = [SetInfoBox, ecosys_ptr](const sf::Vector2f& mousePos)
+	{
+		SetInfoBox(ecosys_ptr->GetInfoByPixelCoords(mousePos.x, mousePos.y));
+	};
+	auto SetObservedInfoByCoords = [SetInfoBox, ecosys_ptr](size_t x, size_t y)
+	{
+		SetInfoBox(ecosys_ptr->GetInfoByCellsCoords(x, y));
+	};
+
+	canvas->onClick(SetObservedInfoByPixel);
 
 	auto ClearInfoBox = [
-		info_genome, info_light_power, 
+		info_genome, info_light_power,
 		info_organic_power, info_mutation_chance, 
 		info_energy, info_generation, 
 		info_hp, info_age, info_title,
@@ -499,6 +506,10 @@ int main()
 			tics_counter->setText(to_string(tics));
 			max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
 			entities_counter->setText(to_string(ecosystem.GetEntitiesCount()));
+			if (ecosystem.Observing())
+			{
+				SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->GetX()), static_cast<float>(ecosystem.Observing()->GetY()));
+			}
 			acum = 0;
 		}
 		else

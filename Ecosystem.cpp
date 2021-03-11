@@ -205,10 +205,8 @@ void Ecosystem::ScaleCellSize(float scale)
 	map_height = height * cell_outline + 1;
 }
 
-Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
+Info Ecosystem::GetInfoByCellsCoords(size_t x, size_t y)
 {
-	size_t x = x_px / cell_outline;
-	size_t y = y_px / cell_outline;
 	Info info;
 	if (x >= width || y >= height)
 	{
@@ -221,6 +219,7 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	info.contains_entity = terrain[y][x].ContainsEntity();
 	if (terrain[y][x].ContainsEntity())
 	{
+		observed_entity = *terrain[y][x].GetEntity();
 		info.age.curr = terrain[y][x].GetEntity()->Age();
 		info.age.max = terrain[y][x].GetEntity()->MaxAge();
 		info.genome = terrain[y][x].GetEntity()->GetGenome().Data();
@@ -237,7 +236,19 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	}
 	return info;
 }
+Info Ecosystem::GetInfoByPixelCoords(size_t x_px, size_t y_px)
+{
+	return GetInfoByCellsCoords(x_px / cell_outline, y_px / cell_outline);
+}
 
+void Ecosystem::Observing(Entity* entity)
+{
+	observed_entity = entity;
+}
+Entity* Ecosystem::Observing()
+{
+	return observed_entity;
+}
 size_t Ecosystem::GetEntitiesCount()
 {
 	return entities.size();

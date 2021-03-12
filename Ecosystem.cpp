@@ -159,7 +159,15 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 		pos.y = y * cell_outline;
 		sprite.setPosition(pos);
 		sprite.setSize(osize);
-		sprite.setFillColor({ 0, 171, 209 });
+
+		if (observed_entity)
+		{
+			sprite.setFillColor({ 0, 171, 209, 100 });
+		}
+		else
+		{
+			sprite.setFillColor({ 0, 171, 209 });
+		}
 		canvas->draw(sprite);
 
 		object++;
@@ -177,12 +185,21 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 		auto x = entity->GetX();
 		auto y = entity->GetY();
 
-		pos.x = x * (cell_size + OUTLINE);
-		pos.y = y * (cell_size + OUTLINE);
+		pos.x = x * ((size_t)cell_size + OUTLINE);
+		pos.y = y * ((size_t)cell_size + OUTLINE);
 		sprite.setPosition(pos);
 		sprite.setSize(size);
 
-		sprite.setFillColor(ObtainEntityColor(entity));
+		auto color = ObtainEntityColor(entity);
+		if (observed_entity)
+		{
+			if (observed_entity->GetX() != x ||
+				observed_entity->GetY() != y)
+			{
+				color.a = 100;
+			}
+		}
+		sprite.setFillColor(color);
 
 		canvas->draw(sprite);
 

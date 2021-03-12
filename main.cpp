@@ -89,7 +89,7 @@ int main()
 	menu->setMenuItemEnabled({ "View", "Terrain" }, false);
 
 	menu->connectMenuItem({ "Help" }, []() {
-		ShellExecuteA(0, 0, "github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
+		ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
 	});
 
 	menu->connectMenuItem({ "Environment", "Run" }, [&hibernate, &pause]() {
@@ -450,7 +450,7 @@ int main()
 	canvas->onClick(SetObservedInfoByPixel);
 
 	auto ClearInfoBox = [
-		info_genome, info_light_power,
+		&ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance, 
 		info_energy, info_generation, 
 		info_hp, info_age, info_title,
@@ -474,6 +474,7 @@ int main()
 		info_hp->setText("-");
 		info_organic_power->setText("-");
 		info_light_power->setText("-");
+		ecosys_ptr->Observing(nullptr);
 	};
 
 	ClearInfoBox();
@@ -531,8 +532,6 @@ int main()
 		if ((acum >= SPEED && !pause) || do_tic)
 		{
 			do_tic = false;
-			// clear the window and draw background with background color
-			// update ecosystem and draw sprites
 
 			auto start = high_resolution_clock::now();
 			ecosystem.Update();
@@ -541,19 +540,10 @@ int main()
 			if (duration.count() > speedmeter)
 			{
 				speedmeter = duration.count();
-				cout << "Environment update MAX: \t" << speedmeter << " ms" << endl;
+				cout << "Environment update max time: \t" << speedmeter << " ms\r";
 			}
+
 			tics++;
-			if (!hibernate)
-			{
-				tics_counter->setText(to_string(tics));
-				max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
-				entities_counter->setText(to_string(ecosystem.GetEntitiesCount()));
-				if (ecosystem.Observing())
-				{
-					SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->GetX()), static_cast<float>(ecosystem.Observing()->GetY()));
-				}
-			}
 			acum = 0;
 		}
 		else
@@ -567,6 +557,18 @@ int main()
 		if (!hibernate)
 		{
 			ecosystem.Draw(canvas);
+
+			if (!pause)
+			{
+				tics_counter->setText(to_string(tics));
+				max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
+				entities_counter->setText(to_string(ecosystem.GetEntitiesCount()));
+			}
+
+			if (ecosystem.Observing())
+			{
+				SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->GetX()), static_cast<float>(ecosystem.Observing()->GetY()));
+			}
 		}
 
 		gui.draw();

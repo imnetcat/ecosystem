@@ -58,7 +58,10 @@ protected:
 	ListPool<Entity> entities;
 	ListPool<Organic> organic;
 
+	Entity* observed_entity = nullptr;
+
 private:
+
 	EntitiesIterator EntityDie(EntitiesIterator);
 
 	Position GetViewedPosition(view_side view, size_t x, size_t y);

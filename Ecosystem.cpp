@@ -159,7 +159,15 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 		pos.y = y * cell_outline;
 		sprite.setPosition(pos);
 		sprite.setSize(osize);
-		sprite.setFillColor({ 0, 171, 209 });
+
+		if (observed_entity)
+		{
+			sprite.setFillColor({ 0, 171, 209, 100 });
+		}
+		else
+		{
+			sprite.setFillColor({ 0, 171, 209 });
+		}
 		canvas->draw(sprite);
 
 		object++;
@@ -177,12 +185,21 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 		auto x = entity->GetX();
 		auto y = entity->GetY();
 
-		pos.x = x * (cell_size + OUTLINE);
-		pos.y = y * (cell_size + OUTLINE);
+		pos.x = x * ((size_t)cell_size + OUTLINE);
+		pos.y = y * ((size_t)cell_size + OUTLINE);
 		sprite.setPosition(pos);
 		sprite.setSize(size);
 
-		sprite.setFillColor(ObtainEntityColor(entity));
+		auto color = ObtainEntityColor(entity);
+		if (observed_entity)
+		{
+			if (observed_entity->GetX() != x ||
+				observed_entity->GetY() != y)
+			{
+				color.a = 100;
+			}
+		}
+		sprite.setFillColor(color);
 
 		canvas->draw(sprite);
 
@@ -205,10 +222,8 @@ void Ecosystem::ScaleCellSize(float scale)
 	map_height = height * cell_outline + 1;
 }
 
-Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
+Info Ecosystem::GetInfoByCellsCoords(size_t x, size_t y)
 {
-	size_t x = x_px / cell_outline;
-	size_t y = y_px / cell_outline;
 	Info info;
 	if (x >= width || y >= height)
 	{
@@ -221,6 +236,7 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	info.contains_entity = terrain[y][x].ContainsEntity();
 	if (terrain[y][x].ContainsEntity())
 	{
+		observed_entity = *terrain[y][x].GetEntity();
 		info.age.curr = terrain[y][x].GetEntity()->Age();
 		info.age.max = terrain[y][x].GetEntity()->MaxAge();
 		info.genome = terrain[y][x].GetEntity()->GetGenome().Data();
@@ -237,7 +253,23 @@ Info Ecosystem::GetInfo(size_t x_px, size_t y_px)
 	}
 	return info;
 }
+Info Ecosystem::GetInfoByPixelCoords(size_t x_px, size_t y_px)
+{
+	return GetInfoByCellsCoords(x_px / cell_outline, y_px / cell_outline);
+}
 
+void Ecosystem::Observing(Entity* entity)
+{
+	observed_entity = entity;
+}
+Entity* Ecosystem::Observing()
+{
+	return observed_entity;
+}
+size_t Ecosystem::GetEntitiesCount()
+{
+	return entities.size();
+}
 view_settings Ecosystem::GetView()
 {
 	return view;

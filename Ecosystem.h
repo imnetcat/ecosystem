@@ -38,9 +38,12 @@ public:
 	);
 
 	void Draw(tgui::Canvas::Ptr canvas);
-	Info GetInfo(size_t x_px, size_t y_px);
+	Info GetInfoByCellsCoords(size_t x, size_t y);
+	Info GetInfoByPixelCoords(size_t x_px, size_t y_px);
 	view_settings GetView();
 	void SetView(view_settings new_val);
+	void Observing(Entity* entity);
+	Entity* Observing();
 	RGBColor ObtainEntityColor(EntitiesIterator entity);
 	RGBColor ObtainColor(size_t x, size_t y);
 
@@ -48,6 +51,7 @@ public:
 	unsigned int GetMapWidth();
 	unsigned int GetMapHeight();
 	size_t GetMaxGeneration();
+	size_t GetEntitiesCount();
 
 private:
 

@@ -73,6 +73,14 @@ EntitiesIterator Environment::EntityDie(EntitiesIterator entity_iterator)
 		terrain[y][x].SetOrganic(organic.Add({ x, y, entity_iterator->Energy() + 100ull }));
 	}
 	terrain[y][x].DelEntity();
+	if (observed_entity)
+	{
+		if (observed_entity->GetX() == entity_iterator->GetX() &&
+			observed_entity->GetY() == entity_iterator->GetY())
+		{
+			observed_entity = nullptr;
+		}
+	}
 	return entities.Del(entity_iterator);
 }
 

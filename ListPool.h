@@ -63,6 +63,19 @@ public:
 		delta.emplace_front(obj);
 		return delta.begin();
 	}
+	iterator Add()
+	{
+		if (!free.size())
+		{
+			throw std::out_of_range("Pool out of size");
+		}
+
+		T* obj = free.front();
+		free.pop();
+		delta.emplace_front(obj);
+		return delta.begin();
+	}
+
 
 	iterator Del(iterator it)
 	{

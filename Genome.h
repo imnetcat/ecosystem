@@ -11,17 +11,6 @@
 
 using RGBColor = sf::Color;
 
-enum class Ration
-{
-	omnivorous,
-	entities,
-	light,
-	organic,
-	entites_organic,
-	entites_light,
-	light_organic
-};
-
 enum class Coefficient
 {
 	enlarge,
@@ -41,7 +30,7 @@ private:
 
 	unsigned __int64 generation;
 	unsigned __int8 mutationChance;
-	Ration ration;
+	RGBColor ration;
 	RGBColor species;
 	Random random;
 	unsigned __int16 replicate_cost;
@@ -74,7 +63,7 @@ public:
 	unsigned __int8 MutationChance() const;
 	inline unsigned __int8 Size() const;
 	const RGBColor& Species() const;
-	Ration Ration() const;
+	const RGBColor& Ration() const;
 	unsigned __int16 ReplicateCost() const;
 
 	static void Init(unsigned __int64 genome_seed);

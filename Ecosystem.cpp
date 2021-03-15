@@ -44,30 +44,7 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	case view_settings::organic:
 		return { 209, 209, 209 };
 	case view_settings::ration:
-	{
-		Ration ration = entity->GetGenome().Ration();
-
-		switch (ration)
-		{
-		case Ration::entities:
-			return { 255, 51, 51 };
-		case Ration::light:
-			return { 255, 245, 30 };
-		case Ration::organic:
-			return { 37, 53, 217 };
-		case Ration::entites_organic:
-			return { 50, 255, 30 };
-		case Ration::entites_light:
-			return { 255, 160, 30 };
-		case Ration::light_organic:
-			return { 30, 255, 248 };
-		case Ration::omnivorous:
-			return { 0, 0, 0 };
-		default:
-			return { 0, 0, 0 };
-		}
-		break;
-	}
+		return entity->GetGenome().Ration();
 	case view_settings::energy:
 	{
 		if (entity->Energy() < (max_energy / 2))

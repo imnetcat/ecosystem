@@ -14,7 +14,7 @@ Genome::Genome()
 	, generation(1)
 	, replicate_cost(0)
 	, mutationChance(10)
-	, ration(Ration::omnivorous)
+	, ration({255, 255, 0})
 {
 	Construct();
 }
@@ -28,7 +28,7 @@ Genome::Genome(unsigned __int64 genom, unsigned __int8 args, unsigned __int64 ge
 	, generation(generation)
 	, replicate_cost(0)
 	, mutationChance(mutationChance)
-	, ration(Ration::omnivorous)
+	, ration({ 255, 255, 0 })
 {
 	Construct();
 }
@@ -82,7 +82,7 @@ const RGBColor& Genome::Species() const
 {
 	return species;
 }
-Ration Genome::Ration() const
+const RGBColor& Genome::Ration() const
 {
 	return ration;
 }
@@ -177,10 +177,6 @@ Genome Genome::Replicate(Coefficient coef)
 
 void Genome::Construct()
 {
-	bool Carnivorous = false;
-	bool Photosyntesis = false;
-	bool Organic = false;
-
 	for (unsigned __int8 i = 0; i < genom_size; i++)
 	{
 		Gen gen = Read();
@@ -203,41 +199,23 @@ void Genome::Construct()
 		switch (gen.trigger)
 		{
 		case Trigger::Carnivorous:
-			Carnivorous = true;
+			if (ration.r != 255)
+				ration.r++;
+			if (ration.g != 0)
+				ration.g--;
 			break;
 		case Trigger::Photosyntesis:
-			Photosyntesis = true;
+			if (ration.r != 0)
+				ration.r--;
+			if (ration.g != 255)
+				ration.g++;
 			break;
 		case Trigger::Mineraleon:
-			Organic = true;
+			if (ration.r != 255)
+				ration.r++;
+			if (ration.g != 255)
+				ration.g++;
 			break;
 		}
-	}
-
-	ration = Ration::omnivorous;
-	// Define ration
-	if (Carnivorous && Photosyntesis)
-	{
-		ration = Ration::entites_light;
-	}
-	else if (Carnivorous && Organic)
-	{
-		ration = Ration::entites_organic;
-	}
-	else if (Photosyntesis && Organic)
-	{
-		ration = Ration::light_organic;
-	}
-	else if (Photosyntesis)
-	{
-		ration = Ration::light;
-	}
-	else if (Organic)
-	{
-		ration = Ration::organic;
-	}
-	else if (Carnivorous)
-	{
-		ration = Ration::entities;
 	}
 }

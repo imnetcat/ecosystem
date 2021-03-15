@@ -9,15 +9,14 @@ Environment::Environment(
 	unsigned short max_organic_to_eat,
 	unsigned short max_entities_to_eat,
 	unsigned short max_energy,
-	unsigned short max_hp,
-	unsigned short entities_start_count
+	unsigned short max_hp
 )
 	: max_generation(1)
 	, width(width)
 	, height(height)
 	, terrain(nullptr)
-	, entities((size_t)height * width)
-	, organic((size_t)height * width)
+	, entities((size_t)height* width)
+	, organic((size_t)height* width)
 	, light_power(light_power)
 	, light_coef(light_coef)
 	, max_organic_to_eat(max_organic_to_eat)
@@ -32,24 +31,20 @@ Environment::Environment(
 		terrain[y] = new TerrainCell[width];
 	}
 
-	Random random;
-	// Put first entities
-	while (entities_start_count--)
-	{
-		auto x = random.Generate(width);
-		auto y = random.Generate(height);
-		terrain[y][x].SetEntity(entities.Add({
-			x, y,
-			view_side::top,
-			max_hp,
-			100,
-			max_energy,
-			100,
-			0.01,
-			0.01,
-			Genome()
-		}));
-	}
+	// Put first entity
+	auto x = width / 2;
+	auto y = height / 8;
+	terrain[y][x].SetEntity(entities.Add({
+		x, y,
+		view_side::top,
+		max_hp,
+		100,
+		max_energy,
+		100,
+		0.01,
+		0.01,
+		Genome()
+	}));
 }
 Environment::~Environment()
 {

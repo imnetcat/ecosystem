@@ -1,11 +1,14 @@
 #include "Genome.h"
 
-unsigned __int64 Genome::xr = std::hash<unsigned __int64>{}(args_max ^ genom_size);
+const std::uniform_int_distribution<unsigned __int64> Genome::distributor = std::uniform_int_distribution<unsigned __int64>(1, args_max - 1);
+
+unsigned __int64 Genome::start_data[64];
+std::mt19937_64 Genome::engine;
+unsigned __int64 Genome::world_seed;
 
 Genome::Genome()
 	: genom(random.Generate(genome_max))
 	, props(0)
-	, reserved(0)
 	, args(random.Generate(args_max))
 	, cursor(0)
 	, generation(1)
@@ -13,14 +16,13 @@ Genome::Genome()
 	, mutationChance(10)
 	, ration(Ration::omnivorous)
 {
-	Initializing();
+	Construct();
 }
 
 // mutationChance must be from 0 to 100
 Genome::Genome(unsigned __int64 genom, unsigned __int8 args, unsigned __int64 generation, unsigned __int8 mutationChance)
 	: genom(genom)
 	, props(0)
-	, reserved(0)
 	, args(args)
 	, cursor(0)
 	, generation(generation)
@@ -28,7 +30,7 @@ Genome::Genome(unsigned __int64 genom, unsigned __int8 args, unsigned __int64 ge
 	, mutationChance(mutationChance)
 	, ration(Ration::omnivorous)
 {
-	Initializing();
+	Construct();
 }
 
 Gen Genome::Read()
@@ -39,23 +41,23 @@ Gen Genome::Read()
 	}
 
 	bool bit = (genom >> (genom_size - cursor - 1)) & 1;
+	unsigned __int64 base = start_data[cursor];
+	unsigned __int64 trigger = base;
+	if (bit)
+	{
+		trigger *= world_seed % base + world_seed;
+	}
+	trigger %= trigger_max;
 
-	Trigger current_trigger = static_cast<Trigger>(
-		(
-			(
-				xr ^ ((unsigned __int64)cursor * (bit ? 1 : 2))
-				) ^ genom
-			) % trigger_max
-		);
+	Trigger current_trigger = static_cast<Trigger>(trigger);
 
-
+	unsigned __int8 current_arg = base;
 	bit = (args >> (args_size - cursor - 1)) & 1;
-
-	unsigned __int8 current_arg = (
-		(
-			xr ^ ((unsigned __int64)cursor * (bit ? 1 : 2))
-			) ^ args
-		) % args_max;
+	if (bit)
+	{
+		current_arg *= world_seed % current_arg + world_seed;
+	}
+	current_arg %= args_max;
 
 	cursor++;
 	return { current_trigger, current_arg };
@@ -89,6 +91,15 @@ unsigned __int16 Genome::ReplicateCost() const
 	return replicate_cost;
 }
 
+void Genome::Init(unsigned __int64 world_seed)
+{
+	Genome::world_seed = world_seed;
+	Genome::engine = std::mt19937_64(Genome::world_seed);
+	for (int i = 0; i < 64; i++)
+	{
+		Genome::start_data[i] = Genome::distributor(Genome::engine);
+	}
+}
 Genome Genome::Replicate(Coefficient coef)
 {
 	auto new_genom = genom;
@@ -164,7 +175,7 @@ Genome Genome::Replicate(Coefficient coef)
 	return { new_genom, new_args, generation + 1, new_mutationChance };
 }
 
-void Genome::Initializing()
+void Genome::Construct()
 {
 	bool Carnivorous = false;
 	bool Photosyntesis = false;

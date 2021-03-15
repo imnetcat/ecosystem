@@ -11,8 +11,7 @@ Ecosystem::Ecosystem(
 	unsigned short max_organic_to_eat,
 	unsigned short max_entities_to_eat,
 	unsigned short max_energy,
-	unsigned short max_hp,
-	unsigned short entities_start_count
+	unsigned short max_hp
 )
 	: Environment(
 		width, 
@@ -22,8 +21,7 @@ Ecosystem::Ecosystem(
 		max_organic_to_eat,
 		max_entities_to_eat,
 		max_energy,
-		max_hp,
-		entities_start_count)
+		max_hp)
 
 	, view(view_settings::terrain) 
 {}

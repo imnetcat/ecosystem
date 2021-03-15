@@ -59,7 +59,29 @@ int main()
 	bool do_tic = false;
 	bool pause = false;
 	bool hibernate = false;
-	Ecosystem ecosystem(100, 51, 1000, 0.5, 1000, 2000, 20000, 100, 5);
+
+	unsigned __int64 WORLD_SEED		= time(0);
+	unsigned int WORLD_WIDTH		= 100;
+	unsigned int WORLD_HEIGHT		= 51;
+	unsigned short  LIGHT_POWER		= 1000;
+	double LIGHT_COEF				= 0.5;
+	unsigned short MAX_ORGANIC_TO_EAT = 1000;
+	unsigned short MAX_ENTITIES_TO_EAT = 2000;
+	unsigned short MAX_ENERGY = 20000;
+	unsigned short MAX_HP = 100;
+
+	Genome::Init(WORLD_SEED);
+	Ecosystem ecosystem(
+		WORLD_WIDTH, 
+		WORLD_HEIGHT,
+		LIGHT_POWER, 
+		LIGHT_COEF,
+		MAX_ORGANIC_TO_EAT, 
+		MAX_ENTITIES_TO_EAT, 
+		MAX_ENERGY, 
+		MAX_HP
+	);
+
 	Ecosystem* ecosys_ptr = &ecosystem;
 
 	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem", sf::Style::Titlebar | sf::Style::Close);

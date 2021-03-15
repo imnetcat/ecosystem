@@ -33,8 +33,7 @@ public:
 		unsigned short max_organic_to_eat,
 		unsigned short max_entities_to_eat,
 		unsigned short max_energy,
-		unsigned short max_hp,
-		unsigned short entities_start_count
+		unsigned short max_hp
 	);
 
 	void Draw(tgui::Canvas::Ptr canvas);

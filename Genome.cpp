@@ -4,7 +4,7 @@ const std::uniform_int_distribution<unsigned __int64> Genome::distributor = std:
 
 unsigned __int64 Genome::start_data[64];
 std::mt19937_64 Genome::engine;
-unsigned __int64 Genome::world_seed;
+unsigned __int64 Genome::genome_seed;
 
 Genome::Genome()
 	: genom(random.Generate(genome_max))
@@ -45,7 +45,7 @@ Gen Genome::Read()
 	unsigned __int64 trigger = base;
 	if (bit)
 	{
-		trigger *= world_seed % base + world_seed;
+		trigger *= genome_seed % base + genome_seed;
 	}
 	trigger %= trigger_max;
 
@@ -55,7 +55,7 @@ Gen Genome::Read()
 	bit = (args >> (args_size - cursor - 1)) & 1;
 	if (bit)
 	{
-		current_arg *= world_seed % current_arg + world_seed;
+		current_arg *= genome_seed % current_arg + genome_seed;
 	}
 	current_arg %= args_max;
 
@@ -91,10 +91,10 @@ unsigned __int16 Genome::ReplicateCost() const
 	return replicate_cost;
 }
 
-void Genome::Init(unsigned __int64 world_seed)
+void Genome::Init(unsigned __int64 genome_seed)
 {
-	Genome::world_seed = world_seed;
-	Genome::engine = std::mt19937_64(Genome::world_seed);
+	Genome::genome_seed = genome_seed;
+	Genome::engine = std::mt19937_64(Genome::genome_seed);
 	for (int i = 0; i < 64; i++)
 	{
 		Genome::start_data[i] = Genome::distributor(Genome::engine);

@@ -60,7 +60,7 @@ int main()
 	bool pause = false;
 	bool hibernate = false;
 
-	unsigned __int64 WORLD_SEED		= time(0);
+	unsigned __int64 GENOME_SEED		= time(0);
 	unsigned int WORLD_WIDTH		= 100;
 	unsigned int WORLD_HEIGHT		= 51;
 	unsigned short  LIGHT_POWER		= 1000;
@@ -70,7 +70,7 @@ int main()
 	unsigned short MAX_ENERGY = 20000;
 	unsigned short MAX_HP = 100;
 
-	Genome::Init(WORLD_SEED);
+	Genome::Init(GENOME_SEED);
 	Ecosystem ecosystem(
 		WORLD_WIDTH, 
 		WORLD_HEIGHT,
@@ -263,36 +263,49 @@ int main()
 	label->setPosition(10, 110);
 	label->setSize(110, 18);
 	label->setTextSize(13);
+	label->setText("Genome seed:");
+	stats_panel->add(label);
+	auto genome_seed = tgui::Label::create();
+	genome_seed->setPosition(120, 110);
+	genome_seed->setSize(100, 18);
+	genome_seed->setTextSize(13);
+	genome_seed->setText(to_string(GENOME_SEED));
+	stats_panel->add(genome_seed);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 130);
+	label->setSize(110, 18);
+	label->setTextSize(13);
 	label->setText("Max generation:");
 	stats_panel->add(label);
 	auto max_generation = tgui::Label::create();
-	max_generation->setPosition(120, 110);
+	max_generation->setPosition(120, 130);
 	max_generation->setSize(100, 18);
 	max_generation->setTextSize(13);
 	max_generation->setText("1");
 	stats_panel->add(max_generation);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 130);
+	label->setPosition(10, 150);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("Tics:");
 	stats_panel->add(label);
 	auto tics_counter = tgui::Label::create();
-	tics_counter->setPosition(40, 130);
+	tics_counter->setPosition(40, 150);
 	tics_counter->setSize(200, 18);
 	tics_counter->setTextSize(13);
 	tics_counter->setText("0");
 	stats_panel->add(tics_counter);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 150);
+	label->setPosition(10, 170);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("Entities:");
 	stats_panel->add(label);
 	auto entities_counter = tgui::Label::create();
-	entities_counter->setPosition(65, 150);
+	entities_counter->setPosition(65, 170);
 	entities_counter->setSize(100, 18);
 	entities_counter->setTextSize(13);
 	entities_counter->setText("0");

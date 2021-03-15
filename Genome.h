@@ -55,7 +55,7 @@ private:
 	static const std::uniform_int_distribution<unsigned __int64> distributor;
 	static unsigned __int64 start_data[64];
 	static std::mt19937_64 engine;
-	static unsigned __int64 world_seed;
+	static unsigned __int64 genome_seed;
 
 	void Construct();
 public:
@@ -77,6 +77,6 @@ public:
 	Ration Ration() const;
 	unsigned __int16 ReplicateCost() const;
 
-	static void Init(unsigned __int64 world_seed);
+	static void Init(unsigned __int64 genome_seed);
 	Genome Replicate(Coefficient coef);
 };

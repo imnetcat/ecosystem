@@ -207,7 +207,7 @@ Info Ecosystem::GetInfoByCellsCoords(size_t x, size_t y)
 
 	info.color = ObtainColor(x, y);
 
-	info.light_power = (((height - (double)y) / height) * light_coef) * light_power;
+	info.light_power = (((height - (double)y) / height) * light_coef) * light_power * 2;
 	info.contains_entity = terrain[y][x].ContainsEntity();
 	if (terrain[y][x].ContainsEntity())
 	{

@@ -60,13 +60,13 @@ int main()
 	bool pause = false;
 	bool hibernate = false;
 
-	unsigned __int64 GENOME_SEED = Random::Generate();
+	unsigned __int64 GENOME_SEED = 869967928505;// Random::Generate();
 	unsigned int WORLD_WIDTH		= 100;
 	unsigned int WORLD_HEIGHT		= 51;
-	unsigned short  LIGHT_POWER		= 1000;
-	double LIGHT_COEF				= 0.5;
-	unsigned short MAX_ORGANIC_TO_EAT = 1000;
-	unsigned short MAX_ENTITIES_TO_EAT = 2000;
+	unsigned short  LIGHT_POWER		= 3000;
+	double LIGHT_COEF				= 0.2;
+	unsigned short MAX_ORGANIC_TO_EAT = 3000;
+	unsigned short MAX_ENTITIES_TO_EAT = 6000;
 	unsigned short MAX_ENERGY = 20000;
 	unsigned short MAX_HP = 100;
 
@@ -266,7 +266,7 @@ int main()
 	label->setText("Genome seed:");
 	stats_panel->add(label);
 	auto genome_seed = tgui::Label::create();
-	genome_seed->setPosition(120, 110);
+	genome_seed->setPosition(110, 110);
 	genome_seed->setSize(100, 18);
 	genome_seed->setTextSize(13);
 	genome_seed->setText(to_string(GENOME_SEED));
@@ -424,8 +424,8 @@ int main()
 	label->setText("genome:");
 	info_panel->add(label);
 	auto info_genome = tgui::Label::create();
-	info_genome->setPosition(80, 200);
-	info_genome->setSize(100, 18);
+	info_genome->setPosition(70, 200);
+	info_genome->setSize(150, 40);
 	info_genome->setTextSize(13);
 	info_panel->add(info_genome);
 
@@ -515,7 +515,7 @@ int main()
 	ClearInfoBox();
 
 	tgui::Button::Ptr info_clear_rect_btn = tgui::Button::create();
-	info_clear_rect_btn->setPosition(80, 228);
+	info_clear_rect_btn->setPosition(80, 248);
 	info_clear_rect_btn->setText("Clear");
 	info_clear_rect_btn->onPress(ClearInfoBox);
 	info_panel->add(info_clear_rect_btn, "info_clear");

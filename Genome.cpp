@@ -7,21 +7,29 @@ std::mt19937_64 Genome::engine;
 unsigned __int64 Genome::genome_seed;
 
 Genome::Genome()
-	: genom(random.Generate(genome_max))
+	: genome(0)
 	, props(0)
-	, args(random.Generate(args_max))
+	, args(0)
+	, genome_size(0)
 	, cursor(0)
 	, generation(1)
 	, replicate_cost(0)
-	, mutationChance(10)
-	, ration({255, 255, 0})
+	, mutationChance(0)
+	, ration()
 {
 	Construct();
 }
 
 // mutationChance must be from 0 to 100
-Genome::Genome(unsigned __int64 genom, unsigned __int8 args, unsigned __int64 generation, unsigned __int8 mutationChance)
-	: genom(genom)
+Genome::Genome(
+	unsigned __int64 genome,
+	unsigned __int8 genome_size,
+	unsigned __int8 args, 
+	unsigned __int64 generation, 
+	unsigned __int8 mutationChance
+)
+	: genome(genome)
+	, genome_size(genome_size > 64 ? 64 : genome_size)
 	, props(0)
 	, args(args)
 	, cursor(0)
@@ -35,12 +43,12 @@ Genome::Genome(unsigned __int64 genom, unsigned __int8 args, unsigned __int64 ge
 
 Gen Genome::Read()
 {
-	if (cursor == genom_size)
+	if (cursor == genome_size)
 	{
 		cursor = 0;
 	}
 
-	bool bit = (genom >> (genom_size - cursor - 1)) & 1;
+	bool bit = (genome >> (genome_size - cursor - 1)) & 1;
 	unsigned __int64 base = start_data[cursor];
 	unsigned __int64 trigger = base;
 	if (bit)
@@ -64,7 +72,7 @@ Gen Genome::Read()
 }
 unsigned __int64 Genome::Data() const
 {
-	return genom;
+	return genome;
 }
 unsigned __int64 Genome::Generation() const
 {
@@ -76,7 +84,7 @@ unsigned __int8 Genome::MutationChance() const
 }
 inline unsigned __int8 Genome::Size() const
 {
-	return genom_size;
+	return genome_size;
 }
 const RGBColor& Genome::Species() const
 {
@@ -102,7 +110,7 @@ void Genome::Init(unsigned __int64 genome_seed)
 }
 Genome Genome::Replicate(Coefficient coef)
 {
-	auto new_genom = genom;
+	auto new_genom = genome;
 	auto new_args = args;
 
 	unsigned __int8 rand = random.Generate(100);
@@ -114,7 +122,7 @@ Genome Genome::Replicate(Coefficient coef)
 		{
 		case 0:
 			// Invert bit in genome
-			new_genom ^= (1ull << (rand % genom_size));
+			new_genom ^= (1ull << (rand % genome_size));
 			break;
 		case 1:
 			// Invert bit in args
@@ -138,19 +146,19 @@ Genome Genome::Replicate(Coefficient coef)
 			break;
 		case 6:
 			// Write 1 to the bit in genom
-			new_genom |= (1ull << (rand % genom_size));
+			new_genom |= (1ull << (rand % genome_size));
 			break;
 		case 7:
 			// Write 1 to the bit in args
-			new_args |= (1ull << (rand % genom_size));
+			new_args |= (1ull << (rand % genome_size));
 			break;
 		case 8:
 			// Write 0 to the bit in genom
-			new_genom &= ~(1ull << (rand % genom_size));
+			new_genom &= ~(1ull << (rand % genome_size));
 			break;
 		case 9:
 			// Write 0 to the bit in args
-			new_args &= ~(1ull << (rand % genom_size));
+			new_args &= ~(1ull << (rand % genome_size));
 			break;
 		default:
 			break;
@@ -172,12 +180,12 @@ Genome Genome::Replicate(Coefficient coef)
 		break;
 	}
 
-	return { new_genom, new_args, generation + 1, new_mutationChance };
+	return { new_genom, genome_size, new_args, generation + 1, new_mutationChance };
 }
 
 void Genome::Construct()
 {
-	for (unsigned __int8 i = 0; i < genom_size; i++)
+	for (unsigned __int8 i = 0; i < genome_size; i++)
 	{
 		Gen gen = Read();
 
@@ -195,26 +203,42 @@ void Genome::Construct()
 		species.g += std::hash<unsigned __int8>{}(args % args_max) % 128;
 		species.b += std::hash<unsigned __int8>{}(args ^ (args_max * args_max)) % 128;
 
+		double step = 255.0 / genome_size;
 		// Acummulate ration
 		switch (gen.trigger)
 		{
 		case Trigger::Carnivorous:
-			if (ration.r != 255)
-				ration.r++;
-			if (ration.g != 0)
-				ration.g--;
+			if (ration.r < 255)
+				ration.r += step;
+			if (ration.r > 255)
+				ration.r = 255;
+
+			if (ration.g >= step)
+				ration.g -= step;
+			else
+				ration.g = 0;
 			break;
 		case Trigger::Photosyntesis:
-			if (ration.r != 0)
-				ration.r--;
-			if (ration.g != 255)
-				ration.g++;
+			if (ration.r >= step)
+				ration.r -= step;
+			else
+				ration.r = 0;
+
+			if (ration.g < 255)
+				ration.g += step;
+			if (ration.g > 255)
+				ration.g = 255;
 			break;
 		case Trigger::Mineraleon:
-			if (ration.r != 255)
-				ration.r++;
-			if (ration.g != 255)
-				ration.g++;
+			if (ration.r < 255)
+				ration.r += step;
+			if (ration.r > 255)
+				ration.r = 255;
+
+			if (ration.g < 255)
+				ration.g += step;
+			if (ration.g > 255)
+				ration.g = 255;
 			break;
 		}
 	}

@@ -23,7 +23,7 @@ enum class Coefficient
 class Genome
 {
 private:
-	unsigned __int64 genom;		// 8 bytes
+	unsigned __int64 genome;		// 8 bytes
 	unsigned __int32 props;		// 4 bytes
 	unsigned __int8 args;		// 1 byte
 	unsigned __int8 cursor;		// 1 byte
@@ -35,7 +35,7 @@ private:
 	Random random;
 	unsigned __int16 replicate_cost;
 
-	constexpr static const unsigned __int8 genom_size = sizeof(genom) * 8;
+	unsigned __int8 genome_size = sizeof(genome) * 8;
 	constexpr static const unsigned __int8 args_size = sizeof(args) * 8;
 	constexpr static const unsigned __int64 genome_max = std::numeric_limits<unsigned __int64>().max();
 	constexpr static const unsigned __int64 args_max = std::numeric_limits<unsigned __int8>().max();
@@ -51,7 +51,8 @@ public:
 	Genome();
 	// mutationChance must be from 0 to 100
 	Genome(
-		unsigned __int64 genom,
+		unsigned __int64 genome,
+		unsigned __int8 genome_size,
 		unsigned __int8 args,
 		unsigned __int64 generation,
 		unsigned __int8 mutationChance

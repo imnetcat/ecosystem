@@ -43,7 +43,13 @@ Environment::Environment(
 		100,
 		0.01,
 		0.01,
-		Genome()
+		Genome(
+			317959930655,// Random::Generate(),
+			8,
+			Random::Generate(std::numeric_limits<unsigned __int8>().max()),
+			1,
+			10
+		)
 	}));
 }
 Environment::~Environment()
@@ -141,6 +147,9 @@ void Environment::Update()
 				break;
 			case Trigger::Turn:
 				Turning(gen.args, entity);
+				break;
+			case Trigger::Move:
+				Moving(entity);
 				break;
 			}
 		}
@@ -420,7 +429,7 @@ void Environment::Moving(EntitiesIterator entity)
 void Environment::Photosynthesing(EntitiesIterator entity)
 {
 	entity->IncreaceEnergy(
-			(((height - (double)entity->GetY()) / height) * light_coef) * light_power
+			(((height - (double)entity->GetY()) / height) * light_coef) * light_power * 2
 	);
 }
 void Environment::Turning(unsigned __int8 args, EntitiesIterator entity)

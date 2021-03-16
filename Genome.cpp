@@ -15,7 +15,7 @@ Genome::Genome()
 	, generation(1)
 	, replicate_cost(0)
 	, mutationChance(0)
-	, ration()
+	, ration({ 0, 0, 0 })
 {
 	Construct();
 }
@@ -36,7 +36,7 @@ Genome::Genome(
 	, generation(generation)
 	, replicate_cost(0)
 	, mutationChance(mutationChance)
-	, ration({ 255, 255, 0 })
+	, ration({ 0, 0, 0 })
 {
 	Construct();
 }
@@ -185,6 +185,8 @@ Genome Genome::Replicate(Coefficient coef)
 
 void Genome::Construct()
 {
+	double food_triggers = 0;
+
 	for (unsigned __int8 i = 0; i < genome_size; i++)
 	{
 		Gen gen = Read();
@@ -203,43 +205,26 @@ void Genome::Construct()
 		species.g += std::hash<unsigned __int8>{}(args % args_max) % 128;
 		species.b += std::hash<unsigned __int8>{}(args ^ (args_max * args_max)) % 128;
 
-		double step = 255.0 / genome_size;
 		// Acummulate ration
 		switch (gen.trigger)
 		{
 		case Trigger::Carnivorous:
-			if (ration.r < 255)
-				ration.r += step;
-			if (ration.r > 255)
-				ration.r = 255;
-
-			if (ration.g >= step)
-				ration.g -= step;
-			else
-				ration.g = 0;
+			food_triggers++;
+			ration.r++;
 			break;
 		case Trigger::Photosyntesis:
-			if (ration.r >= step)
-				ration.r -= step;
-			else
-				ration.r = 0;
-
-			if (ration.g < 255)
-				ration.g += step;
-			if (ration.g > 255)
-				ration.g = 255;
+			food_triggers++;
+			ration.g++;
 			break;
 		case Trigger::Mineraleon:
-			if (ration.r < 255)
-				ration.r += step;
-			if (ration.r > 255)
-				ration.r = 255;
-
-			if (ration.g < 255)
-				ration.g += step;
-			if (ration.g > 255)
-				ration.g = 255;
+			food_triggers++;
+			ration.b++;
 			break;
 		}
 	}
+
+	// Hash ration
+	ration.r = (ration.r / food_triggers) * 255;
+	ration.g = (ration.g / food_triggers) * 255;
+	ration.b = (ration.b / food_triggers) * 255;
 }

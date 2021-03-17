@@ -1,6 +1,5 @@
 #include "Ecosystem.h"
 #include "Environment.h"
-#include "config.h"
 #include <SFML/Graphics.hpp>
 
 Ecosystem::Ecosystem(

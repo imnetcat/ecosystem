@@ -1,5 +1,4 @@
 #include "Object.h"
-#include "config.h"
 
 Object::Object() :
 	x(0),

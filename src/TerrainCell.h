@@ -1,7 +1,6 @@
 #pragma once
 #include "Organic.h"
 #include "Entity.h"
-#include "config.h"
 #include <memory>
 #include <map>
 #include <array>

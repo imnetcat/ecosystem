@@ -40,11 +40,11 @@ Entity::Entity(
 	genom(g)
 {}
 
-unsigned short Entity::Age()
+unsigned short Entity::Age() const
 {
 	return age;
 }
-unsigned short Entity::MaxAge()
+unsigned short Entity::MaxAge() const
 {
 	return max_age;
 }
@@ -70,7 +70,7 @@ bool Entity::Defencing(double attack)
 		return true;
 	}
 }
-double Entity::Attack()
+double Entity::Attack() const
 {
 	return attack;
 }
@@ -78,12 +78,12 @@ void Entity::AttackUp()
 {
 	attack += 0.01;
 }
-double Entity::Defence()
+double Entity::Defence() const
 {
 	return defence;
 }
 
-view_side Entity::GetView()
+view_side Entity::GetView() const
 {
 	return view;
 }
@@ -149,22 +149,26 @@ void Entity::DecreaceHp(unsigned short value)
 	}
 }
 
-unsigned short Entity::Energy()
+unsigned short Entity::Energy() const
 {
 	return energy;
 }
+unsigned short Entity::MaxEnergy() const
+{
+	return max_energy;
+}
 
-unsigned short Entity::Hp()
+unsigned short Entity::Hp() const
 {
 	return hp;
 }
 
-bool Entity::IsDead()
+bool Entity::IsDead() const
 {
 	return !hp || age > max_age;
 }
 
-size_t Entity::ReproductionCost()
+size_t Entity::ReproductionCost() const
 {
 	return genom.ReplicateCost();
 }

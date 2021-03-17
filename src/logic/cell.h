@@ -13,7 +13,7 @@ public:
 
 	void SetEntity(EntitiesIterator);
 	void DelEntity();
-	EntitiesIterator GetEntity();
+	EntitiesIterator GetEntity() const;
 	bool ContainsEntity() const;
 
 	void SetOrganic(OrganicIterator organic);

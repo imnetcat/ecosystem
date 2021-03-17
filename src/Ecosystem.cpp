@@ -1,39 +1,20 @@
 #include "Ecosystem.h"
 #include <SFML/Graphics.hpp>
 
-Ecosystem::Ecosystem(
-	unsigned int width,
-	unsigned int height,
-	unsigned short light_power,
-	double light_coef,
-	unsigned short max_organic_to_eat,
-	unsigned short max_entities_to_eat,
-	unsigned short max_energy,
-	unsigned short max_hp
-)
-	: World(
-		width, 
-		height,
-		light_power,
-		light_coef,
-		max_organic_to_eat,
-		max_entities_to_eat,
-		max_energy,
-		max_hp)
-
-	, view(view_settings::terrain) 
+Map::Map(World* world)
+	: world(world)
 {}
 
-unsigned int Ecosystem::GetMapWidth()
+unsigned int Map::Width()
 {
 	return map_width;
 }
-unsigned int Ecosystem::GetMapHeight()
+unsigned int Map::Height()
 {
 	return map_height;
 }
 
-RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
+RGBColor Map::ObtainEntityColor(pool<Entity>::const_iterator entity)
 {
 	switch (view)
 	{
@@ -47,18 +28,18 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 		return entity->GetGenome().Species();
 	case view_settings::energy:
 	{
-		if (entity->Energy() < (max_energy / 2))
+		if (entity->Energy() < (entity->MaxEnergy() / 2))
 		{
 			return { 
 				255, 
-				static_cast<unsigned char>(255 * (entity->Energy() / (double)(max_energy / 2))), 
+				static_cast<unsigned char>(255 * (entity->Energy() / (double)(entity->MaxEnergy() / 2))),
 				0 
 			};
 		}
 		else
 		{
 			return { 
-				static_cast<unsigned char>(255 - 255 * (entity->Energy() / (double)max_energy)),
+				static_cast<unsigned char>(255 - 255 * (entity->Energy() / (double)entity->MaxEnergy())),
 				255,
 				0 
 			};
@@ -73,18 +54,18 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	}
 	case view_settings::hp:
 	{
-		if (entity->Hp() < (max_hp / 2))
+		if (entity->Hp() < (world->MaxHp() / 2))
 		{
 			return { 
 				255, 
-				static_cast<unsigned char>(255 * (entity->Hp() / (double)max_hp)),
+				static_cast<unsigned char>(255 * (entity->Hp() / (double)world->MaxHp())),
 				0 
 			};
 		}
 		else
 		{
 			return { 
-				static_cast<unsigned char>(255 - 255 * (entity->Hp() / (double)max_hp)), 
+				static_cast<unsigned char>(255 - 255 * (entity->Hp() / (double)world->MaxHp())),
 				255, 
 				0 
 			};
@@ -92,7 +73,7 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	}
 	case view_settings::success:
 	{
-		switch (World::SuccessRule(entity))
+		switch (world->SuccessRule(entity))
 		{
 		case Coefficient::reduce:
 			return { 255, 21, 0 };
@@ -111,7 +92,7 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	case view_settings::generations:
 	{
 		unsigned char c = static_cast<unsigned char>(
-			255 * ((double)entity->GetGenome().Generation()) / max_generation
+			255 * ((double)entity->GetGenome().Generation()) / world->MaxGeneration()
 		);
 		return { c, c, c }; 
 	}
@@ -120,13 +101,13 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	}
 }
 
-RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
+RGBColor Map::ObtainColor(size_t x, size_t y)
 {
-	if (terrain[y][x].ContainsEntity() && view != view_settings::organic)
+	if (world->Terrain()[y][x].ContainsEntity() && view != view_settings::organic)
 	{
-		return ObtainEntityColor(terrain[y][x].GetEntity());
+		return ObtainEntityColor(world->Terrain()[y][x].GetEntity());
 	}
-	else if (terrain[y][x].IsContainsOrganic())
+	else if (world->Terrain()[y][x].IsContainsOrganic())
 	{
 		return	{ 0, 171, 209 };
 	}
@@ -134,7 +115,7 @@ RGBColor Ecosystem::ObtainColor(size_t x, size_t y)
 	return { 141, 219, 255 };
 }
 
-void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
+void Map::Draw(tgui::Canvas::Ptr canvas)
 {
 	canvas->clear({ 141, 219, 255 });
 
@@ -145,8 +126,8 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 	sf::Vector2f size(cell_size, cell_size);
 	sf::Vector2f osize(cell_outline, cell_outline);
 
-	auto object = organic.begin();
-	while (object != organic.end())
+	auto object = world->Organics().begin();
+	while (object != world->Organics().end())
 	{
 		auto x = object->x();
 		auto y = object->y();
@@ -156,27 +137,22 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 		sprite.setPosition(pos);
 		sprite.setSize(osize);
 
-		if (observed_entity)
-		{
-			sprite.setFillColor({ 0, 171, 209, 100 });
-		}
-		else
-		{
-			sprite.setFillColor({ 0, 171, 209 });
-		}
+		sprite.setFillColor({ 0, 171, 209 });
+		
 		canvas->draw(sprite);
 
 		object++;
 	}
 
-	auto entity = entities.begin();
 	if (view == view_settings::organic)
 	{
-		entity = entities.end();
+		canvas->display();
+		return;
 	}
 
+	auto entity = world->Entities().begin();
 	sprite.setOutlineThickness(OUTLINE);
-	while (entity != entities.end())
+	while (entity != world->Entities().end())
 	{
 		auto x = entity->x();
 		auto y = entity->y();
@@ -187,14 +163,6 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 		sprite.setSize(size);
 
 		auto color = ObtainEntityColor(entity);
-		if (observed_entity)
-		{
-			if (observed_entity->x() != x ||
-				observed_entity->y() != y)
-			{
-				color.a = 100;
-			}
-		}
 		sprite.setFillColor(color);
 
 		canvas->draw(sprite);
@@ -205,73 +173,64 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 	canvas->display();
 }
 
-size_t Ecosystem::GetMaxGeneration()
+size_t Map::GetMaxGeneration()
 {
-	return max_generation;
+	return world->MaxGeneration();
 }
 
-void Ecosystem::ScaleCellSize(float scale)
+void Map::ScaleCellSize(float scale)
 {
 	cell_size = cell_default_size * scale;
 	cell_outline = cell_size + OUTLINE;
-	map_width = width * cell_outline + 1;
-	map_height = height * cell_outline + 1;
+	map_width = world->Width() * cell_outline + 1;
+	map_height = world->Height() * cell_outline + 1;
 }
 
-Info Ecosystem::GetInfoByCellsCoords(size_t x, size_t y)
+Info Map::GetInfoByCellsCoords(size_t x, size_t y)
 {
 	Info info;
-	if (x >= width || y >= height)
+	if (x >= world->Width() || y >= world->Height())
 	{
 		return info;
 	}
 
 	info.color = ObtainColor(x, y);
 
-	info.light_power = (((height - (double)y) / height) * light_coef) * light_power * 2;
-	info.contains_entity = terrain[y][x].ContainsEntity();
-	if (terrain[y][x].ContainsEntity())
+	info.light_power = (((world->Height() - (double)y) / world->Height()) * world->LightCoef()) * world->LightPower() * 2;
+	info.contains_entity = world->Terrain()[y][x].ContainsEntity();
+	if (world->Terrain()[y][x].ContainsEntity())
 	{
-		observed_entity = *terrain[y][x].GetEntity();
-		info.age.curr = terrain[y][x].GetEntity()->Age();
-		info.age.max = terrain[y][x].GetEntity()->MaxAge();
-		info.genome = terrain[y][x].GetEntity()->GetGenome().Data();
-		info.genome_args = terrain[y][x].GetEntity()->GetGenome().Args();
-		info.generation = terrain[y][x].GetEntity()->GetGenome().Generation();
-		info.hp = terrain[y][x].GetEntity()->Hp();
-		info.ch_of_mut = terrain[y][x].GetEntity()->GetGenome().MutationChance();
-		info.energy = terrain[y][x].GetEntity()->Energy();
-		info.max_energy = max_energy;
-		info.max_hp = max_hp;
+		info.age.curr = world->Terrain()[y][x].GetEntity()->Age();
+		info.age.max = world->Terrain()[y][x].GetEntity()->MaxAge();
+		info.genome = world->Terrain()[y][x].GetEntity()->GetGenome().Data();
+		info.genome_args = world->Terrain()[y][x].GetEntity()->GetGenome().Args();
+		info.generation = world->Terrain()[y][x].GetEntity()->GetGenome().Generation();
+		info.hp = world->Terrain()[y][x].GetEntity()->Hp();
+		info.ch_of_mut = world->Terrain()[y][x].GetEntity()->GetGenome().MutationChance();
+		info.energy = world->Terrain()[y][x].GetEntity()->Energy();
+		info.max_energy = world->Terrain()[y][x].GetEntity()->MaxEnergy();
+		info.max_hp = world->MaxHp();
 	}
-	if (terrain[y][x].IsContainsOrganic())
+	if (world->Terrain()[y][x].IsContainsOrganic())
 	{
-		info.food_power = terrain[y][x].GetOrganic()->Energy();
+		info.food_power = world->Terrain()[y][x].GetOrganic()->Energy();
 	}
 	return info;
 }
-Info Ecosystem::GetInfoByPixelCoords(size_t x_px, size_t y_px)
+Info Map::GetInfoByPixelCoords(size_t x_px, size_t y_px)
 {
 	return GetInfoByCellsCoords(x_px / cell_outline, y_px / cell_outline);
 }
 
-void Ecosystem::Observing(Entity* entity)
+size_t Map::GetEntitiesCount()
 {
-	observed_entity = entity;
+	return world->Entities().size();
 }
-Entity* Ecosystem::Observing()
-{
-	return observed_entity;
-}
-size_t Ecosystem::GetEntitiesCount()
-{
-	return entities.size();
-}
-view_settings Ecosystem::GetView()
+view_settings Map::GetView()
 {
 	return view;
 }
-void Ecosystem::SetView(view_settings new_val)
+void Map::SetView(view_settings new_val)
 {
 	view = new_val;
 }

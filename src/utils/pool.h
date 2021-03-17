@@ -33,6 +33,20 @@ public:
 			return *(*this);
 		}
 	};
+	struct const_iterator : public std::list<T*>::const_iterator
+	{
+		const_iterator()
+			: std::list<T*>::const_iterator() {};
+		const_iterator(typename std::list<T*>::iterator it)
+			: std::list<T*>::const_iterator(it) {};
+		const_iterator(typename std::list<T*>::const_iterator it)
+			: std::list<T*>::const_iterator(it) {};
+
+		const T* const operator-> ()
+		{
+			return *(*this);
+		}
+	};
 
 	iterator begin()
 	{
@@ -44,7 +58,17 @@ public:
 		return busy_.end();
 	}
 
-	size_t size()
+	const_iterator begin() const
+	{
+		return busy_.begin();
+	}
+
+	const_iterator end() const
+	{
+		return busy_.end();
+	}
+
+	size_t size() const
 	{
 		return busy_.size();
 	}

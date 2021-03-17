@@ -1,6 +1,6 @@
 #include "cell.h"
 
-EntitiesIterator cell::GetEntity()
+EntitiesIterator cell::GetEntity() const
 {
 	return entity;
 }

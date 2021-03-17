@@ -26,7 +26,46 @@ public:
 
 	void Update();
 
-	Coefficient SuccessRule(EntitiesIterator);
+	Coefficient SuccessRule(pool<Entity>::const_iterator) const;
+
+	unsigned short MaxHp() const
+	{
+		return max_hp;
+	}
+	size_t MaxGeneration() const
+	{
+		return max_generation;
+	}
+	cell** const Terrain() const
+	{
+		return terrain;
+	}
+	const pool<Entity>& Entities() const
+	{
+		return entities;
+	}
+	const pool<Organic>& Organics() const
+	{
+		return organic;
+	}
+
+	unsigned int Width() const
+	{
+		return width;
+	}
+	unsigned int Height() const
+	{
+		return height;
+	}
+
+	unsigned int LightPower() const
+	{
+		return light_power;
+	}
+	double LightCoef() const
+	{
+		return light_coef;
+	}
 protected:
 
 	const unsigned int width;
@@ -37,15 +76,12 @@ protected:
 
 	const unsigned short max_organic_to_eat;
 	const unsigned short max_entities_to_eat;
-	const unsigned short max_energy;
 	const unsigned short max_hp;
 
 	size_t max_generation;
 	cell** terrain;
 	pool<Entity> entities;
 	pool<Organic> organic;
-
-	Entity* observed_entity = nullptr;
 
 private:
 

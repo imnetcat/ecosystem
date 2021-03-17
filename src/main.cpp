@@ -69,7 +69,7 @@ int main()
 	unsigned short MAX_HP = 100;
 
 	Genome::Init(GENOME_SEED);
-	Ecosystem ecosystem(
+	World world(
 		WORLD_WIDTH, 
 		WORLD_HEIGHT,
 		LIGHT_POWER, 
@@ -80,7 +80,9 @@ int main()
 		MAX_HP
 	);
 
-	Ecosystem* ecosys_ptr = &ecosystem;
+	Map world_map(&world);
+
+	Map* ecosys_ptr = &world_map;
 
 	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem", sf::Style::Titlebar | sf::Style::Close);
 	main.setPosition(sf::Vector2i(350, 250));
@@ -89,10 +91,10 @@ int main()
 	tgui::GuiSFML* gui_ptr = &gui;
 
 	gui.menubar({ "About", "Help" }, []() {
-		ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
+		ShellExecuteA(0, 0, "https://github.com/imnetcat/world_map/wiki", NULL, NULL, SW_SHOW);
 	});
 	gui.menubar({ "About", "Repository" }, []() {
-		ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem", NULL, NULL, SW_SHOW);
+		ShellExecuteA(0, 0, "https://github.com/imnetcat/world_map", NULL, NULL, SW_SHOW);
 	});
 	gui.menubar({ "About", "Creator" }, []() {
 		ShellExecuteA(0, 0, "https://github.com/imnetcat", NULL, NULL, SW_SHOW);
@@ -155,7 +157,7 @@ int main()
 	map_layout->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - gui.MENUBAR_HEIGHT);
 	map_layout->setPosition(SIDEBAR_WIDTH, gui.MENUBAR_HEIGHT + 1);
 	map->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - gui.MENUBAR_HEIGHT);
-	canvas->setSize(ecosystem.GetMapWidth(), ecosystem.GetMapHeight());
+	canvas->setSize(world_map.Width(), world_map.Height());
 	map->add(canvas);
 	map_layout->add(map);
 	gui.add(map_layout);
@@ -223,7 +225,7 @@ int main()
 	auto Zoom = [canvas, ecosys_ptr](float scale)
 	{
 		ecosys_ptr->ScaleCellSize(scale);
-		canvas->setSize(ecosys_ptr->GetMapWidth(), ecosys_ptr->GetMapHeight());
+		canvas->setSize(ecosys_ptr->Width(), ecosys_ptr->Height());
 	};
 	auto Speed = [&SPEED](float coef)
 	{
@@ -498,7 +500,6 @@ int main()
 		info_organic_power->setText("-");
 		info_light_power->setText("-");
 		info_genome_args->setText("-");
-		ecosys_ptr->Observing(nullptr);
 	};
 
 	ClearInfoBox();
@@ -558,7 +559,7 @@ int main()
 			do_tic = false;
 
 			auto start = high_resolution_clock::now();
-			ecosystem.Update();
+			world.Update();
 			auto stop = high_resolution_clock::now();
 			auto duration = duration_cast<std::chrono::microseconds>(stop - start);
 			if (duration.count() > speedmeter)
@@ -580,18 +581,13 @@ int main()
 
 		if (!hibernate)
 		{
-			ecosystem.Draw(canvas);
+			world_map.Draw(canvas);
 
 			if (!pause)
 			{
 				tics_counter->setText(to_string(tics));
-				max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
-				entities_counter->setText(to_string(ecosystem.GetEntitiesCount()));
-			}
-
-			if (ecosystem.Observing())
-			{
-				SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->x()), static_cast<float>(ecosystem.Observing()->y()));
+				max_generation->setText(to_string(world_map.GetMaxGeneration()));
+				entities_counter->setText(to_string(world_map.GetEntitiesCount()));
 			}
 		}
 

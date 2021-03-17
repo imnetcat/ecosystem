@@ -60,9 +60,9 @@ public:
 	);
 
 
-	bool IsDead();
+	bool IsDead() const;
 
-	size_t ReproductionCost();
+	size_t ReproductionCost() const;
 
 	const Genome& GetGenome() const;
 	Genome& GetGenome();
@@ -70,19 +70,20 @@ public:
 	void Tic();
 
 	bool Defencing(double);
-	double Defence();
-	double Attack();
+	double Defence() const;
+	double Attack() const;
 	void AttackUp();
-	unsigned short Age();
-	unsigned short MaxAge();
-	view_side GetView();
+	unsigned short Age() const;
+	unsigned short MaxAge() const;
+	view_side GetView() const;
 	void SetView(view_side val);
 	void IncreaceEnergy(unsigned short value);
 	void DecreaceEnergy(unsigned short value);
 	void IncreaceHp(unsigned short value);
 	void DecreaceHp(unsigned short value);
-	unsigned short Energy();
-	unsigned short Hp();
+	unsigned short Energy() const;
+	unsigned short MaxEnergy() const;
+	unsigned short Hp() const;
 
 	void SetGenome(Genome value);
 	void Defence(double);

@@ -23,45 +23,38 @@ struct Info
 	unsigned __int8 ch_of_mut = 0;
 };
 
-class Ecosystem : public World
+class Map
 {
 public:
-	Ecosystem(
-		unsigned int width,
-		unsigned int height,
-		unsigned short light_power,
-		double light_coef,
-		unsigned short max_organic_to_eat,
-		unsigned short max_entities_to_eat,
-		unsigned short max_energy,
-		unsigned short max_hp
-	);
+	Map(World* world);
 
 	void Draw(tgui::Canvas::Ptr canvas);
-	Info GetInfoByCellsCoords(size_t x, size_t y);
-	Info GetInfoByPixelCoords(size_t x_px, size_t y_px);
-	view_settings GetView();
-	void SetView(view_settings new_val);
-	void Observing(Entity* entity);
-	Entity* Observing();
-	RGBColor ObtainEntityColor(EntitiesIterator entity);
+	RGBColor ObtainEntityColor(pool<Entity>::const_iterator entity);
 	RGBColor ObtainColor(size_t x, size_t y);
 
+	view_settings GetView();
+	void SetView(view_settings new_val);
+
 	void ScaleCellSize(float scale);
-	unsigned int GetMapWidth();
-	unsigned int GetMapHeight();
+	unsigned int Width();
+	unsigned int Height();
 	size_t GetMaxGeneration();
 	size_t GetEntitiesCount();
 
+	Info GetInfoByCellsCoords(size_t x, size_t y);
+	Info GetInfoByPixelCoords(size_t x_px, size_t y_px);
+
 private:
+
+	World* world;
 
 	const short OUTLINE = 1;
 
 	static const unsigned short cell_default_size = 10;
 	unsigned short cell_size = cell_default_size;
 	unsigned short cell_outline = cell_size + OUTLINE;
-	unsigned int map_width = width * cell_outline + 1;
-	unsigned int map_height = height * cell_outline + 1;
-	
-	view_settings view;
+	unsigned int map_width = world->Width() * cell_outline + 1;
+	unsigned int map_height = world->Height() * cell_outline + 1;
+
+	view_settings view = view_settings::terrain;
 };

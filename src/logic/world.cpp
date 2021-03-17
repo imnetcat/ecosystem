@@ -20,7 +20,6 @@ World::World(
 	, light_coef(light_coef)
 	, max_organic_to_eat(max_organic_to_eat)
 	, max_entities_to_eat(max_entities_to_eat)
-	, max_energy(max_energy)
 	, max_hp(max_hp)
 {
 	// Allocate 2d array for world map
@@ -73,14 +72,6 @@ EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)
 		terrain[y][x].SetOrganic(organic.get({ x, y, entity_iterator->Energy() + 100ull }));
 	}
 	terrain[y][x].DelEntity();
-	if (observed_entity)
-	{
-		if (observed_entity->x() == entity_iterator->x() &&
-			observed_entity->y() == entity_iterator->y())
-		{
-			observed_entity = nullptr;
-		}
-	}
 	return entities.free(entity_iterator);
 }
 
@@ -283,9 +274,9 @@ view_side World::GetViewSide(unsigned __int8 arg)
 	}
 }
 
-Coefficient World::SuccessRule(EntitiesIterator entity)
+Coefficient World::SuccessRule(pool<Entity>::const_iterator entity) const
 {
-	unsigned int success_border = max_energy * (double(entity->Age()) / (entity->MaxAge()));
+	unsigned int success_border = entity->MaxEnergy() * (double(entity->Age()) / (entity->MaxAge()));
 	return (entity->Energy() > success_border) ? Coefficient::enlarge :
 		(entity->Energy() > (success_border / 2) ? Coefficient::unchanged : Coefficient::reduce);
 }
@@ -318,7 +309,7 @@ EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, size_t x, s
 		view,
 		max_hp,
 		100,
-		max_energy,
+		parent_entity->MaxEnergy(),
 		new_max_age,
 		parent_entity->Defence(),
 		parent_entity->Attack(),

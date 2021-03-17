@@ -1,4 +1,4 @@
-#include "Ecosystem.h"
+#include "map.h"
 #include <SFML/Graphics.hpp>
 
 Map::Map(World* world)

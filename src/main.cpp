@@ -1,5 +1,5 @@
 #include "ui/gui.h"
-#include "Ecosystem.h"
+#include "ui/map.h"
 #include <chrono> 
 using namespace std::chrono;
 

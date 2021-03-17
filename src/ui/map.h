@@ -1,5 +1,5 @@
 #pragma once
-#include "logic/world.h"
+#include "../logic/world.h"
 #include <TGUI/TGUI.hpp>
 
 struct Info

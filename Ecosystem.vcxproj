@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Ecosystem.cpp" />
     <ClCompile Include="src\logic\entity.cpp" />
     <ClCompile Include="src\logic\world.cpp" />
     <ClCompile Include="src\logic\genome.cpp" />
@@ -27,10 +26,10 @@
     <ClCompile Include="src\logic\organic.cpp" />
     <ClCompile Include="src\logic\cell.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ui\map.cpp" />
     <ClCompile Include="src\utils\random.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Ecosystem.h" />
     <ClInclude Include="src\logic\entity.h" />
     <ClInclude Include="src\logic\world.h" />
     <ClInclude Include="src\logic\gen.h" />
@@ -39,6 +38,7 @@
     <ClInclude Include="src\logic\organic.h" />
     <ClInclude Include="src\logic\cell.h" />
     <ClInclude Include="src\ui\gui.h" />
+    <ClInclude Include="src\ui\map.h" />
     <ClInclude Include="src\utils\pool.h" />
     <ClInclude Include="src\utils\random.h" />
   </ItemGroup>

@@ -34,7 +34,6 @@ World::World(
 	auto y = height / 8;
 	terrain[y][x].SetEntity(entities.get({
 		x, y,
-		view_side::top,
 		max_hp,
 		100,
 		max_energy,
@@ -50,6 +49,7 @@ World::World(
 		)
 	}));
 }
+
 World::~World()
 {
 	for (size_t y = 0; y < height; y++)
@@ -127,19 +127,16 @@ void World::Update()
 				Birthing(gen.args, entity);
 				break;
 			case Operation::Carnivorous:
-				Carnivorousing(entity);
+				Carnivorousing(gen.args, entity);
 				break;
-			case Operation::Mineraleon:
+			case Operation::EatOrganic:
 				EatOrganic(entity);
 				break;
 			case Operation::Photosyntesis:
 				Photosynthesing(entity);
 				break;
-			case Operation::Turn:
-				Turning(gen.args, entity);
-				break;
 			case Operation::Move:
-				Moving(entity);
+				Moving(gen.args, entity);
 				break;
 			}
 		}
@@ -147,131 +144,129 @@ void World::Update()
 	}
 }
 
-bool operator == (const Position& lhs, const Position& rhs)
-{
-	return lhs.x == rhs.x && lhs.y == rhs.y;
-}
-
-Position World::GetViewedPosition(view_side view, size_t x, size_t y)
+bool World::GetViewPos(unsigned __int8 arg, position& pos)
 {
 	auto maxX = width - 1;
 	auto maxY = height - 1;
 
-	switch (view)
-	{
-	case view_side::left:
-		if (x > 0)
-		{
-			x--;
-		}
-		else
-		{
-			x = maxX;
-		}
-		break;
-	case view_side::right:
-		if (x < maxX)
-		{
-			x++;
-		}
-		else
-		{
-			x = 0;
-		}
-		break;
-	case view_side::bottom:
-		if (y > 0)
-		{
-			y--;
-		}
-		break;
-	case view_side::top:
-		if (y < maxY)
-		{
-			y++;
-		}
-		break;
-	case view_side::left_bottom:
-		if (x > 0 && y < maxY)
-		{
-			x--;
-			y++;
-		}
-		else if (y < maxY)
-		{
-			x = maxX;
-			y++;
-		}
-		break;
-	case view_side::left_top:
-		if (x > 0 && y > 0)
-		{
-			x--;
-			y--;
-		}
-		else if (y > 0)
-		{
-			x = maxX;
-			y--;
-		}
-		break;
-	case view_side::right_bottom:
-		if (y < maxY && x < maxX)
-		{
-			x++;
-			y++;
-		}
-		else if (y < maxY)
-		{
-			x = 0;
-			y++;
-		}
-		break;
-	case view_side::right_top:
-		if (y > 0 && x < maxX)
-		{
-			x++;
-			y--;
-		}
-		else if (y > 0)
-		{
-			x = 0;
-			y--;
-		}
-		break;
-	}
-	return { x, y };
-}
-
-view_side World::GetViewSide(unsigned __int8 arg)
-{
-	// Define view side
 	/*
-		0 1 2
-		7   3
-		6 5	4
+		Define view side
+
+			0 1 2
+			7   3
+			6 5	4
 	*/
 	switch (arg % 8)
 	{
 	case 0:
-		return view_side::left_top;
+		if (pos.x() > 0 && pos.y() > 0)
+		{
+			pos.x(pos.x() - 1);
+			pos.y(pos.y() - 1);
+		}
+		else if (pos.y() > 0)
+		{
+			pos.x(maxX);
+			pos.y(pos.y() - 1);
+		}
+		else
+		{
+			return false;
+		}
+		break;
 	case 1:
-		return view_side::top;
+		if (pos.y() < maxY)
+		{
+			pos.y(pos.y() + 1);
+		}
+		else
+		{
+			return false;
+		}
+		break;
 	case 2:
-		return view_side::right_top;
+		if (pos.y() > 0 && pos.x() < maxX)
+		{
+			pos.x(pos.x() + 1);
+			pos.y(pos.y() - 1);
+		}
+		else if (pos.y() > 0)
+		{
+			pos.x(0);
+			pos.y(pos.y() - 1);
+		}
+		else
+		{
+			return false;
+		}
+		break;
 	case 3:
-		return view_side::right;
+		if (pos.x() < maxX)
+		{
+			pos.x(pos.x() + 1);
+		}
+		else
+		{
+			pos.x(0);
+		}
+		break;
 	case 4:
-		return view_side::right_bottom;
+		if (pos.y() < maxY && pos.x() < maxX)
+		{
+			pos.x(pos.x() + 1);
+			pos.y(pos.y() + 1);
+		}
+		else if (pos.y() < maxY)
+		{
+			pos.x(0);
+			pos.y(pos.y() + 1);
+		}
+		else
+		{
+			return false;
+		}
+		break;
 	case 5:
-		return view_side::bottom;
+		if (pos.y() > 0)
+		{
+			pos.y(pos.y() - 1);
+		}
+		else
+		{
+			return false;
+		}
+		break;
 	case 6:
-		return view_side::left_bottom;
+		if (pos.x() > 0 && pos.y() < maxY)
+		{
+			pos.x(pos.x() - 1);
+			pos.y(pos.y() + 1);
+		}
+		else if (pos.y() < maxY)
+		{
+			pos.x(maxX);
+			pos.y(pos.y() + 1);
+		}
+		else
+		{
+			return false;
+		}
+		break;
 	case 7:
-		return view_side::left;
+		if (pos.x() > 0)
+		{
+			pos.x(pos.x() - 1);
+		}
+		else
+		{
+			pos.x(maxX);
+		}
+		break;
 	default:
-		return view_side::left;
+		return false;
 	}
+
+	return true;
 }
 
 Coefficient World::SuccessRule(pool<Entity>::const_iterator entity) const
@@ -281,7 +276,7 @@ Coefficient World::SuccessRule(pool<Entity>::const_iterator entity) const
 		(entity->Energy() > (success_border / 2) ? Coefficient::unchanged : Coefficient::reduce);
 }
 
-EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, size_t x, size_t y, view_side view)
+EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, const position& pos)
 {
 	Coefficient coef = SuccessRule(parent_entity);
 	
@@ -304,9 +299,8 @@ EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, size_t x, s
 	
 	parent_entity->DecreaceEnergy(parent_entity->ReproductionCost());
 
-	terrain[y][x].SetEntity(entities.get({
-		x, y,
-		view,
+	terrain[pos.y()][pos.x()].SetEntity(entities.get({
+		pos.x(), pos.y(),
 		max_hp,
 		100,
 		parent_entity->MaxEnergy(),
@@ -319,7 +313,7 @@ EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, size_t x, s
 	if (new_genom.Generation() > max_generation)
 		max_generation = new_genom.Generation();
 
-	return terrain[y][x].GetEntity();
+	return terrain[pos.y()][pos.x()].GetEntity();
 }
 
 void World::Birthing(unsigned __int8 args, EntitiesIterator entity)
@@ -327,11 +321,13 @@ void World::Birthing(unsigned __int8 args, EntitiesIterator entity)
 	if (entity->Energy() < (entity->ReproductionCost() / 2))
 		return;
 
-	Position new_position = GetViewedPosition(GetViewSide(args), entity->x(), entity->y());
+	position new_position = { entity->x(), entity->y() };
+	if (!GetViewPos(args, new_position))
+		return;
 
-	if (!terrain[new_position.y][new_position.x].ContainsEntity())
+	if (!terrain[new_position.y()][new_position.x()].ContainsEntity())
 	{
-		Reproduction(entity, new_position.x, new_position.y, view_side::top);
+		Reproduction(entity, new_position);
 	}
 }
 
@@ -340,11 +336,13 @@ void World::Separationing(unsigned __int8 args, EntitiesIterator entity)
 	if (entity->Energy() < entity->ReproductionCost())
 		return;
 
-	Position new_position = GetViewedPosition(GetViewSide(args), entity->x(), entity->y());
+	position new_position = { entity->x(), entity->y() };
+	if (!GetViewPos(args, new_position))
+		return;
 
-	if (!terrain[new_position.y][new_position.x].ContainsEntity())
+	if (!terrain[new_position.y()][new_position.x()].ContainsEntity())
 	{
-		EntitiesIterator nEntity = Reproduction(entity, new_position.x, new_position.y, view_side::top);
+		EntitiesIterator nEntity = Reproduction(entity, new_position);
 
 		unsigned short hlph = entity->Energy() / 2;
 		entity->DecreaceEnergy(hlph);
@@ -352,11 +350,13 @@ void World::Separationing(unsigned __int8 args, EntitiesIterator entity)
 	}
 }
 
-void World::Carnivorousing(EntitiesIterator entity)
+void World::Carnivorousing(unsigned __int8 args, EntitiesIterator entity)
 {
-	Position viewed_position = GetViewedPosition(entity->GetView(), entity->x(), entity->y());
+	position viewed_position = { entity->x(), entity->y() };
+	if (!GetViewPos(args, viewed_position))
+		return;
 
-	auto& viewed_point = terrain[viewed_position.y][viewed_position.x];
+	const auto& viewed_point = terrain[viewed_position.y()][viewed_position.x()];
 
 	if (viewed_point.ContainsEntity())
 	{
@@ -378,6 +378,7 @@ void World::Carnivorousing(EntitiesIterator entity)
 		}
 	}
 }
+
 void World::EatOrganic(EntitiesIterator entity)
 {
 	if (!terrain[entity->y()][entity->x()].IsContainsOrganic())
@@ -405,15 +406,17 @@ void World::EatOrganic(EntitiesIterator entity)
 		terrain[entity->y()][entity->x()].DelOrganic();
 	}
 }
-void World::Moving(EntitiesIterator entity)
+void World::Moving(unsigned __int8 args, EntitiesIterator entity)
 {
-	Position new_position = GetViewedPosition(entity->GetView(), entity->x(), entity->y());
+	position new_position = { entity->x(), entity->y() };
+	if (!GetViewPos(args, new_position))
+		return;
 
-	if (!terrain[new_position.y][new_position.x].ContainsEntity())
+	if (!terrain[new_position.y()][new_position.x()].ContainsEntity())
 	{
 		terrain[entity->y()][entity->x()].DelEntity();
-		entity->SetPosition(new_position.x, new_position.y);
-		terrain[new_position.y][new_position.x].SetEntity(entity);
+		entity->SetPosition(new_position.x(), new_position.y());
+		terrain[new_position.y()][new_position.x()].SetEntity(entity);
 	}
 }
 void World::Photosynthesing(EntitiesIterator entity)
@@ -421,9 +424,4 @@ void World::Photosynthesing(EntitiesIterator entity)
 	entity->IncreaceEnergy(
 			(((height - (double)entity->y()) / height) * light_coef) * light_power * 2
 	);
-}
-void World::Turning(unsigned __int8 args, EntitiesIterator entity)
-{
-	// Set up new side of view for entity
-	entity->SetView(GetViewSide(args));
 }

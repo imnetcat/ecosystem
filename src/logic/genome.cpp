@@ -257,7 +257,7 @@ void Genome::Construct()
 			food_triggers++;
 			ration.g++;
 			break;
-		case Operation::Mineraleon:
+		case Operation::EatOrganic:
 			food_triggers++;
 			ration.b++;
 			break;

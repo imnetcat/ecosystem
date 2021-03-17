@@ -4,7 +4,6 @@
 Entity::Entity()
 	:
 	position(0, 0),
-	view(view_side::top),
 	age(0),
 	max_age(0),
 	hp(0),
@@ -18,7 +17,6 @@ Entity::Entity()
 Entity::Entity(
 	size_t x,
 	size_t y,
-	view_side view,
 	unsigned short max_hp,
 	unsigned short energy,
 	unsigned short max_energy,
@@ -28,7 +26,6 @@ Entity::Entity(
 	Genome g)
 	:
 	position(x, y),
-	view(view),
 	age(0),
 	max_age(max_age),
 	max_hp(max_hp),
@@ -81,15 +78,6 @@ void Entity::AttackUp()
 double Entity::Defence() const
 {
 	return defence;
-}
-
-view_side Entity::GetView() const
-{
-	return view;
-}
-void Entity::SetView(view_side val)
-{
-	view = val;
 }
 
 void Entity::IncreaceEnergy(unsigned short value)
@@ -206,10 +194,6 @@ void Entity::Age(unsigned short value)
 void Entity::MaxAge(unsigned short value)
 {
 	max_age = value;
-}
-void Entity::View(view_side value)
-{
-	view = value;
 }
 void Entity::Energy(unsigned short value)
 {

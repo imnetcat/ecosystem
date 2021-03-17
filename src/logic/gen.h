@@ -4,9 +4,8 @@ enum class Operation
 {
 	Stay,
 	Move,
-	Turn,
 	Photosyntesis,
-	Mineraleon,
+	EatOrganic,
 	Carnivorous,
 	Birth,
 	Separate,
@@ -32,9 +31,8 @@ struct Gen
 const std::map<Operation, unsigned int> CREATION_COST = {
 	{Operation::Stay, 1},
 	{Operation::Move, 15},
-	{Operation::Turn, 2},
 	{Operation::Photosyntesis, 10},
-	{Operation::Mineraleon, 15},
+	{Operation::EatOrganic, 15},
 	{Operation::Carnivorous, 25},
 	{Operation::Birth, 30},
 	{Operation::Separate, 30}
@@ -43,9 +41,8 @@ const std::map<Operation, unsigned int> CREATION_COST = {
 const std::map<Operation, unsigned int> MAINTENANACE_COST = {
 	{Operation::Stay, 1},
 	{Operation::Move, 5},
-	{Operation::Turn, 1},
 	{Operation::Photosyntesis, 1},
-	{Operation::Mineraleon, 2},
+	{Operation::EatOrganic, 2},
 	{Operation::Carnivorous, 5},
 	{Operation::Birth, 6},
 	{Operation::Separate, 6}

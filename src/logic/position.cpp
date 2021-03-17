@@ -31,3 +31,8 @@ void position::SetPosition(size_t x, size_t y)
 	x_ = x;
 	y_ = y;
 }
+
+bool operator == (const position& lhs, const position& rhs)
+{
+	return lhs.x_ == rhs.x_ && lhs.y_ == rhs.y_;
+}

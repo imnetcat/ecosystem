@@ -17,39 +17,6 @@ const int WINDOW_WIDTH = 1100;
 const int WINDOW_HEIGHT = 600;
 const int SIDEBAR_WIDTH = WINDOW_WIDTH * 0.2;
 
-void DisableViewMenuItem(tgui::MenuBar::Ptr menu, const tgui::String& item)
-{
-	menu->setMenuItemEnabled({ 
-		 "View", "Terrain"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Energy"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Organic"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Species"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Age"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Ration"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Hp"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Success"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Generation"
-	}, true);
-
-	menu->setMenuItemEnabled({ "View", item }, false);
-}
-
 int main()
 {
 	int SPEED = 0;

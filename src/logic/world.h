@@ -1,13 +1,18 @@
 #pragma once
 #include "cell.h"
 
-struct Position
+enum class view_settings
 {
-	size_t x;
-	size_t y;
+	terrain,
+	organic,
+	ration,
+	energy,
+	species,
+	age,
+	hp,
+	success,
+	generations
 };
-
-bool operator == (const Position& lhs, const Position& rhs);
 
 class World
 {
@@ -87,16 +92,13 @@ private:
 
 	EntitiesIterator EntityDie(EntitiesIterator);
 
-	Position GetViewedPosition(view_side view, size_t x, size_t y);
+	bool GetViewPos(unsigned __int8 arg, position& pos);
 
-	view_side GetViewSide(unsigned __int8 arg);
-
-	EntitiesIterator Reproduction(EntitiesIterator parent_entity, size_t x, size_t y, view_side view);
+	EntitiesIterator Reproduction(EntitiesIterator parent_entity, const position& pos);
 	void Separationing(unsigned __int8 args, EntitiesIterator);
 	void Birthing(unsigned __int8 args, EntitiesIterator);
-	void Carnivorousing(EntitiesIterator);
+	void Carnivorousing(unsigned __int8 args, EntitiesIterator);
 	void EatOrganic(EntitiesIterator);
-	void Moving(EntitiesIterator);
+	void Moving(unsigned __int8 args, EntitiesIterator);
 	void Photosynthesing(EntitiesIterator);
-	void Turning(unsigned __int8 args, EntitiesIterator);
 };

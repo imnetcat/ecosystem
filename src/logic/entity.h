@@ -3,35 +3,9 @@
 #include "position.h"
 #include "../utils/pool.h"
 
-enum class view_side
-{
-	top,
-	right_top,
-	right,
-	right_bottom,
-	bottom,
-	left_bottom,
-	left,
-	left_top,
-};
-
-enum class view_settings
-{
-	terrain,
-	organic,
-	ration,
-	energy,
-	species,
-	age,
-	hp,
-	success,
-	generations
-};
-
 class Entity : public position
 {
 protected:
-	view_side view;
 	unsigned short age;
 	unsigned short max_age;
 	unsigned short hp;
@@ -49,7 +23,6 @@ public:
 	Entity(
 		size_t x,
 		size_t y,
-		view_side view,
 		unsigned short max_hp,
 		unsigned short energy,
 		unsigned short max_energy,
@@ -75,8 +48,6 @@ public:
 	void AttackUp();
 	unsigned short Age() const;
 	unsigned short MaxAge() const;
-	view_side GetView() const;
-	void SetView(view_side val);
 	void IncreaceEnergy(unsigned short value);
 	void DecreaceEnergy(unsigned short value);
 	void IncreaceHp(unsigned short value);
@@ -90,7 +61,6 @@ public:
 	void Attack(double);
 	void Age(unsigned short);
 	void MaxAge(unsigned short);
-	void View(view_side);
 	void Energy(unsigned short);
 	void Hp(unsigned short);
 };

@@ -8,7 +8,6 @@
 #include <array>
 #include <list>
 #include <cmath>
-#include "config.h"
 #include "TerrainCell.h"
 
 using namespace std;

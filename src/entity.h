@@ -1,7 +1,6 @@
 #pragma once
 #include "genome.h"
 #include "Object.h"
-#include "config.h"
 #include "ListPool.h"
 
 #include <iostream>

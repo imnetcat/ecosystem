@@ -104,23 +104,23 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>Dependencies\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\dependencies\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;TGUI_STATIC</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>Dependencies\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\dependencies\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>openal32.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;sfml-system-s.lib;sfml-window-s.lib;sfml-graphics-s.lib;tgui-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>Dependencies\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\dependencies\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;TGUI_STATIC</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>Dependencies\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\dependencies\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>openal32.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;sfml-system-s-d.lib;sfml-window-s-d.lib;sfml-graphics-s-d.lib;tgui-s-d.lib;kernel32.lib;user32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -143,7 +143,6 @@
     <ClInclude Include="Genome.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Organic.h" />
-    <ClInclude Include="config.h" />
     <ClInclude Include="Gen.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="TerrainCell.h" />

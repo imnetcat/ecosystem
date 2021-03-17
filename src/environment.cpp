@@ -1,5 +1,4 @@
 #include "environment.h"
-#include "config.h"
 
 Environment::Environment(
 	unsigned int width,

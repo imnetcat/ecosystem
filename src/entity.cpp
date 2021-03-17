@@ -1,5 +1,4 @@
 #include "Entity.h"
-#include "config.h"
 #include <array>
 
 Entity::Entity()

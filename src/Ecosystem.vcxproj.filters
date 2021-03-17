@@ -47,9 +47,6 @@
     <ClInclude Include="environment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Ecosystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>

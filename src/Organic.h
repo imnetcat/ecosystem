@@ -1,6 +1,5 @@
 #pragma once
 #include "Object.h"
-#include "config.h"
 #include "ListPool.h"
 
 class Organic : public Object

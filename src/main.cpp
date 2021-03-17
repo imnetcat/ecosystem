@@ -1,5 +1,4 @@
 #include "Ecosystem.h"
-#include "config.h"
 
 #include <chrono> 
 using namespace std::chrono;

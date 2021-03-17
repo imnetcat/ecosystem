@@ -10,9 +10,9 @@ struct Info
 		size_t curr = 0;
 		size_t max = 0;
 	} age;
-	bool contains_entity;
-	unsigned __int64 genome;
-	unsigned __int8 genome_args;
+	bool contains_entity = 0;
+	unsigned __int64 genome = 0;
+	unsigned __int8 genome_args = 0;
 	unsigned short hp = 0;
 	unsigned short max_hp = 0;
 	size_t energy = 0;
@@ -20,7 +20,7 @@ struct Info
 	size_t generation = 0;
 	size_t light_power = 0;
 	size_t food_power = 0;
-	unsigned __int8 ch_of_mut;
+	unsigned __int8 ch_of_mut = 0;
 };
 
 class Ecosystem : public Environment

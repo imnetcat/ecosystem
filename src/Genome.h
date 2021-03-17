@@ -1,13 +1,10 @@
 #pragma once
-#include <array>
-#include <ctime>
-#include <sstream>
-#include <map>
-#include <vector>
-#include <limits>
 #include "Gen.h"
+#include "ListPool.h"
 #include "Random.h"
 #include <SFML/Graphics/Color.hpp>
+
+#include <limits>
 
 using RGBColor = sf::Color;
 
@@ -17,8 +14,6 @@ enum class Coefficient
 	reduce,
 	unchanged
 };
-
-#include "ListPool.h"
 
 class Genome
 {

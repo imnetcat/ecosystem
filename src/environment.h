@@ -1,16 +1,5 @@
 #pragma once
-
-#include <vector>
-#include <map>
-#include <memory>
-#include <algorithm>
-#include <ctime>
-#include <array>
-#include <list>
-#include <cmath>
 #include "TerrainCell.h"
-
-using namespace std;
 
 struct Position
 {

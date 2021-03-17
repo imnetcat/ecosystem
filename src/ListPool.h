@@ -1,7 +1,5 @@
 #pragma once
-#include <deque>
 #include <queue>
-#include <forward_list>
 #include <list>
 #include <stdexcept>
 

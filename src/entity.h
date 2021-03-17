@@ -3,13 +3,6 @@
 #include "Object.h"
 #include "ListPool.h"
 
-#include <iostream>
-#include <memory>
-#include <ctime>
-#include <unordered_map>
-#include <map>
-#include <sstream>
-
 enum class view_side
 {
 	top,

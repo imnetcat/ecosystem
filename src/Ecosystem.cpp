@@ -44,33 +44,51 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 		return { 209, 209, 209 };
 	case view_settings::ration:
 		return entity->GetGenome().Ration();
+	case view_settings::species:
+		return entity->GetGenome().Species();
 	case view_settings::energy:
 	{
 		if (entity->Energy() < (max_energy / 2))
 		{
-			return { 255, static_cast<unsigned char>(255 * (entity->Energy() / (double)(max_energy / 2))), 0 };
+			return { 
+				255, 
+				static_cast<unsigned char>(255 * (entity->Energy() / (double)(max_energy / 2))), 
+				0 
+			};
 		}
 		else
 		{
-			return { static_cast<unsigned char>(255 - 255 * (entity->Energy() / (double)max_energy)), 255, 0 };
+			return { 
+				static_cast<unsigned char>(255 - 255 * (entity->Energy() / (double)max_energy)),
+				255,
+				0 
+			};
 		}
 	}
-	case view_settings::species:
-		return entity->GetGenome().Species();
 	case view_settings::age:
 	{
-		unsigned char c = static_cast<unsigned char>(255 - 255 * ((double)entity->Age() / entity->MaxAge()));
+		unsigned char c = static_cast<unsigned char>(
+			255 - 255 * ((double)entity->Age() / entity->MaxAge())
+		);
 		return { c, c, c };
 	}
 	case view_settings::hp:
 	{
 		if (entity->Hp() < (max_hp / 2))
 		{
-			return { 255, static_cast<unsigned char>(255 * (entity->Hp() / (double)max_hp)), 0 };
+			return { 
+				255, 
+				static_cast<unsigned char>(255 * (entity->Hp() / (double)max_hp)),
+				0 
+			};
 		}
 		else
 		{
-			return { static_cast<unsigned char>(255 - 255 * (entity->Hp() / (double)max_hp)), 255, 0 };
+			return { 
+				static_cast<unsigned char>(255 - 255 * (entity->Hp() / (double)max_hp)), 
+				255, 
+				0 
+			};
 		}
 	}
 	case view_settings::success:
@@ -93,8 +111,13 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	}
 	case view_settings::generations:
 	{
-		unsigned char c = static_cast<unsigned char>(255 * ((double)entity->GetGenome().Generation()) / max_generation);
-		return { c, c, c }; }
+		unsigned char c = static_cast<unsigned char>(
+			255 * ((double)entity->GetGenome().Generation()) / max_generation
+		);
+		return { c, c, c }; 
+	}
+	default:
+		return {};
 	}
 }
 

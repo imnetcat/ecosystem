@@ -1,4 +1,4 @@
-#include "Organic.h"
+#include "organic.h"
 
 Organic::Organic() : energy(0) {}
 Organic::Organic(size_t x, size_t y, unsigned __int64 energy)

@@ -11,8 +11,7 @@ Ecosystem::Ecosystem(
 	unsigned short max_organic_to_eat,
 	unsigned short max_entities_to_eat,
 	unsigned short max_energy,
-	unsigned short max_hp,
-	unsigned short entities_start_count
+	unsigned short max_hp
 )
 	: Environment(
 		width, 
@@ -22,8 +21,7 @@ Ecosystem::Ecosystem(
 		max_organic_to_eat,
 		max_entities_to_eat,
 		max_energy,
-		max_hp,
-		entities_start_count)
+		max_hp)
 
 	, view(view_settings::terrain) 
 {}
@@ -46,30 +44,7 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	case view_settings::organic:
 		return { 209, 209, 209 };
 	case view_settings::ration:
-	{
-		Ration ration = entity->GetGenome().Ration();
-
-		switch (ration)
-		{
-		case Ration::entities:
-			return { 255, 51, 51 };
-		case Ration::light:
-			return { 255, 245, 30 };
-		case Ration::organic:
-			return { 37, 53, 217 };
-		case Ration::entites_organic:
-			return { 50, 255, 30 };
-		case Ration::entites_light:
-			return { 255, 160, 30 };
-		case Ration::light_organic:
-			return { 30, 255, 248 };
-		case Ration::omnivorous:
-			return { 0, 0, 0 };
-		default:
-			return { 0, 0, 0 };
-		}
-		break;
-	}
+		return entity->GetGenome().Ration();
 	case view_settings::energy:
 	{
 		if (entity->Energy() < (max_energy / 2))
@@ -92,11 +67,11 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	{
 		if (entity->Hp() < (max_hp / 2))
 		{
-			return { 191, static_cast<unsigned char>(191 * (entity->Hp() / (double)(max_hp / 2))), 0 };
+			return { 255, static_cast<unsigned char>(255 * (entity->Hp() / (double)max_hp)), 0 };
 		}
 		else
 		{
-			return { static_cast<unsigned char>(191 * ((double)(max_hp / 2) / entity->Hp())), 191, 0 };
+			return { static_cast<unsigned char>(255 - 255 * (entity->Hp() / (double)max_hp)), 255, 0 };
 		}
 	}
 	case view_settings::success:
@@ -232,7 +207,7 @@ Info Ecosystem::GetInfoByCellsCoords(size_t x, size_t y)
 
 	info.color = ObtainColor(x, y);
 
-	info.light_power = (((height - (double)y) / height) * light_coef) * light_power;
+	info.light_power = (((height - (double)y) / height) * light_coef) * light_power * 2;
 	info.contains_entity = terrain[y][x].ContainsEntity();
 	if (terrain[y][x].ContainsEntity())
 	{
@@ -240,6 +215,7 @@ Info Ecosystem::GetInfoByCellsCoords(size_t x, size_t y)
 		info.age.curr = terrain[y][x].GetEntity()->Age();
 		info.age.max = terrain[y][x].GetEntity()->MaxAge();
 		info.genome = terrain[y][x].GetEntity()->GetGenome().Data();
+		info.genome_args = terrain[y][x].GetEntity()->GetGenome().Args();
 		info.generation = terrain[y][x].GetEntity()->GetGenome().Generation();
 		info.hp = terrain[y][x].GetEntity()->Hp();
 		info.ch_of_mut = terrain[y][x].GetEntity()->GetGenome().MutationChance();

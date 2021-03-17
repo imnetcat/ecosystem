@@ -59,7 +59,29 @@ int main()
 	bool do_tic = false;
 	bool pause = false;
 	bool hibernate = false;
-	Ecosystem ecosystem(100, 51, 1000, 0.5, 1000, 2000, 20000, 100, 5);
+
+	unsigned __int64 GENOME_SEED = 981703922302;// Random::Generate();
+	unsigned int WORLD_WIDTH		= 100;
+	unsigned int WORLD_HEIGHT		= 51;
+	unsigned short  LIGHT_POWER		= 2000;
+	double LIGHT_COEF				= 0.5;
+	unsigned short MAX_ORGANIC_TO_EAT = 3000;
+	unsigned short MAX_ENTITIES_TO_EAT = 6000;
+	unsigned short MAX_ENERGY = 20000;
+	unsigned short MAX_HP = 100;
+
+	Genome::Init(GENOME_SEED);
+	Ecosystem ecosystem(
+		WORLD_WIDTH, 
+		WORLD_HEIGHT,
+		LIGHT_POWER, 
+		LIGHT_COEF,
+		MAX_ORGANIC_TO_EAT, 
+		MAX_ENTITIES_TO_EAT, 
+		MAX_ENERGY, 
+		MAX_HP
+	);
+
 	Ecosystem* ecosys_ptr = &ecosystem;
 
 	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem", sf::Style::Titlebar | sf::Style::Close);
@@ -241,36 +263,49 @@ int main()
 	label->setPosition(10, 110);
 	label->setSize(110, 18);
 	label->setTextSize(13);
+	label->setText("Genome seed:");
+	stats_panel->add(label);
+	auto genome_seed = tgui::Label::create();
+	genome_seed->setPosition(110, 110);
+	genome_seed->setSize(100, 18);
+	genome_seed->setTextSize(13);
+	genome_seed->setText(to_string(GENOME_SEED));
+	stats_panel->add(genome_seed);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 130);
+	label->setSize(110, 18);
+	label->setTextSize(13);
 	label->setText("Max generation:");
 	stats_panel->add(label);
 	auto max_generation = tgui::Label::create();
-	max_generation->setPosition(120, 110);
+	max_generation->setPosition(120, 130);
 	max_generation->setSize(100, 18);
 	max_generation->setTextSize(13);
 	max_generation->setText("1");
 	stats_panel->add(max_generation);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 130);
+	label->setPosition(10, 150);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("Tics:");
 	stats_panel->add(label);
 	auto tics_counter = tgui::Label::create();
-	tics_counter->setPosition(40, 130);
+	tics_counter->setPosition(40, 150);
 	tics_counter->setSize(200, 18);
 	tics_counter->setTextSize(13);
 	tics_counter->setText("0");
 	stats_panel->add(tics_counter);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 150);
+	label->setPosition(10, 170);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("Entities:");
 	stats_panel->add(label);
 	auto entities_counter = tgui::Label::create();
-	entities_counter->setPosition(65, 150);
+	entities_counter->setPosition(65, 170);
 	entities_counter->setSize(100, 18);
 	entities_counter->setTextSize(13);
 	entities_counter->setText("0");
@@ -389,17 +424,29 @@ int main()
 	label->setText("genome:");
 	info_panel->add(label);
 	auto info_genome = tgui::Label::create();
-	info_genome->setPosition(80, 200);
-	info_genome->setSize(100, 18);
+	info_genome->setPosition(70, 200);
+	info_genome->setSize(150, 40);
 	info_genome->setTextSize(13);
 	info_panel->add(info_genome);
+
+	label = tgui::Label::create();
+	label->setPosition(10, 215);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("genome args:");
+	info_panel->add(label);
+	auto info_genome_args = tgui::Label::create();
+	info_genome_args->setPosition(100, 215);
+	info_genome_args->setSize(150, 40);
+	info_genome_args->setTextSize(13);
+	info_panel->add(info_genome_args);
 
 	auto SetInfoBox = [
 		&hibernate, ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
 		info_hp, info_age, info_title,
-		&cell_image, cell_image_canvas](const Info& info)
+		&cell_image, cell_image_canvas, info_genome_args](const Info& info)
 	{
 		if (hibernate)
 		{
@@ -419,6 +466,7 @@ int main()
 			info_mutation_chance->setText(to_string(info.ch_of_mut));
 			info_energy->setText(to_string(info.energy) + "/" + to_string(info.max_energy));
 			info_hp->setText(to_string(info.hp) + "/" + to_string(info.max_hp));
+			info_genome_args->setText(to_string(info.genome_args));
 		}
 		else
 		{
@@ -429,6 +477,7 @@ int main()
 			info_mutation_chance->setText("-");
 			info_energy->setText("-");
 			info_hp->setText("-");
+			info_genome_args->setText("-");
 		}
 		info_organic_power->setText(to_string(info.food_power));
 		info_light_power->setText(to_string(info.light_power));
@@ -454,7 +503,7 @@ int main()
 		info_organic_power, info_mutation_chance, 
 		info_energy, info_generation, 
 		info_hp, info_age, info_title,
-		&cell_image, cell_image_canvas ]()
+		&cell_image, cell_image_canvas, info_genome_args]()
 	{
 		cell_image[0].color = sf::Color::White;
 		cell_image[1].color = sf::Color::White;
@@ -474,13 +523,14 @@ int main()
 		info_hp->setText("-");
 		info_organic_power->setText("-");
 		info_light_power->setText("-");
+		info_genome_args->setText("-");
 		ecosys_ptr->Observing(nullptr);
 	};
 
 	ClearInfoBox();
 
 	tgui::Button::Ptr info_clear_rect_btn = tgui::Button::create();
-	info_clear_rect_btn->setPosition(80, 228);
+	info_clear_rect_btn->setPosition(80, 248);
 	info_clear_rect_btn->setText("Clear");
 	info_clear_rect_btn->onPress(ClearInfoBox);
 	info_panel->add(info_clear_rect_btn, "info_clear");

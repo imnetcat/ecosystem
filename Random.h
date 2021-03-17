@@ -10,5 +10,7 @@ private:
 public:
 
 	// Return random numbers in range [0, max)
-	size_t Generate(size_t max);
+	static size_t Generate(size_t max);
+	// Return random numbers in range [0, distributor maximum)
+	static size_t Generate();
 };

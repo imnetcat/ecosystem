@@ -12,6 +12,7 @@ struct Info
 	} age;
 	bool contains_entity;
 	unsigned __int64 genome;
+	unsigned __int8 genome_args;
 	unsigned short hp = 0;
 	unsigned short max_hp = 0;
 	size_t energy = 0;
@@ -33,8 +34,7 @@ public:
 		unsigned short max_organic_to_eat,
 		unsigned short max_entities_to_eat,
 		unsigned short max_energy,
-		unsigned short max_hp,
-		unsigned short entities_start_count
+		unsigned short max_hp
 	);
 
 	void Draw(tgui::Canvas::Ptr canvas);

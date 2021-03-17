@@ -14,7 +14,7 @@ unsigned int Map::Height()
 	return map_height;
 }
 
-RGBColor Map::ObtainEntityColor(pool<Entity>::const_iterator entity)
+Color Map::ObtainEntityColor(pool<Entity>::const_iterator entity)
 {
 	switch (view)
 	{
@@ -101,7 +101,7 @@ RGBColor Map::ObtainEntityColor(pool<Entity>::const_iterator entity)
 	}
 }
 
-RGBColor Map::ObtainColor(size_t x, size_t y)
+Color Map::ObtainColor(size_t x, size_t y)
 {
 	if (world->Terrain()[y][x].ContainsEntity() && view != view_settings::organic)
 	{

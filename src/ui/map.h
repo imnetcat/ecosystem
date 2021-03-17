@@ -4,7 +4,7 @@
 
 struct Info
 {
-	RGBColor color;
+	Color color;
 	struct Age
 	{
 		size_t curr = 0;
@@ -29,8 +29,8 @@ public:
 	Map(World* world);
 
 	void Draw(tgui::Canvas::Ptr canvas);
-	RGBColor ObtainEntityColor(pool<Entity>::const_iterator entity);
-	RGBColor ObtainColor(size_t x, size_t y);
+	Color ObtainEntityColor(pool<Entity>::const_iterator entity);
+	Color ObtainColor(size_t x, size_t y);
 
 	view_settings GetView();
 	void SetView(view_settings new_val);

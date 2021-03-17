@@ -92,11 +92,11 @@ inline unsigned __int8 Genome::Size() const
 {
 	return genome_size;
 }
-const RGBColor& Genome::Species() const
+const Color& Genome::Species() const
 {
 	return species;
 }
-const RGBColor& Genome::Ration() const
+const Color& Genome::Ration() const
 {
 	return ration;
 }

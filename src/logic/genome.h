@@ -6,7 +6,7 @@
 
 #include <limits>
 
-using RGBColor = sf::Color;
+using Color = sf::Color;
 
 enum class Coefficient
 {
@@ -25,8 +25,8 @@ private:
 
 	unsigned __int64 generation;
 	unsigned __int8 mutationChance;
-	RGBColor ration;
-	RGBColor species;
+	Color ration;
+	Color species;
 	random random;
 	unsigned __int16 replicate_cost;
 
@@ -59,8 +59,8 @@ public:
 	unsigned __int64 Generation() const;
 	unsigned __int8 MutationChance() const;
 	inline unsigned __int8 Size() const;
-	const RGBColor& Species() const;
-	const RGBColor& Ration() const;
+	const Color& Species() const;
+	const Color& Ration() const;
 	unsigned __int16 ReplicateCost() const;
 
 	static void Init(unsigned __int64 genome_seed);

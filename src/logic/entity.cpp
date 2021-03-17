@@ -3,7 +3,7 @@
 
 Entity::Entity()
 	:
-	Object(0, 0),
+	position(0, 0),
 	view(view_side::top),
 	age(0),
 	max_age(0),
@@ -27,7 +27,7 @@ Entity::Entity(
 	double attack,
 	Genome g)
 	:
-	Object(x, y),
+	position(x, y),
 	view(view),
 	age(0),
 	max_age(max_age),

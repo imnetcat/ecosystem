@@ -23,7 +23,7 @@
     <ClCompile Include="src\logic\entity.cpp" />
     <ClCompile Include="src\logic\world.cpp" />
     <ClCompile Include="src\logic\genome.cpp" />
-    <ClCompile Include="src\logic\Object.cpp" />
+    <ClCompile Include="src\logic\position.cpp" />
     <ClCompile Include="src\logic\Organic.cpp" />
     <ClCompile Include="src\logic\TerrainCell.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -35,7 +35,7 @@
     <ClInclude Include="src\logic\world.h" />
     <ClInclude Include="src\logic\gen.h" />
     <ClInclude Include="src\logic\genome.h" />
-    <ClInclude Include="src\logic\Object.h" />
+    <ClInclude Include="src\logic\position.h" />
     <ClInclude Include="src\logic\Organic.h" />
     <ClInclude Include="src\logic\TerrainCell.h" />
     <ClInclude Include="src\utils\pool.h" />

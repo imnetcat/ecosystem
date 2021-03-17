@@ -62,8 +62,8 @@ World::~World()
 
 EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)
 {
-	auto x = entity_iterator->GetX();
-	auto y = entity_iterator->GetY();
+	auto x = entity_iterator->x();
+	auto y = entity_iterator->y();
 	if (terrain[y][x].IsContainsOrganic())
 	{
 		terrain[y][x].AddOrganic(entity_iterator->Energy() + 100ull);
@@ -75,8 +75,8 @@ EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)
 	terrain[y][x].DelEntity();
 	if (observed_entity)
 	{
-		if (observed_entity->GetX() == entity_iterator->GetX() &&
-			observed_entity->GetY() == entity_iterator->GetY())
+		if (observed_entity->x() == entity_iterator->x() &&
+			observed_entity->y() == entity_iterator->y())
 		{
 			observed_entity = nullptr;
 		}
@@ -90,8 +90,8 @@ void World::Update()
 	auto object = organic.begin();
 	while (object != organic.end())
 	{
-		auto x = object->GetX();
-		auto y = object->GetY();
+		auto x = object->x();
+		auto y = object->y();
 		if (y == (height - 1))
 		{
 			object++;
@@ -104,7 +104,7 @@ void World::Update()
 		}
 		terrain[y][x].DelOrganic();
 		y++;
-		object->SetY(y);
+		object->y(y);
 		terrain[y][x].SetOrganic(object);
 		object++;
 	}
@@ -336,7 +336,7 @@ void World::Birthing(unsigned __int8 args, EntitiesIterator entity)
 	if (entity->Energy() < (entity->ReproductionCost() / 2))
 		return;
 
-	Position new_position = GetViewedPosition(GetViewSide(args), entity->GetX(), entity->GetY());
+	Position new_position = GetViewedPosition(GetViewSide(args), entity->x(), entity->y());
 
 	if (!terrain[new_position.y][new_position.x].ContainsEntity())
 	{
@@ -349,7 +349,7 @@ void World::Separationing(unsigned __int8 args, EntitiesIterator entity)
 	if (entity->Energy() < entity->ReproductionCost())
 		return;
 
-	Position new_position = GetViewedPosition(GetViewSide(args), entity->GetX(), entity->GetY());
+	Position new_position = GetViewedPosition(GetViewSide(args), entity->x(), entity->y());
 
 	if (!terrain[new_position.y][new_position.x].ContainsEntity())
 	{
@@ -363,7 +363,7 @@ void World::Separationing(unsigned __int8 args, EntitiesIterator entity)
 
 void World::Carnivorousing(EntitiesIterator entity)
 {
-	Position viewed_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
+	Position viewed_position = GetViewedPosition(entity->GetView(), entity->x(), entity->y());
 
 	auto& viewed_point = terrain[viewed_position.y][viewed_position.x];
 
@@ -389,12 +389,12 @@ void World::Carnivorousing(EntitiesIterator entity)
 }
 void World::EatOrganic(EntitiesIterator entity)
 {
-	if (!terrain[entity->GetY()][entity->GetX()].IsContainsOrganic())
+	if (!terrain[entity->y()][entity->x()].IsContainsOrganic())
 	{
 		return;
 	}
 
-	auto o = terrain[entity->GetY()][entity->GetX()].GetOrganic();
+	auto o = terrain[entity->y()][entity->x()].GetOrganic();
 	auto energy = o->Energy();
 
 	if (energy >= max_organic_to_eat)
@@ -404,23 +404,23 @@ void World::EatOrganic(EntitiesIterator entity)
 		if (!o->Energy())
 		{
 			organic.Del(o);
-			terrain[entity->GetY()][entity->GetX()].DelOrganic();
+			terrain[entity->y()][entity->x()].DelOrganic();
 		}
 	}
 	else
 	{
 		entity->IncreaceEnergy(energy);
 		organic.Del(o);
-		terrain[entity->GetY()][entity->GetX()].DelOrganic();
+		terrain[entity->y()][entity->x()].DelOrganic();
 	}
 }
 void World::Moving(EntitiesIterator entity)
 {
-	Position new_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
+	Position new_position = GetViewedPosition(entity->GetView(), entity->x(), entity->y());
 
 	if (!terrain[new_position.y][new_position.x].ContainsEntity())
 	{
-		terrain[entity->GetY()][entity->GetX()].DelEntity();
+		terrain[entity->y()][entity->x()].DelEntity();
 		entity->SetPosition(new_position.x, new_position.y);
 		terrain[new_position.y][new_position.x].SetEntity(entity);
 	}
@@ -428,7 +428,7 @@ void World::Moving(EntitiesIterator entity)
 void World::Photosynthesing(EntitiesIterator entity)
 {
 	entity->IncreaceEnergy(
-			(((height - (double)entity->GetY()) / height) * light_coef) * light_power * 2
+			(((height - (double)entity->y()) / height) * light_coef) * light_power * 2
 	);
 }
 void World::Turning(unsigned __int8 args, EntitiesIterator entity)

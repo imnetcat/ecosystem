@@ -2,7 +2,7 @@
 
 Organic::Organic() : energy(0) {}
 Organic::Organic(size_t x, size_t y, unsigned __int64 energy)
-	: Object(x, y),
+	: position(x, y),
 	energy(energy)
 {}
 unsigned __int64 Organic::Energy()

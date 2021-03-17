@@ -148,8 +148,8 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 	auto object = organic.begin();
 	while (object != organic.end())
 	{
-		auto x = object->GetX();
-		auto y = object->GetY();
+		auto x = object->x();
+		auto y = object->y();
 
 		pos.x = x * cell_outline;
 		pos.y = y * cell_outline;
@@ -178,8 +178,8 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 	sprite.setOutlineThickness(OUTLINE);
 	while (entity != entities.end())
 	{
-		auto x = entity->GetX();
-		auto y = entity->GetY();
+		auto x = entity->x();
+		auto y = entity->y();
 
 		pos.x = x * ((size_t)cell_size + OUTLINE);
 		pos.y = y * ((size_t)cell_size + OUTLINE);
@@ -189,8 +189,8 @@ void Ecosystem::Draw(tgui::Canvas::Ptr canvas)
 		auto color = ObtainEntityColor(entity);
 		if (observed_entity)
 		{
-			if (observed_entity->GetX() != x ||
-				observed_entity->GetY() != y)
+			if (observed_entity->x() != x ||
+				observed_entity->y() != y)
 			{
 				color.a = 100;
 			}

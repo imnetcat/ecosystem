@@ -1,8 +1,8 @@
 #pragma once
-#include "Object.h"
+#include "position.h"
 #include "../utils/pool.h"
 
-class Organic : public Object
+class Organic : public position
 {
 private:
 	unsigned __int64 energy;

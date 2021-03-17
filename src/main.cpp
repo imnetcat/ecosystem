@@ -616,7 +616,7 @@ int main()
 
 			if (ecosystem.Observing())
 			{
-				SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->GetX()), static_cast<float>(ecosystem.Observing()->GetY()));
+				SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->x()), static_cast<float>(ecosystem.Observing()->y()));
 			}
 		}
 

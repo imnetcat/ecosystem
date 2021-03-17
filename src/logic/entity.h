@@ -1,6 +1,6 @@
 #pragma once
 #include "genome.h"
-#include "Object.h"
+#include "position.h"
 #include "../utils/pool.h"
 
 enum class view_side
@@ -28,7 +28,7 @@ enum class view_settings
 	generations
 };
 
-class Entity : public Object
+class Entity : public position
 {
 protected:
 	view_side view;

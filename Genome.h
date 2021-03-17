@@ -68,5 +68,7 @@ public:
 	const RGBColor& Ration() const;
 	unsigned __int16 ReplicateCost() const;
 
+	static void Init(unsigned __int64 genome_seed);
+
 	Genome Replicate(Coefficient coef);
 };

@@ -44,7 +44,7 @@ Environment::Environment(
 		0.01,
 		0.01,
 		Genome(
-			496066783527,// Random::Generate(),
+			Random::Generate(),
 			8,
 			Random::Generate(std::numeric_limits<unsigned __int8>().max()),
 			1,

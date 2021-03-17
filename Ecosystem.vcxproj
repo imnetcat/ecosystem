@@ -38,6 +38,7 @@
     <ClInclude Include="src\logic\position.h" />
     <ClInclude Include="src\logic\Organic.h" />
     <ClInclude Include="src\logic\cell.h" />
+    <ClInclude Include="src\ui\gui.h" />
     <ClInclude Include="src\utils\pool.h" />
     <ClInclude Include="src\utils\random.h" />
   </ItemGroup>

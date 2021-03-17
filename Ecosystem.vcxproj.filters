@@ -83,5 +83,8 @@
     <ClInclude Include="src\logic\cell.h">
       <Filter>Source Files\logic</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\gui.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

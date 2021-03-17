@@ -1,5 +1,5 @@
+#include "ui/gui.h"
 #include "Ecosystem.h"
-
 #include <chrono> 
 using namespace std::chrono;
 
@@ -15,7 +15,6 @@ using namespace sf;
 
 const int WINDOW_WIDTH = 1100;
 const int WINDOW_HEIGHT = 600;
-const int MENUBAR_HEIGHT = 22;
 const int SIDEBAR_WIDTH = WINDOW_WIDTH * 0.2;
 
 void DisableViewMenuItem(tgui::MenuBar::Ptr menu, const tgui::String& item)
@@ -86,48 +85,34 @@ int main()
 	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem", sf::Style::Titlebar | sf::Style::Close);
 	main.setPosition(sf::Vector2i(350, 250));
 
-	tgui::GuiSFML gui(main);
+	gui gui(main);
 	tgui::GuiSFML* gui_ptr = &gui;
 
-	tgui::MenuBar::Ptr menu = tgui::MenuBar::create();
-	menu->setHeight(MENUBAR_HEIGHT);
-	menu->addMenu("Help");
-	menu->addMenu("World");
-	menu->addMenuItem("Run");
-	menu->addMenuItem("Pause");
-	menu->addMenuItem("Tic");
-	menu->addMenuItem("Hybernate");
-	menu->addMenu("View");
-	menu->addMenuItem("Terrain");
-	menu->addMenuItem("Energy");
-	menu->addMenuItem("Organic");
-	menu->addMenuItem("Species");
-	menu->addMenuItem("Age");
-	menu->addMenuItem("Ration");
-	menu->addMenuItem("Hp");
-	menu->addMenuItem("Success");
-	menu->addMenuItem("Generation");
-	menu->setMenuItemEnabled({ "View", "Terrain" }, false);
-
-	menu->connectMenuItem({ "Help" }, []() {
+	gui.menubar({ "About", "Help" }, []() {
 		ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
 	});
+	gui.menubar({ "About", "Repository" }, []() {
+		ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem", NULL, NULL, SW_SHOW);
+	});
+	gui.menubar({ "About", "Creator" }, []() {
+		ShellExecuteA(0, 0, "https://github.com/imnetcat", NULL, NULL, SW_SHOW);
+	});
 
-	menu->connectMenuItem({ "World", "Run" }, [&hibernate, &pause]() {
+	gui.menubar({ "World", "Run" }, [&hibernate, &pause]() {
 		if (hibernate)
 		{
 			return;
 		}
 		pause = false;
 	});
-	menu->connectMenuItem({ "World", "Pause" }, [&hibernate , &pause]() {
+	gui.menubar({ "World", "Pause" }, [&hibernate , &pause]() {
 		if (hibernate)
 		{
 			return;
 		}
 		pause = true;
 	});
-	menu->connectMenuItem({ "World", "Tic" }, [&hibernate, &pause, &do_tic]() {
+	gui.menubar({ "World", "Tic" }, [&hibernate, &pause, &do_tic]() {
 		if (hibernate)
 		{
 			return;
@@ -136,57 +121,47 @@ int main()
 		do_tic = true;
 	});
 
-	menu->connectMenuItem({ "View", "Terrain" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Terrain");
+	gui.menubar({ "View", "Terrain" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::terrain);
 	});
-	menu->connectMenuItem({ "View", "Energy" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Energy");
+	gui.menubar({ "View", "Energy" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::energy);
 	});
-	menu->connectMenuItem({ "View", "Organic" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Organic");
+	gui.menubar({ "View", "Organic" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::organic);
 	});
-	menu->connectMenuItem({ "View", "Species" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Species");
+	gui.menubar({ "View", "Species" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::species);
 	});
-	menu->connectMenuItem({ "View", "Age" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Age");
+	gui.menubar({ "View", "Age" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::age);
 	});
-	menu->connectMenuItem({ "View", "Ration" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Ration");
+	gui.menubar({ "View", "Ration" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::ration);
 	});
-	menu->connectMenuItem({ "View", "Hp" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Hp");
+	gui.menubar({ "View", "Hp" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::hp);
 	});
-	menu->connectMenuItem({ "View", "Success" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Success");
+	gui.menubar({ "View", "Success" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::success);
 	});
-	menu->connectMenuItem({ "View", "Generation" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Generation");
+	gui.menubar({ "View", "Generation" }, [ecosys_ptr]() {
 		ecosys_ptr->SetView(view_settings::generations);
 	});
-	gui.add(menu);
 
 	auto map_layout = tgui::VerticalLayout::create();
 	auto map = tgui::ScrollablePanel::create();
 	auto canvas = tgui::Canvas::create();
-	map_layout->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - MENUBAR_HEIGHT);
-	map_layout->setPosition(SIDEBAR_WIDTH, MENUBAR_HEIGHT + 1);
-	map->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - MENUBAR_HEIGHT);
+	map_layout->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - gui.MENUBAR_HEIGHT);
+	map_layout->setPosition(SIDEBAR_WIDTH, gui.MENUBAR_HEIGHT + 1);
+	map->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - gui.MENUBAR_HEIGHT);
 	canvas->setSize(ecosystem.GetMapWidth(), ecosystem.GetMapHeight());
 	map->add(canvas);
 	map_layout->add(map);
 	gui.add(map_layout);
 
 	auto sidebar_layout = tgui::VerticalLayout::create();
-	sidebar_layout->setPosition(0, MENUBAR_HEIGHT + 1);
+	sidebar_layout->setPosition(0, gui.MENUBAR_HEIGHT + 1);
 	sidebar_layout->setSize(SIDEBAR_WIDTH - 1, "100%");
 	gui.add(sidebar_layout);
 
@@ -196,7 +171,7 @@ int main()
 
 	auto info_panel = tgui::Panel::create();
 	info_panel->setPosition(0, 110);
-	info_panel->setSize("100%", WINDOW_HEIGHT - MENUBAR_HEIGHT - 110);
+	info_panel->setSize("100%", WINDOW_HEIGHT - gui.MENUBAR_HEIGHT - 110);
 	sidebar_layout->add(info_panel);
 
 	auto label = tgui::Label::create();
@@ -229,7 +204,7 @@ int main()
 	speed_slider->setInvertedDirection(true);
 	stats_panel->add(speed_slider);
 
-	menu->connectMenuItem({ "World", "Hybernate" }, [&pause, speed_slider, canvas, &hibernate]() {
+	gui.menubar({ "World", "Hybernate" }, [&pause, speed_slider, canvas, &hibernate]() {
 		hibernate = !hibernate;
 		pause = false;
 		if (hibernate)

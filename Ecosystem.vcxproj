@@ -18,6 +18,29 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Ecosystem.cpp" />
+    <ClCompile Include="src\entity.cpp" />
+    <ClCompile Include="src\environment.cpp" />
+    <ClCompile Include="src\Genome.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Object.cpp" />
+    <ClCompile Include="src\Organic.cpp" />
+    <ClCompile Include="src\Random.cpp" />
+    <ClCompile Include="src\TerrainCell.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Ecosystem.h" />
+    <ClInclude Include="src\entity.h" />
+    <ClInclude Include="src\environment.h" />
+    <ClInclude Include="src\Gen.h" />
+    <ClInclude Include="src\Genome.h" />
+    <ClInclude Include="src\ListPool.h" />
+    <ClInclude Include="src\Object.h" />
+    <ClInclude Include="src\Organic.h" />
+    <ClInclude Include="src\Random.h" />
+    <ClInclude Include="src\TerrainCell.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{918D5341-028D-42D6-BF60-4053F5162482}</ProjectGuid>
@@ -104,49 +127,26 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\dependencies\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>dependencies\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;TGUI_STATIC</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\dependencies\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>dependencies\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>openal32.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;sfml-system-s.lib;sfml-window-s.lib;sfml-graphics-s.lib;tgui-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\dependencies\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>dependencies\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;TGUI_STATIC</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\dependencies\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>dependencies\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>openal32.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;sfml-system-s-d.lib;sfml-window-s-d.lib;sfml-graphics-s-d.lib;tgui-s-d.lib;kernel32.lib;user32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="Ecosystem.cpp" />
-    <ClCompile Include="environment.cpp" />
-    <ClCompile Include="Genome.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Organic.cpp" />
-    <ClCompile Include="Random.cpp" />
-    <ClCompile Include="TerrainCell.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ListPool.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="Ecosystem.h" />
-    <ClInclude Include="environment.h" />
-    <ClInclude Include="Genome.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="Organic.h" />
-    <ClInclude Include="Gen.h" />
-    <ClInclude Include="Random.h" />
-    <ClInclude Include="TerrainCell.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

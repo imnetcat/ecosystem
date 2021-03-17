@@ -59,6 +59,7 @@ public:
 	);
 
 	Gen Read();
+	unsigned __int8 Args() const;
 	unsigned __int64 Data() const;
 	unsigned __int64 Generation() const;
 	unsigned __int8 MutationChance() const;

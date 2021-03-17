@@ -60,11 +60,11 @@ int main()
 	bool pause = false;
 	bool hibernate = false;
 
-	unsigned __int64 GENOME_SEED = 869967928505;// Random::Generate();
+	unsigned __int64 GENOME_SEED = 981703922302;// Random::Generate();
 	unsigned int WORLD_WIDTH		= 100;
 	unsigned int WORLD_HEIGHT		= 51;
-	unsigned short  LIGHT_POWER		= 3000;
-	double LIGHT_COEF				= 0.2;
+	unsigned short  LIGHT_POWER		= 2000;
+	double LIGHT_COEF				= 0.5;
 	unsigned short MAX_ORGANIC_TO_EAT = 3000;
 	unsigned short MAX_ENTITIES_TO_EAT = 6000;
 	unsigned short MAX_ENERGY = 20000;
@@ -429,12 +429,24 @@ int main()
 	info_genome->setTextSize(13);
 	info_panel->add(info_genome);
 
+	label = tgui::Label::create();
+	label->setPosition(10, 215);
+	label->setSize(100, 18);
+	label->setTextSize(13);
+	label->setText("genome args:");
+	info_panel->add(label);
+	auto info_genome_args = tgui::Label::create();
+	info_genome_args->setPosition(100, 215);
+	info_genome_args->setSize(150, 40);
+	info_genome_args->setTextSize(13);
+	info_panel->add(info_genome_args);
+
 	auto SetInfoBox = [
 		&hibernate, ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
 		info_hp, info_age, info_title,
-		&cell_image, cell_image_canvas](const Info& info)
+		&cell_image, cell_image_canvas, info_genome_args](const Info& info)
 	{
 		if (hibernate)
 		{
@@ -454,6 +466,7 @@ int main()
 			info_mutation_chance->setText(to_string(info.ch_of_mut));
 			info_energy->setText(to_string(info.energy) + "/" + to_string(info.max_energy));
 			info_hp->setText(to_string(info.hp) + "/" + to_string(info.max_hp));
+			info_genome_args->setText(to_string(info.genome_args));
 		}
 		else
 		{
@@ -464,6 +477,7 @@ int main()
 			info_mutation_chance->setText("-");
 			info_energy->setText("-");
 			info_hp->setText("-");
+			info_genome_args->setText("-");
 		}
 		info_organic_power->setText(to_string(info.food_power));
 		info_light_power->setText(to_string(info.light_power));
@@ -489,7 +503,7 @@ int main()
 		info_organic_power, info_mutation_chance, 
 		info_energy, info_generation, 
 		info_hp, info_age, info_title,
-		&cell_image, cell_image_canvas ]()
+		&cell_image, cell_image_canvas, info_genome_args]()
 	{
 		cell_image[0].color = sf::Color::White;
 		cell_image[1].color = sf::Color::White;
@@ -509,6 +523,7 @@ int main()
 		info_hp->setText("-");
 		info_organic_power->setText("-");
 		info_light_power->setText("-");
+		info_genome_args->setText("-");
 		ecosys_ptr->Observing(nullptr);
 	};
 

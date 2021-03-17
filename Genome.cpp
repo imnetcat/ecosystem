@@ -16,6 +16,7 @@ Genome::Genome()
 	, replicate_cost(0)
 	, mutationChance(0)
 	, ration({ 0, 0, 0 })
+	, species({ 0, 0, 0 })
 {
 	Construct();
 }
@@ -37,6 +38,7 @@ Genome::Genome(
 	, replicate_cost(0)
 	, mutationChance(mutationChance)
 	, ration({ 0, 0, 0 })
+	, species({ 0, 0, 0 })
 {
 	Construct();
 }
@@ -73,6 +75,10 @@ Gen Genome::Read()
 unsigned __int64 Genome::Data() const
 {
 	return genome;
+}
+unsigned __int8 Genome::Args() const
+{
+	return args;
 }
 unsigned __int64 Genome::Generation() const
 {
@@ -185,25 +191,60 @@ Genome Genome::Replicate(Coefficient coef)
 
 void Genome::Construct()
 {
-	double food_triggers = 0;
+	// Hash species
+	unsigned char part1, part2, part3;
+	if (genome_size % 3 == 0)
+	{
+		part1 = part2 = genome_size / 3;
+	}
+	else if (genome_size % 3 == 1)
+	{
+		part1 = part2 = genome_size / 3;
+	}
+	else
+	{
+		part1 = genome_size / 3;
+		part2 = genome_size / 3 + 1;
+	}
+	part3 = genome_size - (part2 + part1);
 
+	for (unsigned short i = 0; i < part1; i++)
+	{
+		species.r += static_cast<unsigned char>(Read().trigger);
+	}
+	for (unsigned short i = 0; i < part2; i++)
+	{
+		species.g += static_cast<unsigned char>(Read().trigger);
+	}
+	for (unsigned short i = 0; i < part3; i++)
+	{
+		species.b += static_cast<unsigned char>(Read().trigger);
+	}
+
+	for (unsigned short i = 0; i < part1; i++)
+	{
+		species.r += Read().args;
+	}
+	for (unsigned short i = 0; i < part2; i++)
+	{
+		species.g += Read().args;
+	}
+	for (unsigned short i = 0; i < part3; i++)
+	{
+		species.b += Read().args;
+	}
+
+	species.r %= 255;
+	species.g %= 255;
+	species.b %= 255;
+
+	double food_triggers = 0;
 	for (unsigned __int8 i = 0; i < genome_size; i++)
 	{
 		Gen gen = Read();
 
 		// Calculate reproduction cost
 		replicate_cost += CREATION_COST.at(gen.trigger);
-
-		// Hash species
-		unsigned __int8 trigger = static_cast<unsigned __int8>(gen.trigger);
-		unsigned __int8 args = gen.args;
-		species.r += std::hash<unsigned __int8>{}(trigger) % 128;
-		species.g += std::hash<unsigned __int8>{}(trigger % trigger_max) % 128;
-		species.b += std::hash<unsigned __int8>{}(trigger ^ (trigger_max * trigger_max)) % 128;
-
-		species.r += std::hash<unsigned __int8>{}(args) % 128;
-		species.g += std::hash<unsigned __int8>{}(args % args_max) % 128;
-		species.b += std::hash<unsigned __int8>{}(args ^ (args_max * args_max)) % 128;
 
 		// Acummulate ration
 		switch (gen.trigger)

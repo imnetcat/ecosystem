@@ -215,6 +215,7 @@ Info Ecosystem::GetInfoByCellsCoords(size_t x, size_t y)
 		info.age.curr = terrain[y][x].GetEntity()->Age();
 		info.age.max = terrain[y][x].GetEntity()->MaxAge();
 		info.genome = terrain[y][x].GetEntity()->GetGenome().Data();
+		info.genome_args = terrain[y][x].GetEntity()->GetGenome().Args();
 		info.generation = terrain[y][x].GetEntity()->GetGenome().Generation();
 		info.hp = terrain[y][x].GetEntity()->Hp();
 		info.ch_of_mut = terrain[y][x].GetEntity()->GetGenome().MutationChance();

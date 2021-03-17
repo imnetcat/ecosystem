@@ -1,7 +1,7 @@
 #pragma once
 #include <random>
 
-class Random
+class random
 {
 private:
 	static std::mt19937_64 engine;

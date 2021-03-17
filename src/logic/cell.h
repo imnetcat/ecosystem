@@ -2,7 +2,7 @@
 #include "Organic.h"
 #include "Entity.h"
 
-class TerrainCell
+class cell
 {
 protected:
 	OrganicIterator object;

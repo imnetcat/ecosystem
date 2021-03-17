@@ -27,7 +27,7 @@ private:
 	unsigned __int8 mutationChance;
 	RGBColor ration;
 	RGBColor species;
-	Random random;
+	random random;
 	unsigned __int16 replicate_cost;
 
 	unsigned __int8 genome_size = sizeof(genome) * 8;

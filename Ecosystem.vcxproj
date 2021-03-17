@@ -25,7 +25,7 @@
     <ClCompile Include="src\logic\genome.cpp" />
     <ClCompile Include="src\logic\position.cpp" />
     <ClCompile Include="src\logic\Organic.cpp" />
-    <ClCompile Include="src\logic\TerrainCell.cpp" />
+    <ClCompile Include="src\logic\cell.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\random.cpp" />
   </ItemGroup>
@@ -37,7 +37,7 @@
     <ClInclude Include="src\logic\genome.h" />
     <ClInclude Include="src\logic\position.h" />
     <ClInclude Include="src\logic\Organic.h" />
-    <ClInclude Include="src\logic\TerrainCell.h" />
+    <ClInclude Include="src\logic\cell.h" />
     <ClInclude Include="src\utils\pool.h" />
     <ClInclude Include="src\utils\random.h" />
   </ItemGroup>

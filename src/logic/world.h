@@ -1,5 +1,5 @@
 #pragma once
-#include "TerrainCell.h"
+#include "cell.h"
 
 struct Position
 {
@@ -41,7 +41,7 @@ protected:
 	const unsigned short max_hp;
 
 	size_t max_generation;
-	TerrainCell** terrain;
+	cell** terrain;
 	pool<Entity> entities;
 	pool<Organic> organic;
 

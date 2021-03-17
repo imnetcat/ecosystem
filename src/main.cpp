@@ -59,7 +59,7 @@ int main()
 	bool pause = false;
 	bool hibernate = false;
 
-	unsigned __int64 GENOME_SEED = Random::Generate();
+	unsigned __int64 GENOME_SEED = random::Generate();
 	unsigned int WORLD_WIDTH		= 100;
 	unsigned int WORLD_HEIGHT		= 51;
 	unsigned short  LIGHT_POWER		= 2000;

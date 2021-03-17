@@ -24,10 +24,10 @@ World::World(
 	, max_hp(max_hp)
 {
 	// Allocate 2d array for world map
-	terrain = new TerrainCell * [height];
+	terrain = new cell * [height];
 	for (size_t y = 0; y < height; y++)
 	{
-		terrain[y] = new TerrainCell[width];
+		terrain[y] = new cell[width];
 	}
 
 	// Put first entity
@@ -43,9 +43,9 @@ World::World(
 		0.01,
 		0.01,
 		Genome(
-			Random::Generate(),
+			random::Generate(),
 			8,
-			Random::Generate(std::numeric_limits<unsigned __int8>().max()),
+			random::Generate(std::numeric_limits<unsigned __int8>().max()),
 			1,
 			10
 		)

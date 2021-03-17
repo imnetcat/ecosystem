@@ -67,11 +67,11 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	{
 		if (entity->Hp() < (max_hp / 2))
 		{
-			return { 191, static_cast<unsigned char>(191 * (entity->Hp() / (double)(max_hp / 2))), 0 };
+			return { 255, static_cast<unsigned char>(255 * (entity->Hp() / (double)max_hp)), 0 };
 		}
 		else
 		{
-			return { static_cast<unsigned char>(191 * ((double)(max_hp / 2) / entity->Hp())), 191, 0 };
+			return { static_cast<unsigned char>(255 - 255 * (entity->Hp() / (double)max_hp)), 255, 0 };
 		}
 	}
 	case view_settings::success:

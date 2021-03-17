@@ -40,8 +40,3 @@ bool TerrainCell::IsContainsOrganic() const
 {
 	return has_object;
 }
-
-bool TerrainCell::IsWalkable()
-{
-	return !ContainsEntity();
-}

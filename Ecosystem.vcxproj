@@ -20,26 +20,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Ecosystem.cpp" />
-    <ClCompile Include="src\entity.cpp" />
-    <ClCompile Include="src\environment.cpp" />
-    <ClCompile Include="src\Genome.cpp" />
+    <ClCompile Include="src\logic\entity.cpp" />
+    <ClCompile Include="src\logic\world.cpp" />
+    <ClCompile Include="src\logic\genome.cpp" />
+    <ClCompile Include="src\logic\Object.cpp" />
+    <ClCompile Include="src\logic\Organic.cpp" />
+    <ClCompile Include="src\logic\TerrainCell.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Object.cpp" />
-    <ClCompile Include="src\Organic.cpp" />
-    <ClCompile Include="src\Random.cpp" />
-    <ClCompile Include="src\TerrainCell.cpp" />
+    <ClCompile Include="src\utils\random.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Ecosystem.h" />
-    <ClInclude Include="src\entity.h" />
-    <ClInclude Include="src\environment.h" />
-    <ClInclude Include="src\Gen.h" />
-    <ClInclude Include="src\Genome.h" />
-    <ClInclude Include="src\ListPool.h" />
-    <ClInclude Include="src\Object.h" />
-    <ClInclude Include="src\Organic.h" />
-    <ClInclude Include="src\Random.h" />
-    <ClInclude Include="src\TerrainCell.h" />
+    <ClInclude Include="src\logic\entity.h" />
+    <ClInclude Include="src\logic\world.h" />
+    <ClInclude Include="src\logic\gen.h" />
+    <ClInclude Include="src\logic\genome.h" />
+    <ClInclude Include="src\logic\Object.h" />
+    <ClInclude Include="src\logic\Organic.h" />
+    <ClInclude Include="src\logic\TerrainCell.h" />
+    <ClInclude Include="src\utils\pool.h" />
+    <ClInclude Include="src\utils\random.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

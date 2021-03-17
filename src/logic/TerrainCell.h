@@ -21,7 +21,4 @@ public:
 	void DelOrganic();
 	OrganicIterator GetOrganic() const;
 	bool IsContainsOrganic() const;
-
-	bool IsWalkable();
-
 };

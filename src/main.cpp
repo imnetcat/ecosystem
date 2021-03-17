@@ -92,7 +92,7 @@ int main()
 	tgui::MenuBar::Ptr menu = tgui::MenuBar::create();
 	menu->setHeight(MENUBAR_HEIGHT);
 	menu->addMenu("Help");
-	menu->addMenu("Environment");
+	menu->addMenu("World");
 	menu->addMenuItem("Run");
 	menu->addMenuItem("Pause");
 	menu->addMenuItem("Tic");
@@ -113,21 +113,21 @@ int main()
 		ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
 	});
 
-	menu->connectMenuItem({ "Environment", "Run" }, [&hibernate, &pause]() {
+	menu->connectMenuItem({ "World", "Run" }, [&hibernate, &pause]() {
 		if (hibernate)
 		{
 			return;
 		}
 		pause = false;
 	});
-	menu->connectMenuItem({ "Environment", "Pause" }, [&hibernate , &pause]() {
+	menu->connectMenuItem({ "World", "Pause" }, [&hibernate , &pause]() {
 		if (hibernate)
 		{
 			return;
 		}
 		pause = true;
 	});
-	menu->connectMenuItem({ "Environment", "Tic" }, [&hibernate, &pause, &do_tic]() {
+	menu->connectMenuItem({ "World", "Tic" }, [&hibernate, &pause, &do_tic]() {
 		if (hibernate)
 		{
 			return;
@@ -229,7 +229,7 @@ int main()
 	speed_slider->setInvertedDirection(true);
 	stats_panel->add(speed_slider);
 
-	menu->connectMenuItem({ "Environment", "Hybernate" }, [&pause, speed_slider, canvas, &hibernate]() {
+	menu->connectMenuItem({ "World", "Hybernate" }, [&pause, speed_slider, canvas, &hibernate]() {
 		hibernate = !hibernate;
 		pause = false;
 		if (hibernate)
@@ -589,7 +589,7 @@ int main()
 			if (duration.count() > speedmeter)
 			{
 				speedmeter = duration.count();
-				cout << "Environment update max time: \t" << speedmeter << " ms\r";
+				cout << "World update max time: \t" << speedmeter << " ms\r";
 			}
 
 			tics++;

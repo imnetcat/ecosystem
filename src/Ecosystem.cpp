@@ -1,5 +1,4 @@
 #include "Ecosystem.h"
-#include "Environment.h"
 #include <SFML/Graphics.hpp>
 
 Ecosystem::Ecosystem(
@@ -12,7 +11,7 @@ Ecosystem::Ecosystem(
 	unsigned short max_energy,
 	unsigned short max_hp
 )
-	: Environment(
+	: World(
 		width, 
 		height,
 		light_power,
@@ -93,7 +92,7 @@ RGBColor Ecosystem::ObtainEntityColor(EntitiesIterator entity)
 	}
 	case view_settings::success:
 	{
-		switch (Environment::SuccessRule(entity))
+		switch (World::SuccessRule(entity))
 		{
 		case Coefficient::reduce:
 			return { 255, 21, 0 };

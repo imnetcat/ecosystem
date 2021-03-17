@@ -1,5 +1,5 @@
 #pragma once
-#include "environment.h"
+#include "logic/world.h"
 #include <TGUI/TGUI.hpp>
 
 struct Info
@@ -23,7 +23,7 @@ struct Info
 	unsigned __int8 ch_of_mut = 0;
 };
 
-class Ecosystem : public Environment
+class Ecosystem : public World
 {
 public:
 	Ecosystem(

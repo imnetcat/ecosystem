@@ -1,7 +1,7 @@
 #pragma once
-#include "Gen.h"
-#include "ListPool.h"
-#include "Random.h"
+#include "gen.h"
+#include "../utils/pool.h"
+#include "../utils/random.h"
 #include <SFML/Graphics/Color.hpp>
 
 #include <limits>
@@ -34,7 +34,7 @@ private:
 	constexpr static const unsigned __int8 args_size = sizeof(args) * 8;
 	constexpr static const unsigned __int64 genome_max = std::numeric_limits<unsigned __int64>().max();
 	constexpr static const unsigned __int64 args_max = std::numeric_limits<unsigned __int8>().max();
-	constexpr static const unsigned __int8 trigger_max = static_cast<unsigned __int8>(Trigger::Count);
+	constexpr static const unsigned __int8 trigger_max = static_cast<unsigned __int8>(Operation::Count);
 
 	static const std::uniform_int_distribution<unsigned __int64> distributor;
 	static unsigned __int64 start_data[64];

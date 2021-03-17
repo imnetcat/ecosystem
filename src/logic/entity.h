@@ -1,7 +1,7 @@
 #pragma once
 #include "genome.h"
 #include "Object.h"
-#include "ListPool.h"
+#include "../utils/pool.h"
 
 enum class view_side
 {
@@ -94,4 +94,4 @@ public:
 	void Hp(unsigned short);
 };
 
-using EntitiesIterator = ListPool<Entity>::iterator;
+using EntitiesIterator = pool<Entity>::iterator;

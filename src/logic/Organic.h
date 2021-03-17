@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include "ListPool.h"
+#include "../utils/pool.h"
 
 class Organic : public Object
 {
@@ -15,4 +15,4 @@ public:
 	void Decreace(unsigned __int64 value);
 };
 
-using OrganicIterator = ListPool<Organic>::iterator;
+using OrganicIterator = pool<Organic>::iterator;

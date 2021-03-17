@@ -1,6 +1,6 @@
-#include "environment.h"
+#include "world.h"
 
-Environment::Environment(
+World::World(
 	unsigned int width,
 	unsigned int height,
 	unsigned short light_power,
@@ -51,7 +51,7 @@ Environment::Environment(
 		)
 	}));
 }
-Environment::~Environment()
+World::~World()
 {
 	for (size_t y = 0; y < height; y++)
 	{
@@ -60,7 +60,7 @@ Environment::~Environment()
 	delete[] terrain;
 }
 
-EntitiesIterator Environment::EntityDie(EntitiesIterator entity_iterator)
+EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)
 {
 	auto x = entity_iterator->GetX();
 	auto y = entity_iterator->GetY();
@@ -84,7 +84,7 @@ EntitiesIterator Environment::EntityDie(EntitiesIterator entity_iterator)
 	return entities.Del(entity_iterator);
 }
 
-void Environment::Update()
+void World::Update()
 {
 	// Update gravity
 	auto object = organic.begin();
@@ -127,27 +127,27 @@ void Environment::Update()
 			entity->DecreaceEnergy(MAINTENANACE_COST.at(gen.trigger));
 			switch (gen.trigger)
 			{
-			case Trigger::Stay:
+			case Operation::Stay:
 				break;
-			case Trigger::Separate:
+			case Operation::Separate:
 				Separationing(gen.args, entity);
 				break;
-			case Trigger::Birth:
+			case Operation::Birth:
 				Birthing(gen.args, entity);
 				break;
-			case Trigger::Carnivorous:
+			case Operation::Carnivorous:
 				Carnivorousing(entity);
 				break;
-			case Trigger::Mineraleon:
+			case Operation::Mineraleon:
 				EatOrganic(entity);
 				break;
-			case Trigger::Photosyntesis:
+			case Operation::Photosyntesis:
 				Photosynthesing(entity);
 				break;
-			case Trigger::Turn:
+			case Operation::Turn:
 				Turning(gen.args, entity);
 				break;
-			case Trigger::Move:
+			case Operation::Move:
 				Moving(entity);
 				break;
 			}
@@ -161,7 +161,7 @@ bool operator == (const Position& lhs, const Position& rhs)
 	return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
-Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
+Position World::GetViewedPosition(view_side view, size_t x, size_t y)
 {
 	auto maxX = width - 1;
 	auto maxY = height - 1;
@@ -252,7 +252,7 @@ Position Environment::GetViewedPosition(view_side view, size_t x, size_t y)
 	return { x, y };
 }
 
-view_side Environment::GetViewSide(unsigned __int8 arg)
+view_side World::GetViewSide(unsigned __int8 arg)
 {
 	// Define view side
 	/*
@@ -283,14 +283,14 @@ view_side Environment::GetViewSide(unsigned __int8 arg)
 	}
 }
 
-Coefficient Environment::SuccessRule(EntitiesIterator entity)
+Coefficient World::SuccessRule(EntitiesIterator entity)
 {
 	unsigned int success_border = max_energy * (double(entity->Age()) / (entity->MaxAge()));
 	return (entity->Energy() > success_border) ? Coefficient::enlarge :
 		(entity->Energy() > (success_border / 2) ? Coefficient::unchanged : Coefficient::reduce);
 }
 
-EntitiesIterator Environment::Reproduction(EntitiesIterator parent_entity, size_t x, size_t y, view_side view)
+EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, size_t x, size_t y, view_side view)
 {
 	Coefficient coef = SuccessRule(parent_entity);
 	
@@ -331,27 +331,27 @@ EntitiesIterator Environment::Reproduction(EntitiesIterator parent_entity, size_
 	return terrain[y][x].GetEntity();
 }
 
-void Environment::Birthing(unsigned __int8 args, EntitiesIterator entity)
+void World::Birthing(unsigned __int8 args, EntitiesIterator entity)
 {
 	if (entity->Energy() < (entity->ReproductionCost() / 2))
 		return;
 
 	Position new_position = GetViewedPosition(GetViewSide(args), entity->GetX(), entity->GetY());
 
-	if (terrain[new_position.y][new_position.x].IsWalkable())
+	if (!terrain[new_position.y][new_position.x].ContainsEntity())
 	{
 		Reproduction(entity, new_position.x, new_position.y, view_side::top);
 	}
 }
 
-void Environment::Separationing(unsigned __int8 args, EntitiesIterator entity)
+void World::Separationing(unsigned __int8 args, EntitiesIterator entity)
 {
 	if (entity->Energy() < entity->ReproductionCost())
 		return;
 
 	Position new_position = GetViewedPosition(GetViewSide(args), entity->GetX(), entity->GetY());
 
-	if (terrain[new_position.y][new_position.x].IsWalkable())
+	if (!terrain[new_position.y][new_position.x].ContainsEntity())
 	{
 		EntitiesIterator nEntity = Reproduction(entity, new_position.x, new_position.y, view_side::top);
 
@@ -361,7 +361,7 @@ void Environment::Separationing(unsigned __int8 args, EntitiesIterator entity)
 	}
 }
 
-void Environment::Carnivorousing(EntitiesIterator entity)
+void World::Carnivorousing(EntitiesIterator entity)
 {
 	Position viewed_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
 
@@ -387,7 +387,7 @@ void Environment::Carnivorousing(EntitiesIterator entity)
 		}
 	}
 }
-void Environment::EatOrganic(EntitiesIterator entity)
+void World::EatOrganic(EntitiesIterator entity)
 {
 	if (!terrain[entity->GetY()][entity->GetX()].IsContainsOrganic())
 	{
@@ -414,24 +414,24 @@ void Environment::EatOrganic(EntitiesIterator entity)
 		terrain[entity->GetY()][entity->GetX()].DelOrganic();
 	}
 }
-void Environment::Moving(EntitiesIterator entity)
+void World::Moving(EntitiesIterator entity)
 {
 	Position new_position = GetViewedPosition(entity->GetView(), entity->GetX(), entity->GetY());
 
-	if (terrain[new_position.y][new_position.x].IsWalkable())
+	if (!terrain[new_position.y][new_position.x].ContainsEntity())
 	{
 		terrain[entity->GetY()][entity->GetX()].DelEntity();
 		entity->SetPosition(new_position.x, new_position.y);
 		terrain[new_position.y][new_position.x].SetEntity(entity);
 	}
 }
-void Environment::Photosynthesing(EntitiesIterator entity)
+void World::Photosynthesing(EntitiesIterator entity)
 {
 	entity->IncreaceEnergy(
 			(((height - (double)entity->GetY()) / height) * light_coef) * light_power * 2
 	);
 }
-void Environment::Turning(unsigned __int8 args, EntitiesIterator entity)
+void World::Turning(unsigned __int8 args, EntitiesIterator entity)
 {
 	// Set up new side of view for entity
 	entity->SetView(GetViewSide(args));

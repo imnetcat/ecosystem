@@ -9,10 +9,10 @@ struct Position
 
 bool operator == (const Position& lhs, const Position& rhs);
 
-class Environment
+class World
 {
 public:
-	explicit Environment(
+	explicit World(
 		unsigned int width, 
 		unsigned int height,
 		unsigned short light_power,
@@ -22,7 +22,7 @@ public:
 		unsigned short max_energy,
 		unsigned short max_hp
 	); 
-	~Environment();
+	~World();
 
 	void Update();
 
@@ -42,8 +42,8 @@ protected:
 
 	size_t max_generation;
 	TerrainCell** terrain;
-	ListPool<Entity> entities;
-	ListPool<Organic> organic;
+	pool<Entity> entities;
+	pool<Organic> organic;
 
 	Entity* observed_entity = nullptr;
 

@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 template <class T>
-class ListPool
+class pool
 {
 public:
 	struct iterator : public std::list<T*>::iterator
@@ -82,21 +82,21 @@ public:
 		return it;
 	}
 
-	ListPool(size_t size)
+	pool(size_t size)
 	{
-		pool = new T[size];
+		data = new T[size];
 		for (size_t i = 0; i < size; i++)
 		{
-			free.push(&pool[i]);
+			free.push(&data[i]);
 		}
 	}
-	~ListPool()
+	~pool()
 	{
-		delete[] pool;
+		delete[] data;
 	}
 
 private:
 	std::list<T*> delta;
 	std::queue<T*> free;
-	T* pool;
+	T* data;
 };

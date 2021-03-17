@@ -33,7 +33,7 @@ World::World(
 	// Put first entity
 	auto x = width / 2;
 	auto y = height / 8;
-	terrain[y][x].SetEntity(entities.Add({
+	terrain[y][x].SetEntity(entities.get({
 		x, y,
 		view_side::top,
 		max_hp,
@@ -70,7 +70,7 @@ EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)
 	}
 	else
 	{
-		terrain[y][x].SetOrganic(organic.Add({ x, y, entity_iterator->Energy() + 100ull }));
+		terrain[y][x].SetOrganic(organic.get({ x, y, entity_iterator->Energy() + 100ull }));
 	}
 	terrain[y][x].DelEntity();
 	if (observed_entity)
@@ -81,7 +81,7 @@ EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)
 			observed_entity = nullptr;
 		}
 	}
-	return entities.Del(entity_iterator);
+	return entities.free(entity_iterator);
 }
 
 void World::Update()
@@ -313,7 +313,7 @@ EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, size_t x, s
 	
 	parent_entity->DecreaceEnergy(parent_entity->ReproductionCost());
 
-	terrain[y][x].SetEntity(entities.Add({
+	terrain[y][x].SetEntity(entities.get({
 		x, y,
 		view,
 		max_hp,
@@ -403,14 +403,14 @@ void World::EatOrganic(EntitiesIterator entity)
 		o->Decreace(max_organic_to_eat);
 		if (!o->Energy())
 		{
-			organic.Del(o);
+			organic.free(o);
 			terrain[entity->y()][entity->x()].DelOrganic();
 		}
 	}
 	else
 	{
 		entity->IncreaceEnergy(energy);
-		organic.Del(o);
+		organic.free(o);
 		terrain[entity->y()][entity->x()].DelOrganic();
 	}
 }

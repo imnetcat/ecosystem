@@ -1,4 +1,5 @@
 #include "world.h"
+using namespace Ecosystem::Logic;
 
 World::World(
 	unsigned int width,
@@ -28,6 +29,14 @@ World::World(
 	{
 		terrain[y] = new cell[width];
 	}
+	for (size_t y = 0; y < height; y++)
+	{
+		for (size_t x = 0; x < width; x++)
+		{
+			terrain[y][x].Init(light_power, light_coef, x, y);
+		}
+	}
+
 
 	// Put first entity
 	auto x = width / 2;
@@ -424,4 +433,43 @@ void World::Photosynthesing(EntitiesIterator entity)
 	entity->IncreaceEnergy(
 			(((height - (double)entity->y()) / height) * light_coef) * light_power * 2
 	);
+}
+
+unsigned short World::MaxHp() const
+{
+	return max_hp;
+}
+size_t World::MaxGeneration() const
+{
+	return max_generation;
+}
+cell** const World::Terrain() const
+{
+	return terrain;
+}
+const pool<Entity>& World::Entities() const
+{
+	return entities;
+}
+const pool<Organic>& World::Organics() const
+{
+	return organic;
+}
+
+unsigned int World::Width() const
+{
+	return width;
+}
+unsigned int World::Height() const
+{
+	return height;
+}
+
+unsigned int World::LightPower() const
+{
+	return light_power;
+}
+double World::LightCoef() const
+{
+	return light_coef;
 }

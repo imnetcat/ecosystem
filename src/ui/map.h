@@ -1,60 +1,58 @@
 #pragma once
 #include "../logic/world.h"
 #include <TGUI/TGUI.hpp>
-
-struct Info
+namespace Ecosystem
 {
-	Color color;
-	struct Age
+	namespace UI
 	{
-		size_t curr = 0;
-		size_t max = 0;
-	} age;
-	bool contains_entity = 0;
-	unsigned __int64 genome = 0;
-	unsigned __int8 genome_args = 0;
-	unsigned short hp = 0;
-	unsigned short max_hp = 0;
-	size_t energy = 0;
-	size_t max_energy = 0;
-	size_t generation = 0;
-	size_t light_power = 0;
-	size_t food_power = 0;
-	unsigned __int8 ch_of_mut = 0;
-};
+		class Map
+		{
+		public:
 
-class Map
-{
-public:
-	Map(World* world);
+			enum class Mode
+			{
+				terrain,
+				organic,
+				ration,
+				energy,
+				species,
+				age,
+				hp,
+				success,
+				generations
+			};
 
-	void Draw(tgui::Canvas::Ptr canvas);
-	Color ObtainEntityColor(pool<Entity>::const_iterator entity);
-	Color ObtainColor(size_t x, size_t y);
 
-	view_settings GetView();
-	void SetView(view_settings new_val);
+			Map(Logic::World* world);
 
-	void ScaleCellSize(float scale);
-	unsigned int Width();
-	unsigned int Height();
-	size_t GetMaxGeneration();
-	size_t GetEntitiesCount();
+			void Draw(tgui::Canvas::Ptr canvas);
+			Logic::Color ObtainEntityColor(pool<Logic::Entity>::const_iterator entity) const;
+			Logic::Color ObtainColor(const Logic::cell* cell) const;
 
-	Info GetInfoByCellsCoords(size_t x, size_t y);
-	Info GetInfoByPixelCoords(size_t x_px, size_t y_px);
+			Mode GetMode();
+			void SetMode(Mode new_val);
 
-private:
+			void ScaleCellSize(float scale);
+			unsigned int Width();
+			unsigned int Height();
+			size_t GetMaxGeneration();
+			size_t GetEntitiesCount();
 
-	World* world;
+			const Logic::cell* GetCell(size_t x_px, size_t y_px);
 
-	const short OUTLINE = 1;
+		private:
 
-	static const unsigned short cell_default_size = 10;
-	unsigned short cell_size = cell_default_size;
-	unsigned short cell_outline = cell_size + OUTLINE;
-	unsigned int map_width = world->Width() * cell_outline + 1;
-	unsigned int map_height = world->Height() * cell_outline + 1;
+			Logic::World* world;
 
-	view_settings view = view_settings::terrain;
-};
+			const short OUTLINE = 1;
+
+			static const unsigned short cell_default_size = 10;
+			unsigned short cell_size = cell_default_size;
+			unsigned short cell_outline = cell_size + OUTLINE;
+			unsigned int map_width = world->Width() * cell_outline + 1;
+			unsigned int map_height = world->Height() * cell_outline + 1;
+
+			Mode mode = Mode::terrain;
+		};
+	}
+}

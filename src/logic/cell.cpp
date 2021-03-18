@@ -1,4 +1,12 @@
 #include "cell.h"
+using namespace Ecosystem::Logic;
+
+void cell::Init(unsigned int lpower, double lcoef, size_t x, size_t y)
+{
+	light_power = lpower;
+	light_coef = lcoef;
+	SetPosition(x, y);
+}
 
 EntitiesIterator cell::GetEntity() const
 {
@@ -39,4 +47,9 @@ OrganicIterator cell::GetOrganic() const
 bool cell::IsContainsOrganic() const
 {
 	return has_object;
+}
+
+unsigned int cell::LightPower() const
+{
+	return y() ? y() * light_coef * light_power : light_power;
 }

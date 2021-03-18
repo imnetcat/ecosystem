@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include <array>
+using namespace Ecosystem::Logic;
 
 Entity::Entity()
 	:

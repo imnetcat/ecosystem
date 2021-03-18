@@ -86,5 +86,14 @@
     <ClInclude Include="src\ui\map.h">
       <Filter>Source Files\ui</Filter>
     </ClInclude>
+    <ClInclude Include="src\logic\coefficient.h">
+      <Filter>Source Files\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\colors.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\colors.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 #include "genome.h"
+using namespace Ecosystem::Logic;
 
 const std::uniform_int_distribution<unsigned __int64> Genome::distributor = std::uniform_int_distribution<unsigned __int64>(1, args_max - 1);
 

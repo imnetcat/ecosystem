@@ -10,6 +10,8 @@ using namespace std::chrono;
 #include <windows.h>
 #include <ShellApi.h>
 
+using namespace Ecosystem::Logic;
+using namespace Ecosystem::UI;
 using namespace std;
 using namespace sf;
 
@@ -81,7 +83,7 @@ int main()
 		}
 		pause = true;
 	});
-	gui.menubar({ "World", "Tic" }, [&hibernate, &pause, &do_tic]() {
+	gui.menubar({ "World", "By tic" }, [&hibernate, &pause, &do_tic]() {
 		if (hibernate)
 		{
 			return;
@@ -91,31 +93,31 @@ int main()
 	});
 
 	gui.menubar({ "View", "Terrain" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::terrain);
+		ecosys_ptr->SetMode(Map::Mode::terrain);
 	});
 	gui.menubar({ "View", "Energy" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::energy);
+		ecosys_ptr->SetMode(Map::Mode::energy);
 	});
 	gui.menubar({ "View", "Organic" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::organic);
+		ecosys_ptr->SetMode(Map::Mode::organic);
 	});
 	gui.menubar({ "View", "Species" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::species);
+		ecosys_ptr->SetMode(Map::Mode::species);
 	});
 	gui.menubar({ "View", "Age" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::age);
+		ecosys_ptr->SetMode(Map::Mode::age);
 	});
 	gui.menubar({ "View", "Ration" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::ration);
+		ecosys_ptr->SetMode(Map::Mode::ration);
 	});
 	gui.menubar({ "View", "Hp" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::hp);
+		ecosys_ptr->SetMode(Map::Mode::hp);
 	});
 	gui.menubar({ "View", "Success" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::success);
+		ecosys_ptr->SetMode(Map::Mode::success);
 	});
 	gui.menubar({ "View", "Generation" }, [ecosys_ptr]() {
-		ecosys_ptr->SetView(view_settings::generations);
+		ecosys_ptr->SetMode(Map::Mode::generations);
 	});
 
 	auto map_layout = tgui::VerticalLayout::create();
@@ -389,27 +391,29 @@ int main()
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
 		info_hp, info_age, info_title,
-		&cell_image, cell_image_canvas, info_genome_args](const Info& info)
+		&cell_image, cell_image_canvas, info_genome_args, world_map](const Ecosystem::Logic::cell* cell)
 	{
 		if (hibernate)
 		{
 			return;
 		}
-		Color color(info.color.r, info.color.g, info.color.b);
+
+		Color color = world_map.ObtainColor(cell);
+
 		cell_image[0].color = color;
 		cell_image[1].color = color;
 		cell_image[2].color = color;
 		cell_image[3].color = color;
-		if (info.contains_entity)
+		if (cell->ContainsEntity())
 		{
 			info_title->setText("Entity");
-			info_genome->setText(to_string(info.genome));
-			info_generation->setText(to_string(info.generation));
-			info_age->setText(to_string(info.age.curr) + "/" + to_string(info.age.max));
-			info_mutation_chance->setText(to_string(info.ch_of_mut));
-			info_energy->setText(to_string(info.energy) + "/" + to_string(info.max_energy));
-			info_hp->setText(to_string(info.hp) + "/" + to_string(info.max_hp));
-			info_genome_args->setText(to_string(info.genome_args));
+			info_genome->setText(to_string(cell->GetEntity()->GetGenome().Data()));
+			info_generation->setText(to_string(cell->GetEntity()->GetGenome().Generation()));
+			info_age->setText(to_string(cell->GetEntity()->Age()) + "/" + to_string(cell->GetEntity()->MaxAge()));
+			info_mutation_chance->setText(to_string(cell->GetEntity()->GetGenome().MutationChance()));
+			info_energy->setText(to_string(cell->GetEntity()->Energy()) + "/" + to_string(cell->GetEntity()->MaxEnergy()));
+			info_hp->setText(to_string(cell->GetEntity()->Hp()));
+			info_genome_args->setText(to_string(cell->GetEntity()->GetGenome().Args()));
 		}
 		else
 		{
@@ -422,24 +426,19 @@ int main()
 			info_hp->setText("-");
 			info_genome_args->setText("-");
 		}
-		info_organic_power->setText(to_string(info.food_power));
-		info_light_power->setText(to_string(info.light_power));
+
+		info_organic_power->setText(to_string(cell->GetOrganic()->Energy()));
+		info_light_power->setText(to_string(cell->LightPower()));
 
 		cell_image_canvas->clear();
 		cell_image_canvas->draw(cell_image);
 		cell_image_canvas->display();
 	};
 
-	auto SetObservedInfoByPixel = [SetInfoBox, ecosys_ptr](const sf::Vector2f& mousePos)
+	canvas->onClick([SetInfoBox, ecosys_ptr](const sf::Vector2f& mousePos)
 	{
-		SetInfoBox(ecosys_ptr->GetInfoByPixelCoords(mousePos.x, mousePos.y));
-	};
-	auto SetObservedInfoByCoords = [SetInfoBox, ecosys_ptr](size_t x, size_t y)
-	{
-		SetInfoBox(ecosys_ptr->GetInfoByCellsCoords(x, y));
-	};
-
-	canvas->onClick(SetObservedInfoByPixel);
+		SetInfoBox(ecosys_ptr->GetCell(mousePos.x, mousePos.y));
+	});
 
 	auto ClearInfoBox = [
 		&ecosys_ptr, info_genome, info_light_power,

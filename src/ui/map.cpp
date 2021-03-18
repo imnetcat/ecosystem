@@ -1,5 +1,7 @@
 #include "map.h"
-#include <SFML/Graphics.hpp>
+#include "colors.h"
+using namespace Ecosystem::UI;
+using namespace Ecosystem::Logic;
 
 Map::Map(World* world)
 	: world(world)
@@ -14,82 +16,86 @@ unsigned int Map::Height()
 	return map_height;
 }
 
-Color Map::ObtainEntityColor(pool<Entity>::const_iterator entity)
+Color Map::ObtainEntityColor(pool<Entity>::const_iterator entity) const
 {
-	switch (view)
+	switch (mode)
 	{
-	case view_settings::terrain:
-		return { 13, 168, 19 };
-	case view_settings::organic:
-		return { 209, 209, 209 };
-	case view_settings::ration:
+	case Mode::terrain:
+		return ENTITY_COLOR;
+	case Mode::organic:
+		return ORGANIC_COLOR;
+	case Mode::ration:
 		return entity->GetGenome().Ration();
-	case view_settings::species:
+	case Mode::species:
 		return entity->GetGenome().Species();
-	case view_settings::energy:
+	case Mode::energy:
 	{
 		if (entity->Energy() < (entity->MaxEnergy() / 2))
 		{
 			return { 
 				255, 
-				static_cast<unsigned char>(255 * (entity->Energy() / (double)(entity->MaxEnergy() / 2))),
+				static_cast<unsigned char>(
+					255 * (entity->Energy() / (double)(entity->MaxEnergy() / 2))
+				),
 				0 
 			};
 		}
 		else
 		{
 			return { 
-				static_cast<unsigned char>(255 - 255 * (entity->Energy() / (double)entity->MaxEnergy())),
+				static_cast<unsigned char>(
+					255 - 255 * (entity->Energy() / (double)entity->MaxEnergy())
+				),
 				255,
 				0 
 			};
 		}
 	}
-	case view_settings::age:
+	case Mode::age:
 	{
 		unsigned char c = static_cast<unsigned char>(
 			255 - 255 * ((double)entity->Age() / entity->MaxAge())
 		);
 		return { c, c, c };
 	}
-	case view_settings::hp:
+	case Mode::hp:
 	{
 		if (entity->Hp() < (world->MaxHp() / 2))
 		{
 			return { 
 				255, 
-				static_cast<unsigned char>(255 * (entity->Hp() / (double)world->MaxHp())),
+				static_cast<unsigned char>(
+					255 * (entity->Hp() / (double)world->MaxHp())
+				),
 				0 
 			};
 		}
 		else
 		{
 			return { 
-				static_cast<unsigned char>(255 - 255 * (entity->Hp() / (double)world->MaxHp())),
+				static_cast<unsigned char>(255 - 255 * (
+					entity->Hp() / (double)world->MaxHp())
+				),
 				255, 
 				0 
 			};
 		}
 	}
-	case view_settings::success:
+	case Mode::success:
 	{
 		switch (world->SuccessRule(entity))
 		{
 		case Coefficient::reduce:
-			return { 255, 21, 0 };
-			break;
+			return RED;
 		case Coefficient::unchanged:
-			return { 255, 225, 0 };
-			break;
+			return YELLOW;
 		case Coefficient::enlarge:
-			return { 0, 194, 0 };
-			break;
+			return GREEN;
 		default:
-			return { 255, 225, 0 };
-			break;
+			return BLACK;
 		}
 	}
-	case view_settings::generations:
+	case Mode::generations:
 	{
 		unsigned char c = static_cast<unsigned char>(
 			255 * ((double)entity->GetGenome().Generation()) / world->MaxGeneration()
@@ -97,27 +103,27 @@ Color Map::ObtainEntityColor(pool<Entity>::const_iterator entity)
 		return { c, c, c }; 
 	}
 	default:
-		return {};
+		return BLACK;
 	}
 }
 
-Color Map::ObtainColor(size_t x, size_t y)
+Color Map::ObtainColor(const cell* cell) const
 {
-	if (world->Terrain()[y][x].ContainsEntity() && view != view_settings::organic)
+	if (cell->ContainsEntity())
 	{
-		return ObtainEntityColor(world->Terrain()[y][x].GetEntity());
+		return ObtainEntityColor(cell->GetEntity());
 	}
-	else if (world->Terrain()[y][x].IsContainsOrganic())
+	else if (cell->IsContainsOrganic())
 	{
-		return	{ 0, 171, 209 };
+		return	ORGANIC_COLOR;
 	}
 
-	return { 141, 219, 255 };
+	return BLUE;
 }
 
 void Map::Draw(tgui::Canvas::Ptr canvas)
 {
-	canvas->clear({ 141, 219, 255 });
+	canvas->clear(BLUE);
 
 	sf::RectangleShape sprite;
 	sprite.setOutlineThickness(0);
@@ -126,25 +132,25 @@ void Map::Draw(tgui::Canvas::Ptr canvas)
 	sf::Vector2f size(cell_size, cell_size);
 	sf::Vector2f osize(cell_outline, cell_outline);
 
-	auto object = world->Organics().begin();
-	while (object != world->Organics().end())
+	auto organic = world->Organics().begin();
+	while (organic != world->Organics().end())
 	{
-		auto x = object->x();
-		auto y = object->y();
+		auto x = organic->x();
+		auto y = organic->y();
 
 		pos.x = x * cell_outline;
 		pos.y = y * cell_outline;
 		sprite.setPosition(pos);
 		sprite.setSize(osize);
 
-		sprite.setFillColor({ 0, 171, 209 });
+		sprite.setFillColor(ORGANIC_COLOR);
 		
 		canvas->draw(sprite);
 
-		object++;
+		organic++;
 	}
 
-	if (view == view_settings::organic)
+	if (mode == Mode::organic)
 	{
 		canvas->display();
 		return;
@@ -186,51 +192,28 @@ void Map::ScaleCellSize(float scale)
 	map_height = world->Height() * cell_outline + 1;
 }
 
-Info Map::GetInfoByCellsCoords(size_t x, size_t y)
+const cell* Map::GetCell(size_t x_px, size_t y_px)
 {
-	Info info;
+	size_t x = x_px / cell_outline;
+	size_t y = y_px / cell_outline;
+
 	if (x >= world->Width() || y >= world->Height())
 	{
-		return info;
+		return nullptr;
 	}
 
-	info.color = ObtainColor(x, y);
-
-	info.light_power = (((world->Height() - (double)y) / world->Height()) * world->LightCoef()) * world->LightPower() * 2;
-	info.contains_entity = world->Terrain()[y][x].ContainsEntity();
-	if (world->Terrain()[y][x].ContainsEntity())
-	{
-		info.age.curr = world->Terrain()[y][x].GetEntity()->Age();
-		info.age.max = world->Terrain()[y][x].GetEntity()->MaxAge();
-		info.genome = world->Terrain()[y][x].GetEntity()->GetGenome().Data();
-		info.genome_args = world->Terrain()[y][x].GetEntity()->GetGenome().Args();
-		info.generation = world->Terrain()[y][x].GetEntity()->GetGenome().Generation();
-		info.hp = world->Terrain()[y][x].GetEntity()->Hp();
-		info.ch_of_mut = world->Terrain()[y][x].GetEntity()->GetGenome().MutationChance();
-		info.energy = world->Terrain()[y][x].GetEntity()->Energy();
-		info.max_energy = world->Terrain()[y][x].GetEntity()->MaxEnergy();
-		info.max_hp = world->MaxHp();
-	}
-	if (world->Terrain()[y][x].IsContainsOrganic())
-	{
-		info.food_power = world->Terrain()[y][x].GetOrganic()->Energy();
-	}
-	return info;
-}
-Info Map::GetInfoByPixelCoords(size_t x_px, size_t y_px)
-{
-	return GetInfoByCellsCoords(x_px / cell_outline, y_px / cell_outline);
+	return &world->Terrain()[y][x];
 }
 
 size_t Map::GetEntitiesCount()
 {
 	return world->Entities().size();
 }
-view_settings Map::GetView()
+Map::Mode Map::GetMode()
 {
-	return view;
+	return mode;
 }
-void Map::SetView(view_settings new_val)
+void Map::SetMode(Mode new_val)
 {
-	view = new_val;
+	mode = new_val;
 }

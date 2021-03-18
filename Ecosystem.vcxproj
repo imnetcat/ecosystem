@@ -30,6 +30,7 @@
     <ClCompile Include="src\utils\random.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\logic\coefficient.h" />
     <ClInclude Include="src\logic\entity.h" />
     <ClInclude Include="src\logic\world.h" />
     <ClInclude Include="src\logic\gen.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="src\logic\cell.h" />
     <ClInclude Include="src\ui\gui.h" />
     <ClInclude Include="src\ui\map.h" />
+    <ClInclude Include="src\ui\colors.h" />
     <ClInclude Include="src\utils\pool.h" />
     <ClInclude Include="src\utils\random.h" />
   </ItemGroup>

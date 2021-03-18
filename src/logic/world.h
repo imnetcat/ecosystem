@@ -11,7 +11,6 @@ namespace Ecosystem
 				unsigned int width,
 				unsigned int height,
 				unsigned short light_power,
-				double light_coef,
 				unsigned short max_orginic_to_eat,
 				unsigned short max_entities_to_eat,
 				unsigned short max_energy
@@ -29,15 +28,12 @@ namespace Ecosystem
 			const pool<Organic>& Organics() const;
 			unsigned int Width() const;
 			unsigned int Height() const;
-			unsigned int LightPower() const;
-			double LightCoef() const;
 		protected:
 
 			const unsigned int width;
 			const unsigned int height;
 
 			const unsigned short light_power;
-			const double light_coef;
 
 			const unsigned short max_organic_to_eat;
 			const unsigned short max_entities_to_eat;

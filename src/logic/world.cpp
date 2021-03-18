@@ -5,7 +5,6 @@ World::World(
 	unsigned int width,
 	unsigned int height,
 	unsigned short light_power,
-	double light_coef,
 	unsigned short max_organic_to_eat,
 	unsigned short max_entities_to_eat,
 	unsigned short max_energy
@@ -17,7 +16,6 @@ World::World(
 	, entities((size_t)height* width)
 	, organic((size_t)height* width)
 	, light_power(light_power)
-	, light_coef(light_coef)
 	, max_organic_to_eat(max_organic_to_eat)
 	, max_entities_to_eat(max_entities_to_eat)
 {
@@ -31,7 +29,7 @@ World::World(
 	{
 		for (size_t x = 0; x < width; x++)
 		{
-			terrain[y][x].Init(light_power, light_coef, x, y);
+			terrain[y][x].Init(light_power, x, y);
 		}
 	}
 
@@ -427,7 +425,7 @@ void World::Moving(unsigned __int8 args, EntitiesIterator entity)
 void World::Photosynthesing(EntitiesIterator entity)
 {
 	entity->IncreaceEnergy(
-			(((height - (double)entity->y()) / height) * light_coef) * light_power * 2
+		terrain[entity->y()][entity->x()].LightPower()
 	);
 }
 
@@ -455,13 +453,4 @@ unsigned int World::Width() const
 unsigned int World::Height() const
 {
 	return height;
-}
-
-unsigned int World::LightPower() const
-{
-	return light_power;
-}
-double World::LightCoef() const
-{
-	return light_coef;
 }

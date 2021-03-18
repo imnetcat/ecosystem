@@ -31,7 +31,6 @@ int main()
 	unsigned int WORLD_WIDTH		= 100;
 	unsigned int WORLD_HEIGHT		= 51;
 	unsigned short  LIGHT_POWER		= 2000;
-	double LIGHT_COEF				= 0.5;
 	unsigned short MAX_ORGANIC_TO_EAT = 3000;
 	unsigned short MAX_ENTITIES_TO_EAT = 6000;
 	unsigned short MAX_ENERGY = 20000;
@@ -41,7 +40,6 @@ int main()
 		WORLD_WIDTH, 
 		WORLD_HEIGHT,
 		LIGHT_POWER, 
-		LIGHT_COEF,
 		MAX_ORGANIC_TO_EAT, 
 		MAX_ENTITIES_TO_EAT, 
 		MAX_ENERGY
@@ -408,7 +406,15 @@ int main()
 			info_genome_args->setText("-");
 		}
 
-		info_organic_power->setText(to_string(cell->GetOrganic()->Energy()));
+		if (cell->ContainsEntity())
+		{
+			info_organic_power->setText(to_string(cell->GetOrganic()->Energy()));
+		}
+		else
+		{
+			info_organic_power->setText("-");
+		}
+
 		info_light_power->setText(to_string(cell->LightPower()));
 
 		cell_image_canvas->clear();

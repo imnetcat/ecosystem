@@ -35,7 +35,6 @@ int main()
 	unsigned short MAX_ORGANIC_TO_EAT = 3000;
 	unsigned short MAX_ENTITIES_TO_EAT = 6000;
 	unsigned short MAX_ENERGY = 20000;
-	unsigned short MAX_HP = 100;
 
 	Genome::Init(GENOME_SEED);
 	World world(
@@ -45,8 +44,7 @@ int main()
 		LIGHT_COEF,
 		MAX_ORGANIC_TO_EAT, 
 		MAX_ENTITIES_TO_EAT, 
-		MAX_ENERGY, 
-		MAX_HP
+		MAX_ENERGY
 	);
 
 	Map world_map(&world);
@@ -109,9 +107,6 @@ int main()
 	});
 	gui.menubar({ "View", "Ration" }, [ecosys_ptr]() {
 		ecosys_ptr->SetMode(Map::Mode::ration);
-	});
-	gui.menubar({ "View", "Hp" }, [ecosys_ptr]() {
-		ecosys_ptr->SetMode(Map::Mode::hp);
 	});
 	gui.menubar({ "View", "Success" }, [ecosys_ptr]() {
 		ecosys_ptr->SetMode(Map::Mode::success);
@@ -294,22 +289,10 @@ int main()
 	label->setPosition(72, 46);
 	label->setSize(100, 18);
 	label->setTextSize(13);
-	label->setText("hp:");
-	info_panel->add(label);
-	auto info_hp = tgui::Label::create();
-	info_hp->setPosition(110, 46);
-	info_hp->setSize(100, 18);
-	info_hp->setTextSize(13);
-	info_panel->add(info_hp);
-
-	label = tgui::Label::create();
-	label->setPosition(10, 75);
-	label->setSize(100, 18);
-	label->setTextSize(13);
 	label->setText("generation:");
 	info_panel->add(label);
 	auto info_generation = tgui::Label::create();
-	info_generation->setPosition(110, 75);
+	info_generation->setPosition(110, 46);
 	info_generation->setSize(100, 18);
 	info_generation->setTextSize(13);
 	info_panel->add(info_generation);
@@ -390,7 +373,7 @@ int main()
 		&hibernate, ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
-		info_hp, info_age, info_title,
+		info_age, info_title,
 		&cell_image, cell_image_canvas, info_genome_args, world_map](const Ecosystem::Logic::cell* cell)
 	{
 		if (hibernate)
@@ -412,7 +395,6 @@ int main()
 			info_age->setText(to_string(cell->GetEntity()->Age()) + "/" + to_string(cell->GetEntity()->MaxAge()));
 			info_mutation_chance->setText(to_string(cell->GetEntity()->GetGenome().MutationChance()));
 			info_energy->setText(to_string(cell->GetEntity()->Energy()) + "/" + to_string(cell->GetEntity()->MaxEnergy()));
-			info_hp->setText(to_string(cell->GetEntity()->Hp()));
 			info_genome_args->setText(to_string(cell->GetEntity()->GetGenome().Args()));
 		}
 		else
@@ -423,7 +405,6 @@ int main()
 			info_age->setText("-");
 			info_mutation_chance->setText("-");
 			info_energy->setText("-");
-			info_hp->setText("-");
 			info_genome_args->setText("-");
 		}
 
@@ -444,7 +425,7 @@ int main()
 		&ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance, 
 		info_energy, info_generation, 
-		info_hp, info_age, info_title,
+		info_age, info_title,
 		&cell_image, cell_image_canvas, info_genome_args]()
 	{
 		cell_image[0].color = sf::Color::White;
@@ -462,7 +443,6 @@ int main()
 		info_age->setText("-");
 		info_mutation_chance->setText("-");
 		info_energy->setText("-");
-		info_hp->setText("-");
 		info_organic_power->setText("-");
 		info_light_power->setText("-");
 		info_genome_args->setText("-");

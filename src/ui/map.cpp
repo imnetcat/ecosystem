@@ -58,29 +58,6 @@ Color Map::ObtainEntityColor(pool<Entity>::const_iterator entity) const
 		);
 		return { c, c, c };
 	}
-	case Mode::hp:
-	{
-		if (entity->Hp() < (world->MaxHp() / 2))
-		{
-			return { 
-				255, 
-				static_cast<unsigned char>(
-					255 * (entity->Hp() / (double)world->MaxHp())
-				),
-				0 
-			};
-		}
-		else
-		{
-			return { 
-				static_cast<unsigned char>(255 - 255 * (
-					entity->Hp() / (double)world->MaxHp())
-				),
-				255, 
-				0 
-			};
-		}
-	}
 	case Mode::success:
 	{
 		switch (world->SuccessRule(entity))

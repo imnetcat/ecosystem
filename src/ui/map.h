@@ -17,7 +17,6 @@ namespace Ecosystem
 				energy,
 				species,
 				age,
-				hp,
 				success,
 				generations
 			};

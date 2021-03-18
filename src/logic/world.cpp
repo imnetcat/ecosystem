@@ -8,8 +8,7 @@ World::World(
 	double light_coef,
 	unsigned short max_organic_to_eat,
 	unsigned short max_entities_to_eat,
-	unsigned short max_energy,
-	unsigned short max_hp
+	unsigned short max_energy
 )
 	: max_generation(1)
 	, width(width)
@@ -21,7 +20,6 @@ World::World(
 	, light_coef(light_coef)
 	, max_organic_to_eat(max_organic_to_eat)
 	, max_entities_to_eat(max_entities_to_eat)
-	, max_hp(max_hp)
 {
 	// Allocate 2d array for world map
 	terrain = new cell * [height];
@@ -43,7 +41,6 @@ World::World(
 	auto y = height / 8;
 	terrain[y][x].SetEntity(entities.get({
 		x, y,
-		max_hp,
 		100,
 		max_energy,
 		100,
@@ -310,7 +307,6 @@ EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, const posit
 
 	terrain[pos.y()][pos.x()].SetEntity(entities.get({
 		pos.x(), pos.y(),
-		max_hp,
 		100,
 		parent_entity->MaxEnergy(),
 		new_max_age,
@@ -435,10 +431,6 @@ void World::Photosynthesing(EntitiesIterator entity)
 	);
 }
 
-unsigned short World::MaxHp() const
-{
-	return max_hp;
-}
 size_t World::MaxGeneration() const
 {
 	return max_generation;

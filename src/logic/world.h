@@ -14,8 +14,7 @@ namespace Ecosystem
 				double light_coef,
 				unsigned short max_orginic_to_eat,
 				unsigned short max_entities_to_eat,
-				unsigned short max_energy,
-				unsigned short max_hp
+				unsigned short max_energy
 			);
 			~World();
 
@@ -24,7 +23,6 @@ namespace Ecosystem
 			Coefficient SuccessRule(pool<Entity>::const_iterator) const;
 
 			// Getters
-			unsigned short MaxHp() const;
 			size_t MaxGeneration() const;
 			cell** const Terrain() const;
 			const pool<Entity>& Entities() const;
@@ -43,7 +41,6 @@ namespace Ecosystem
 
 			const unsigned short max_organic_to_eat;
 			const unsigned short max_entities_to_eat;
-			const unsigned short max_hp;
 
 			size_t max_generation;
 			cell** terrain;

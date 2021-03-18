@@ -6,18 +6,15 @@ Entity::Entity()
 	position(0, 0),
 	age(0),
 	max_age(0),
-	hp(0),
 	energy(0),
 	defence(0),
 	attack(0),
-	max_hp(0),
 	max_energy(0)
 {}
 
 Entity::Entity(
 	size_t x,
 	size_t y,
-	unsigned short max_hp,
 	unsigned short energy,
 	unsigned short max_energy,
 	unsigned short max_age,
@@ -28,8 +25,6 @@ Entity::Entity(
 	position(x, y),
 	age(0),
 	max_age(max_age),
-	max_hp(max_hp),
-	hp(max_hp),
 	energy(energy),
 	max_energy(max_energy),
 	defence(defence),
@@ -54,15 +49,15 @@ bool Entity::Defencing(double attack)
 	
 	attack -= defence;
 
-	unsigned short dif = attack * hp;
-	if (hp < dif)
+	unsigned short dif = attack * energy;
+	if (energy < dif)
 	{
-		hp = 0;
+		energy = 0;
 		return false;
 	}
 	else
 	{
-		hp -= dif;
+		energy -= dif;
 		defence -= 0.01; // defence skill up
 		return true;
 	}
@@ -82,21 +77,6 @@ double Entity::Defence() const
 
 void Entity::IncreaceEnergy(unsigned short value)
 {
-	unsigned short dif = max_hp - hp;
-	if (dif != 0)
-	{
-		if (value > dif)
-		{
-			IncreaceHp(dif);
-			value -= dif;
-		}
-		else
-		{
-			IncreaceHp(dif - value);
-			value = 0;
-		}
-	}
-
 	if (energy + value < max_energy)
 		energy += value;
 	else
@@ -113,28 +93,6 @@ void Entity::DecreaceEnergy(unsigned short value)
 
 	value -= energy;
 	energy = 0;
-
-	DecreaceHp(value);
-}
-
-void Entity::IncreaceHp(unsigned short value)
-{
-	if (hp + value > max_hp)
-		hp = 100;
-	else
-		hp += value;
-}
-
-void Entity::DecreaceHp(unsigned short value)
-{
-	if (hp > value)
-	{
-		hp -= value;
-	}
-	else
-	{
-		hp = 0;
-	}
 }
 
 unsigned short Entity::Energy() const
@@ -146,14 +104,9 @@ unsigned short Entity::MaxEnergy() const
 	return max_energy;
 }
 
-unsigned short Entity::Hp() const
-{
-	return hp;
-}
-
 bool Entity::IsDead() const
 {
-	return !hp || age > max_age;
+	return !energy || age > max_age;
 }
 
 size_t Entity::ReproductionCost() const
@@ -198,8 +151,4 @@ void Entity::MaxAge(unsigned short value)
 void Entity::Energy(unsigned short value)
 {
 	energy = value;
-}
-void Entity::Hp(unsigned short value)
-{
-	hp = value;
 }

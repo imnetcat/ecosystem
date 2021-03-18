@@ -505,6 +505,14 @@ int main()
 			}
 		}
 
+		// Reload world if all entities die
+		if (!world.Entities().size())
+		{
+			GENOME_SEED = random::Generate();
+			Genome::Init(GENOME_SEED);
+			world.Reload();
+		}
+
 		// logic
 		if ((acum >= SPEED && !pause) || do_tic)
 		{

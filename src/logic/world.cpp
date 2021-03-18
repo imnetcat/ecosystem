@@ -18,6 +18,7 @@ World::World(
 	, light_power(light_power)
 	, max_organic_to_eat(max_organic_to_eat)
 	, max_entities_to_eat(max_entities_to_eat)
+	, max_energy(max_energy)
 {
 	// Allocate 2d array for world map
 	terrain = new cell * [height];
@@ -61,6 +62,41 @@ World::~World()
 		delete[] terrain[y];
 	}
 	delete[] terrain;
+}
+
+void World::Reload()
+{
+	// Remove all organics and entities
+	entities.clear();
+	organic.clear();
+
+	for (size_t y = 0; y < height; y++)
+	{
+		for (size_t x = 0; x < width; x++)
+		{
+			terrain[y][x].DelEntity();
+			terrain[y][x].DelOrganic();
+		}
+	}
+
+	// Put first entity
+	auto x = width / 2;
+	auto y = height / 8;
+	terrain[y][x].SetEntity(entities.get({
+		x, y,
+		100,
+		max_energy,
+		100,
+		0.01,
+		0.01,
+		Genome(
+			random::Generate(),
+			8,
+			random::Generate(std::numeric_limits<unsigned __int8>().max()),
+			1,
+			10
+		)
+	}));
 }
 
 EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)

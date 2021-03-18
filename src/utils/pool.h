@@ -73,6 +73,15 @@ public:
 		return busy_.size();
 	}
 
+	void clear()
+	{
+		auto it = busy_.begin();
+		while (it != busy_.end())
+		{
+			it = free(it);
+		}
+	}
+
 	iterator get(const T& value)
 	{
 		if (!free_.size())

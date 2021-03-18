@@ -7,6 +7,11 @@ Map::Map(World* world)
 	: world(world)
 {}
 
+void Map::ChangeWorld(Logic::World* new_world)
+{
+	world = new_world;
+}
+
 unsigned int Map::Width()
 {
 	return map_width;

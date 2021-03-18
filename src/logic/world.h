@@ -17,6 +17,8 @@ namespace Ecosystem
 			);
 			~World();
 
+			void Reload();
+
 			void Update();
 
 			Coefficient SuccessRule(pool<Entity>::const_iterator) const;
@@ -34,7 +36,7 @@ namespace Ecosystem
 			const unsigned int height;
 
 			const unsigned short light_power;
-
+			const unsigned short max_energy;
 			const unsigned short max_organic_to_eat;
 			const unsigned short max_entities_to_eat;
 

@@ -395,26 +395,22 @@ void World::Carnivorousing(unsigned __int8 args, EntitiesIterator entity)
 	if (!GetViewPos(args, viewed_position))
 		return;
 
-	const auto& viewed_point = terrain[viewed_position.y()][viewed_position.x()];
+	const auto& viewed_cell = terrain[viewed_position.y()][viewed_position.x()];
 
-	if (viewed_point.ContainsEntity())
+	if (viewed_cell.ContainsEntity())
 	{
-		auto lhs_genom = viewed_point.GetEntity()->GetGenome().Data();
-		auto rhs_genom = viewed_point.GetEntity()->GetGenome().Data();
+		auto lhs_genom = viewed_cell.GetEntity()->GetGenome().Data();
+		auto rhs_genom = viewed_cell.GetEntity()->GetGenome().Data();
 
 		if (lhs_genom == rhs_genom)
 			return;
 
-		if (!viewed_point.GetEntity()->Defencing(entity->Attack()))
-		{
-			EntityDie(viewed_point.GetEntity());
-			entity->AttackUp();
-			auto e = viewed_point.GetEntity()->Energy();
-			if (e > max_entities_to_eat)
-				entity->IncreaceEnergy(max_entities_to_eat);
-			else
-				entity->IncreaceEnergy(e);
-		}
+		EntityDie(viewed_cell.GetEntity());
+		auto e = viewed_cell.GetOrganic()->Energy();
+		if (e > max_entities_to_eat)
+			entity->IncreaceEnergy(max_entities_to_eat);
+		else
+			entity->IncreaceEnergy(e);
 	}
 }
 

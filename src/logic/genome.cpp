@@ -250,7 +250,7 @@ void Genome::Construct()
 		// Acummulate ration
 		switch (gen.trigger)
 		{
-		case Operation::Carnivorous:
+		case Operation::Attack:
 			food_triggers++;
 			ration.r++;
 			break;

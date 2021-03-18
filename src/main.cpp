@@ -372,7 +372,8 @@ int main()
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
 		info_age, info_title,
-		&cell_image, cell_image_canvas, info_genome_args, world_map](const Ecosystem::Logic::cell* cell)
+		&cell_image, cell_image_canvas, info_genome_args, world_map
+	](const Ecosystem::Logic::cell* cell)
 	{
 		if (hibernate)
 		{

@@ -54,7 +54,7 @@ namespace Ecosystem
 			EntitiesIterator Reproduction(EntitiesIterator parent_entity, const position& pos);
 			void Separationing(unsigned __int8 args, EntitiesIterator);
 			void Birthing(unsigned __int8 args, EntitiesIterator);
-			void Carnivorousing(unsigned __int8 args, EntitiesIterator);
+			void Attacking(unsigned __int8 args, EntitiesIterator);
 			void EatOrganic(EntitiesIterator);
 			void Moving(unsigned __int8 args, EntitiesIterator);
 			void Photosynthesing(EntitiesIterator);

@@ -7,8 +7,6 @@ Entity::Entity()
 	age(0),
 	max_age(0),
 	energy(0),
-	defence(0),
-	attack(0),
 	max_energy(0)
 {}
 
@@ -18,8 +16,6 @@ Entity::Entity(
 	unsigned short energy,
 	unsigned short max_energy,
 	unsigned short max_age,
-	double defence,
-	double attack,
 	Genome g)
 	:
 	position(x, y),
@@ -27,8 +23,6 @@ Entity::Entity(
 	max_age(max_age),
 	energy(energy),
 	max_energy(max_energy),
-	defence(defence),
-	attack(attack),
 	genom(g)
 {}
 
@@ -39,40 +33,6 @@ unsigned short Entity::Age() const
 unsigned short Entity::MaxAge() const
 {
 	return max_age;
-}
-bool Entity::Defencing(double attack)
-{
-	if (attack < defence)
-	{
-		return false;
-	}
-	
-	attack -= defence;
-
-	unsigned short dif = attack * energy;
-	if (energy < dif)
-	{
-		energy = 0;
-		return false;
-	}
-	else
-	{
-		energy -= dif;
-		defence -= 0.01; // defence skill up
-		return true;
-	}
-}
-double Entity::Attack() const
-{
-	return attack;
-}
-void Entity::AttackUp()
-{
-	attack += 0.01;
-}
-double Entity::Defence() const
-{
-	return defence;
 }
 
 void Entity::IncreaceEnergy(unsigned short value)

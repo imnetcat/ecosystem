@@ -13,8 +13,6 @@ namespace Ecosystem
 			unsigned short max_age;
 			unsigned short energy;
 			unsigned short max_energy;
-			double defence;
-			double attack;
 			Genome genom;
 			unsigned char carnivorousing = 0;
 			unsigned char fotosintesis = 0;
@@ -27,8 +25,6 @@ namespace Ecosystem
 				unsigned short energy,
 				unsigned short max_energy,
 				unsigned short max_age,
-				double defence,
-				double attack,
 				Genome g
 			);
 
@@ -42,10 +38,6 @@ namespace Ecosystem
 
 			void Tic();
 
-			bool Defencing(double);
-			double Defence() const;
-			double Attack() const;
-			void AttackUp();
 			unsigned short Age() const;
 			unsigned short MaxAge() const;
 			void IncreaceEnergy(unsigned short value);

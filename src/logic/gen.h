@@ -10,7 +10,7 @@ namespace Ecosystem
 			Move,
 			Photosyntesis,
 			EatOrganic,
-			Carnivorous,
+			Attack,
 			Birth,
 			Separate,
 

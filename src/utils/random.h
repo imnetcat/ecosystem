@@ -1,8 +1,7 @@
 #pragma once
 #include <random>
-#include <chrono>
 
-class Random
+class random
 {
 private:
 	static std::mt19937_64 engine;

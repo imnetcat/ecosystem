@@ -1,5 +1,5 @@
-#include "Ecosystem.h"
-
+#include "ui/gui.h"
+#include "ui/map.h"
 #include <chrono> 
 using namespace std::chrono;
 
@@ -10,46 +10,14 @@ using namespace std::chrono;
 #include <windows.h>
 #include <ShellApi.h>
 
+using namespace Ecosystem::Logic;
+using namespace Ecosystem::UI;
 using namespace std;
 using namespace sf;
 
 const int WINDOW_WIDTH = 1100;
 const int WINDOW_HEIGHT = 600;
-const int MENUBAR_HEIGHT = 22;
 const int SIDEBAR_WIDTH = WINDOW_WIDTH * 0.2;
-
-void DisableViewMenuItem(tgui::MenuBar::Ptr menu, const tgui::String& item)
-{
-	menu->setMenuItemEnabled({ 
-		 "View", "Terrain"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Energy"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Organic"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Species"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Age"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Ration"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Hp"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Success"
-	}, true);
-	menu->setMenuItemEnabled({
-		 "View", "Generation"
-	}, true);
-
-	menu->setMenuItemEnabled({ "View", item }, false);
-}
 
 int main()
 {
@@ -59,7 +27,7 @@ int main()
 	bool pause = false;
 	bool hibernate = false;
 
-	unsigned __int64 GENOME_SEED = Random::Generate();
+	unsigned __int64 GENOME_SEED = random::Generate();
 	unsigned int WORLD_WIDTH		= 100;
 	unsigned int WORLD_HEIGHT		= 51;
 	unsigned short  LIGHT_POWER		= 2000;
@@ -70,7 +38,7 @@ int main()
 	unsigned short MAX_HP = 100;
 
 	Genome::Init(GENOME_SEED);
-	Ecosystem ecosystem(
+	World world(
 		WORLD_WIDTH, 
 		WORLD_HEIGHT,
 		LIGHT_POWER, 
@@ -81,53 +49,41 @@ int main()
 		MAX_HP
 	);
 
-	Ecosystem* ecosys_ptr = &ecosystem;
+	Map world_map(&world);
+
+	Map* ecosys_ptr = &world_map;
 
 	sf::RenderWindow main({ WINDOW_WIDTH, WINDOW_HEIGHT }, "Ecosystem", sf::Style::Titlebar | sf::Style::Close);
 	main.setPosition(sf::Vector2i(350, 250));
 
-	tgui::GuiSFML gui(main);
+	gui gui(main);
 	tgui::GuiSFML* gui_ptr = &gui;
 
-	tgui::MenuBar::Ptr menu = tgui::MenuBar::create();
-	menu->setHeight(MENUBAR_HEIGHT);
-	menu->addMenu("Help");
-	menu->addMenu("Environment");
-	menu->addMenuItem("Run");
-	menu->addMenuItem("Pause");
-	menu->addMenuItem("Tic");
-	menu->addMenuItem("Hybernate");
-	menu->addMenu("View");
-	menu->addMenuItem("Terrain");
-	menu->addMenuItem("Energy");
-	menu->addMenuItem("Organic");
-	menu->addMenuItem("Species");
-	menu->addMenuItem("Age");
-	menu->addMenuItem("Ration");
-	menu->addMenuItem("Hp");
-	menu->addMenuItem("Success");
-	menu->addMenuItem("Generation");
-	menu->setMenuItemEnabled({ "View", "Terrain" }, false);
-
-	menu->connectMenuItem({ "Help" }, []() {
-		ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
+	gui.menubar({ "About", "Help" }, []() {
+		ShellExecuteA(0, 0, "https://github.com/imnetcat/world_map/wiki", NULL, NULL, SW_SHOW);
+	});
+	gui.menubar({ "About", "Repository" }, []() {
+		ShellExecuteA(0, 0, "https://github.com/imnetcat/world_map", NULL, NULL, SW_SHOW);
+	});
+	gui.menubar({ "About", "Creator" }, []() {
+		ShellExecuteA(0, 0, "https://github.com/imnetcat", NULL, NULL, SW_SHOW);
 	});
 
-	menu->connectMenuItem({ "Environment", "Run" }, [&hibernate, &pause]() {
+	gui.menubar({ "World", "Run" }, [&hibernate, &pause]() {
 		if (hibernate)
 		{
 			return;
 		}
 		pause = false;
 	});
-	menu->connectMenuItem({ "Environment", "Pause" }, [&hibernate , &pause]() {
+	gui.menubar({ "World", "Pause" }, [&hibernate , &pause]() {
 		if (hibernate)
 		{
 			return;
 		}
 		pause = true;
 	});
-	menu->connectMenuItem({ "Environment", "Tic" }, [&hibernate, &pause, &do_tic]() {
+	gui.menubar({ "World", "By tic" }, [&hibernate, &pause, &do_tic]() {
 		if (hibernate)
 		{
 			return;
@@ -136,57 +92,47 @@ int main()
 		do_tic = true;
 	});
 
-	menu->connectMenuItem({ "View", "Terrain" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Terrain");
-		ecosys_ptr->SetView(view_settings::terrain);
+	gui.menubar({ "View", "Terrain" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::terrain);
 	});
-	menu->connectMenuItem({ "View", "Energy" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Energy");
-		ecosys_ptr->SetView(view_settings::energy);
+	gui.menubar({ "View", "Energy" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::energy);
 	});
-	menu->connectMenuItem({ "View", "Organic" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Organic");
-		ecosys_ptr->SetView(view_settings::organic);
+	gui.menubar({ "View", "Organic" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::organic);
 	});
-	menu->connectMenuItem({ "View", "Species" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Species");
-		ecosys_ptr->SetView(view_settings::species);
+	gui.menubar({ "View", "Species" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::species);
 	});
-	menu->connectMenuItem({ "View", "Age" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Age");
-		ecosys_ptr->SetView(view_settings::age);
+	gui.menubar({ "View", "Age" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::age);
 	});
-	menu->connectMenuItem({ "View", "Ration" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Ration");
-		ecosys_ptr->SetView(view_settings::ration);
+	gui.menubar({ "View", "Ration" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::ration);
 	});
-	menu->connectMenuItem({ "View", "Hp" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Hp");
-		ecosys_ptr->SetView(view_settings::hp);
+	gui.menubar({ "View", "Hp" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::hp);
 	});
-	menu->connectMenuItem({ "View", "Success" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Success");
-		ecosys_ptr->SetView(view_settings::success);
+	gui.menubar({ "View", "Success" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::success);
 	});
-	menu->connectMenuItem({ "View", "Generation" }, [menu, ecosys_ptr]() {
-		DisableViewMenuItem(menu, "Generation");
-		ecosys_ptr->SetView(view_settings::generations);
+	gui.menubar({ "View", "Generation" }, [ecosys_ptr]() {
+		ecosys_ptr->SetMode(Map::Mode::generations);
 	});
-	gui.add(menu);
 
 	auto map_layout = tgui::VerticalLayout::create();
 	auto map = tgui::ScrollablePanel::create();
 	auto canvas = tgui::Canvas::create();
-	map_layout->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - MENUBAR_HEIGHT);
-	map_layout->setPosition(SIDEBAR_WIDTH, MENUBAR_HEIGHT + 1);
-	map->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - MENUBAR_HEIGHT);
-	canvas->setSize(ecosystem.GetMapWidth(), ecosystem.GetMapHeight());
+	map_layout->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - gui.MENUBAR_HEIGHT);
+	map_layout->setPosition(SIDEBAR_WIDTH, gui.MENUBAR_HEIGHT + 1);
+	map->setSize(WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT - gui.MENUBAR_HEIGHT);
+	canvas->setSize(world_map.Width(), world_map.Height());
 	map->add(canvas);
 	map_layout->add(map);
 	gui.add(map_layout);
 
 	auto sidebar_layout = tgui::VerticalLayout::create();
-	sidebar_layout->setPosition(0, MENUBAR_HEIGHT + 1);
+	sidebar_layout->setPosition(0, gui.MENUBAR_HEIGHT + 1);
 	sidebar_layout->setSize(SIDEBAR_WIDTH - 1, "100%");
 	gui.add(sidebar_layout);
 
@@ -196,7 +142,7 @@ int main()
 
 	auto info_panel = tgui::Panel::create();
 	info_panel->setPosition(0, 110);
-	info_panel->setSize("100%", WINDOW_HEIGHT - MENUBAR_HEIGHT - 110);
+	info_panel->setSize("100%", WINDOW_HEIGHT - gui.MENUBAR_HEIGHT - 110);
 	sidebar_layout->add(info_panel);
 
 	auto label = tgui::Label::create();
@@ -229,7 +175,7 @@ int main()
 	speed_slider->setInvertedDirection(true);
 	stats_panel->add(speed_slider);
 
-	menu->connectMenuItem({ "Environment", "Hybernate" }, [&pause, speed_slider, canvas, &hibernate]() {
+	gui.menubar({ "World", "Hybernate" }, [&pause, speed_slider, canvas, &hibernate]() {
 		hibernate = !hibernate;
 		pause = false;
 		if (hibernate)
@@ -248,7 +194,7 @@ int main()
 	auto Zoom = [canvas, ecosys_ptr](float scale)
 	{
 		ecosys_ptr->ScaleCellSize(scale);
-		canvas->setSize(ecosys_ptr->GetMapWidth(), ecosys_ptr->GetMapHeight());
+		canvas->setSize(ecosys_ptr->Width(), ecosys_ptr->Height());
 	};
 	auto Speed = [&SPEED](float coef)
 	{
@@ -445,27 +391,29 @@ int main()
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
 		info_hp, info_age, info_title,
-		&cell_image, cell_image_canvas, info_genome_args](const Info& info)
+		&cell_image, cell_image_canvas, info_genome_args, world_map](const Ecosystem::Logic::cell* cell)
 	{
 		if (hibernate)
 		{
 			return;
 		}
-		Color color(info.color.r, info.color.g, info.color.b);
+
+		Color color = world_map.ObtainColor(cell);
+
 		cell_image[0].color = color;
 		cell_image[1].color = color;
 		cell_image[2].color = color;
 		cell_image[3].color = color;
-		if (info.contains_entity)
+		if (cell->ContainsEntity())
 		{
 			info_title->setText("Entity");
-			info_genome->setText(to_string(info.genome));
-			info_generation->setText(to_string(info.generation));
-			info_age->setText(to_string(info.age.curr) + "/" + to_string(info.age.max));
-			info_mutation_chance->setText(to_string(info.ch_of_mut));
-			info_energy->setText(to_string(info.energy) + "/" + to_string(info.max_energy));
-			info_hp->setText(to_string(info.hp) + "/" + to_string(info.max_hp));
-			info_genome_args->setText(to_string(info.genome_args));
+			info_genome->setText(to_string(cell->GetEntity()->GetGenome().Data()));
+			info_generation->setText(to_string(cell->GetEntity()->GetGenome().Generation()));
+			info_age->setText(to_string(cell->GetEntity()->Age()) + "/" + to_string(cell->GetEntity()->MaxAge()));
+			info_mutation_chance->setText(to_string(cell->GetEntity()->GetGenome().MutationChance()));
+			info_energy->setText(to_string(cell->GetEntity()->Energy()) + "/" + to_string(cell->GetEntity()->MaxEnergy()));
+			info_hp->setText(to_string(cell->GetEntity()->Hp()));
+			info_genome_args->setText(to_string(cell->GetEntity()->GetGenome().Args()));
 		}
 		else
 		{
@@ -478,24 +426,19 @@ int main()
 			info_hp->setText("-");
 			info_genome_args->setText("-");
 		}
-		info_organic_power->setText(to_string(info.food_power));
-		info_light_power->setText(to_string(info.light_power));
+
+		info_organic_power->setText(to_string(cell->GetOrganic()->Energy()));
+		info_light_power->setText(to_string(cell->LightPower()));
 
 		cell_image_canvas->clear();
 		cell_image_canvas->draw(cell_image);
 		cell_image_canvas->display();
 	};
 
-	auto SetObservedInfoByPixel = [SetInfoBox, ecosys_ptr](const sf::Vector2f& mousePos)
+	canvas->onClick([SetInfoBox, ecosys_ptr](const sf::Vector2f& mousePos)
 	{
-		SetInfoBox(ecosys_ptr->GetInfoByPixelCoords(mousePos.x, mousePos.y));
-	};
-	auto SetObservedInfoByCoords = [SetInfoBox, ecosys_ptr](size_t x, size_t y)
-	{
-		SetInfoBox(ecosys_ptr->GetInfoByCellsCoords(x, y));
-	};
-
-	canvas->onClick(SetObservedInfoByPixel);
+		SetInfoBox(ecosys_ptr->GetCell(mousePos.x, mousePos.y));
+	});
 
 	auto ClearInfoBox = [
 		&ecosys_ptr, info_genome, info_light_power,
@@ -523,7 +466,6 @@ int main()
 		info_organic_power->setText("-");
 		info_light_power->setText("-");
 		info_genome_args->setText("-");
-		ecosys_ptr->Observing(nullptr);
 	};
 
 	ClearInfoBox();
@@ -583,13 +525,13 @@ int main()
 			do_tic = false;
 
 			auto start = high_resolution_clock::now();
-			ecosystem.Update();
+			world.Update();
 			auto stop = high_resolution_clock::now();
 			auto duration = duration_cast<std::chrono::microseconds>(stop - start);
 			if (duration.count() > speedmeter)
 			{
 				speedmeter = duration.count();
-				cout << "Environment update max time: \t" << speedmeter << " ms\r";
+				cout << "World update max time: \t" << speedmeter << " ms\r";
 			}
 
 			tics++;
@@ -605,18 +547,13 @@ int main()
 
 		if (!hibernate)
 		{
-			ecosystem.Draw(canvas);
+			world_map.Draw(canvas);
 
 			if (!pause)
 			{
 				tics_counter->setText(to_string(tics));
-				max_generation->setText(to_string(ecosystem.GetMaxGeneration()));
-				entities_counter->setText(to_string(ecosystem.GetEntitiesCount()));
-			}
-
-			if (ecosystem.Observing())
-			{
-				SetObservedInfoByCoords(static_cast<float>(ecosystem.Observing()->GetX()), static_cast<float>(ecosystem.Observing()->GetY()));
+				max_generation->setText(to_string(world_map.GetMaxGeneration()));
+				entities_counter->setText(to_string(world_map.GetEntitiesCount()));
 			}
 		}
 

@@ -1,10 +1,9 @@
 #include "Entity.h"
-#include <array>
+using namespace Ecosystem::Logic;
 
 Entity::Entity()
 	:
-	Object(0, 0),
-	view(view_side::top),
+	position(0, 0),
 	age(0),
 	max_age(0),
 	hp(0),
@@ -18,7 +17,6 @@ Entity::Entity()
 Entity::Entity(
 	size_t x,
 	size_t y,
-	view_side view,
 	unsigned short max_hp,
 	unsigned short energy,
 	unsigned short max_energy,
@@ -27,8 +25,7 @@ Entity::Entity(
 	double attack,
 	Genome g)
 	:
-	Object(x, y),
-	view(view),
+	position(x, y),
 	age(0),
 	max_age(max_age),
 	max_hp(max_hp),
@@ -40,11 +37,11 @@ Entity::Entity(
 	genom(g)
 {}
 
-unsigned short Entity::Age()
+unsigned short Entity::Age() const
 {
 	return age;
 }
-unsigned short Entity::MaxAge()
+unsigned short Entity::MaxAge() const
 {
 	return max_age;
 }
@@ -70,7 +67,7 @@ bool Entity::Defencing(double attack)
 		return true;
 	}
 }
-double Entity::Attack()
+double Entity::Attack() const
 {
 	return attack;
 }
@@ -78,18 +75,9 @@ void Entity::AttackUp()
 {
 	attack += 0.01;
 }
-double Entity::Defence()
+double Entity::Defence() const
 {
 	return defence;
-}
-
-view_side Entity::GetView()
-{
-	return view;
-}
-void Entity::SetView(view_side val)
-{
-	view = val;
 }
 
 void Entity::IncreaceEnergy(unsigned short value)
@@ -149,22 +137,26 @@ void Entity::DecreaceHp(unsigned short value)
 	}
 }
 
-unsigned short Entity::Energy()
+unsigned short Entity::Energy() const
 {
 	return energy;
 }
+unsigned short Entity::MaxEnergy() const
+{
+	return max_energy;
+}
 
-unsigned short Entity::Hp()
+unsigned short Entity::Hp() const
 {
 	return hp;
 }
 
-bool Entity::IsDead()
+bool Entity::IsDead() const
 {
 	return !hp || age > max_age;
 }
 
-size_t Entity::ReproductionCost()
+size_t Entity::ReproductionCost() const
 {
 	return genom.ReplicateCost();
 }
@@ -202,10 +194,6 @@ void Entity::Age(unsigned short value)
 void Entity::MaxAge(unsigned short value)
 {
 	max_age = value;
-}
-void Entity::View(view_side value)
-{
-	view = value;
 }
 void Entity::Energy(unsigned short value)
 {

@@ -1,4 +1,5 @@
-#include "Genome.h"
+#include "genome.h"
+using namespace Ecosystem::Logic;
 
 const std::uniform_int_distribution<unsigned __int64> Genome::distributor = std::uniform_int_distribution<unsigned __int64>(1, args_max - 1);
 
@@ -59,7 +60,7 @@ Gen Genome::Read()
 	}
 	trigger %= trigger_max;
 
-	Trigger current_trigger = static_cast<Trigger>(trigger);
+	Operation current_trigger = static_cast<Operation>(trigger);
 
 	unsigned __int8 current_arg = base;
 	bit = (args >> (args_size - cursor - 1)) & 1;
@@ -92,11 +93,11 @@ inline unsigned __int8 Genome::Size() const
 {
 	return genome_size;
 }
-const RGBColor& Genome::Species() const
+const Color& Genome::Species() const
 {
 	return species;
 }
-const RGBColor& Genome::Ration() const
+const Color& Genome::Ration() const
 {
 	return ration;
 }
@@ -249,15 +250,15 @@ void Genome::Construct()
 		// Acummulate ration
 		switch (gen.trigger)
 		{
-		case Trigger::Carnivorous:
+		case Operation::Carnivorous:
 			food_triggers++;
 			ration.r++;
 			break;
-		case Trigger::Photosyntesis:
+		case Operation::Photosyntesis:
 			food_triggers++;
 			ration.g++;
 			break;
-		case Trigger::Mineraleon:
+		case Operation::EatOrganic:
 			food_triggers++;
 			ration.b++;
 			break;

@@ -50,5 +50,5 @@ bool cell::ContainsOrganic() const
 
 unsigned int cell::LightPower() const
 {
-	return (light_power / std::pow(2, y()));
+	return (light_power / std::pow(1.3, y()));
 }

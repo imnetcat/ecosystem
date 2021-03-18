@@ -15,8 +15,9 @@ Entity::Entity(
 	size_t y,
 	unsigned short energy,
 	unsigned short max_energy,
-	unsigned short max_age,
-	Genome g)
+	Genome g,
+	unsigned short max_age
+)
 	:
 	position(x, y),
 	age(0),
@@ -91,14 +92,6 @@ void Entity::Tic()
 void Entity::SetGenome(Genome value)
 {
 	genom = value;
-}
-void Entity::Defence(double value)
-{
-	defence = value;
-}
-void Entity::Attack(double value)
-{
-	attack = value;
 }
 void Entity::Age(unsigned short value)
 {

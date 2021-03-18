@@ -13,7 +13,8 @@ namespace Ecosystem
 				unsigned short light_power,
 				unsigned short max_orginic_to_eat,
 				unsigned short max_entities_to_eat,
-				unsigned short max_energy
+				unsigned short max_energy,
+				unsigned short max_age
 			);
 			~World();
 
@@ -36,6 +37,7 @@ namespace Ecosystem
 			const unsigned int height;
 
 			const unsigned short light_power;
+			const unsigned short max_age;
 			const unsigned short max_energy;
 			const unsigned short max_organic_to_eat;
 			const unsigned short max_entities_to_eat;

@@ -35,21 +35,21 @@ namespace Ecosystem
 		const std::map<Operation, unsigned int> CREATION_COST = {
 			{Operation::Stay, 1},
 			{Operation::Move, 15},
-			{Operation::Photosyntesis, 10},
-			{Operation::EatOrganic, 15},
-			{Operation::Carnivorous, 25},
-			{Operation::Birth, 30},
-			{Operation::Separate, 30}
+			{Operation::Photosyntesis, 20},
+			{Operation::EatOrganic, 40},
+			{Operation::Attack, 60},
+			{Operation::Birth, 100},
+			{Operation::Separate, 100}
 		};
 
 		const std::map<Operation, unsigned int> MAINTENANACE_COST = {
 			{Operation::Stay, 1},
-			{Operation::Move, 5},
-			{Operation::Photosyntesis, 1},
-			{Operation::EatOrganic, 2},
-			{Operation::Carnivorous, 5},
-			{Operation::Birth, 6},
-			{Operation::Separate, 6}
+			{Operation::Move, 2},
+			{Operation::Photosyntesis, 2},
+			{Operation::EatOrganic, 4},
+			{Operation::Attack, 8},
+			{Operation::Birth, 10},
+			{Operation::Separate, 10}
 		};
 	}
 }

@@ -34,6 +34,7 @@ int main()
 	unsigned short MAX_ORGANIC_TO_EAT = 3000;
 	unsigned short MAX_ENTITIES_TO_EAT = 6000;
 	unsigned short MAX_ENERGY = 20000;
+	unsigned short MAX_AGE = 100;
 
 	Genome::Init(GENOME_SEED);
 	World world(
@@ -42,7 +43,8 @@ int main()
 		LIGHT_POWER, 
 		MAX_ORGANIC_TO_EAT, 
 		MAX_ENTITIES_TO_EAT, 
-		MAX_ENERGY
+		MAX_ENERGY,
+		MAX_AGE
 	);
 
 	Map world_map(&world);

@@ -24,8 +24,8 @@ namespace Ecosystem
 				size_t y,
 				unsigned short energy,
 				unsigned short max_energy,
-				unsigned short max_age,
-				Genome g
+				Genome g,
+				unsigned short max_age = 50
 			);
 
 
@@ -46,8 +46,6 @@ namespace Ecosystem
 			unsigned short MaxEnergy() const;
 
 			void SetGenome(Genome value);
-			void Defence(double);
-			void Attack(double);
 			void Age(unsigned short);
 			void MaxAge(unsigned short);
 			void Energy(unsigned short);

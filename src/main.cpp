@@ -284,85 +284,85 @@ int main()
 	info_panel->add(info_age);
 
 	label = tgui::Label::create();
-	label->setPosition(72, 46);
+	label->setPosition(10, 70);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("generation:");
 	info_panel->add(label);
 	auto info_generation = tgui::Label::create();
-	info_generation->setPosition(110, 46);
+	info_generation->setPosition(85, 70);
 	info_generation->setSize(100, 18);
 	info_generation->setTextSize(13);
 	info_panel->add(info_generation);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 100);
+	label->setPosition(10, 90);
 	label->setSize(125, 18);
 	label->setTextSize(13);
 	label->setText("mutation chance:");
 	info_panel->add(label);
 	auto info_mutation_chance = tgui::Label::create();
-	info_mutation_chance->setPosition(125, 100);
+	info_mutation_chance->setPosition(125, 90);
 	info_mutation_chance->setSize(100, 18);
 	info_mutation_chance->setTextSize(13);
 	info_panel->add(info_mutation_chance);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 125);
+	label->setPosition(10, 110);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("energy:");
 	info_panel->add(label);
 	auto info_energy = tgui::Label::create();
-	info_energy->setPosition(70, 125);
+	info_energy->setPosition(70, 110);
 	info_energy->setSize(100, 18);
 	info_energy->setTextSize(13);
 	info_panel->add(info_energy);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 150);
+	label->setPosition(10, 130);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("organic power:");
 	info_panel->add(label);
 	auto info_organic_power = tgui::Label::create();
-	info_organic_power->setPosition(110, 150);
+	info_organic_power->setPosition(110, 130);
 	info_organic_power->setSize(100, 18);
 	info_organic_power->setTextSize(13);
 	info_panel->add(info_organic_power);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 175);
+	label->setPosition(10, 150);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("light power:");
 	info_panel->add(label);
 	auto info_light_power = tgui::Label::create();
-	info_light_power->setPosition(110, 175);
+	info_light_power->setPosition(110, 150);
 	info_light_power->setSize(100, 18);
 	info_light_power->setTextSize(13);
 	info_panel->add(info_light_power);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 200);
+	label->setPosition(10, 170);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("genome:");
 	info_panel->add(label);
 	auto info_genome = tgui::Label::create();
-	info_genome->setPosition(70, 200);
+	info_genome->setPosition(70, 170);
 	info_genome->setSize(150, 40);
 	info_genome->setTextSize(13);
 	info_panel->add(info_genome);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 215);
+	label->setPosition(10, 190);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("genome args:");
 	info_panel->add(label);
 	auto info_genome_args = tgui::Label::create();
-	info_genome_args->setPosition(100, 215);
+	info_genome_args->setPosition(100, 190);
 	info_genome_args->setSize(150, 40);
 	info_genome_args->setTextSize(13);
 	info_panel->add(info_genome_args);
@@ -406,7 +406,7 @@ int main()
 			info_genome_args->setText("-");
 		}
 
-		if (cell->ContainsEntity())
+		if (cell->ContainsOrganic())
 		{
 			info_organic_power->setText(to_string(cell->GetOrganic()->Energy()));
 		}

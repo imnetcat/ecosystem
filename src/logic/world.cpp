@@ -103,7 +103,7 @@ EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)
 {
 	auto x = entity_iterator->x();
 	auto y = entity_iterator->y();
-	if (terrain[y][x].IsContainsOrganic())
+	if (terrain[y][x].ContainsOrganic())
 	{
 		terrain[y][x].AddOrganic(entity_iterator->Energy() + 100ull);
 	}
@@ -128,7 +128,7 @@ void World::Update()
 			object++;
 			continue;
 		}
-		if (terrain[y + 1][x].IsContainsOrganic())
+		if (terrain[y + 1][x].ContainsOrganic())
 		{
 			object++;
 			continue;
@@ -420,7 +420,7 @@ void World::Carnivorousing(unsigned __int8 args, EntitiesIterator entity)
 
 void World::EatOrganic(EntitiesIterator entity)
 {
-	if (!terrain[entity->y()][entity->x()].IsContainsOrganic())
+	if (!terrain[entity->y()][entity->x()].ContainsOrganic())
 	{
 		return;
 	}

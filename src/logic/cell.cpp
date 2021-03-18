@@ -43,7 +43,7 @@ OrganicIterator cell::GetOrganic() const
 	return object;
 }
 
-bool cell::IsContainsOrganic() const
+bool cell::ContainsOrganic() const
 {
 	return has_object;
 }

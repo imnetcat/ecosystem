@@ -27,7 +27,7 @@ namespace Ecosystem
 			void AddOrganic(size_t value);
 			void DelOrganic();
 			OrganicIterator GetOrganic() const;
-			bool IsContainsOrganic() const;
+			bool ContainsOrganic() const;
 		};
 	}
 }

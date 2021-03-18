@@ -95,7 +95,7 @@ Color Map::ObtainColor(const cell* cell) const
 	{
 		return ObtainEntityColor(cell->GetEntity());
 	}
-	else if (cell->IsContainsOrganic())
+	else if (cell->ContainsOrganic())
 	{
 		return	ORGANIC_COLOR;
 	}

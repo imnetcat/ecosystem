@@ -15,7 +15,7 @@ namespace Ecosystem
 			unsigned int light_power;
 			double light_coef;
 		public:
-			void Init(unsigned int light_power, double light_coef, size_t x, size_t y);
+			void Init(unsigned int light_power, size_t x, size_t y);
 			void SetEntity(EntitiesIterator);
 			void DelEntity();
 			EntitiesIterator GetEntity() const;
@@ -27,7 +27,7 @@ namespace Ecosystem
 			void AddOrganic(size_t value);
 			void DelOrganic();
 			OrganicIterator GetOrganic() const;
-			bool IsContainsOrganic() const;
+			bool ContainsOrganic() const;
 		};
 	}
 }

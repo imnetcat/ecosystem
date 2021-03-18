@@ -1,10 +1,9 @@
 #include "cell.h"
 using namespace Ecosystem::Logic;
 
-void cell::Init(unsigned int lpower, double lcoef, size_t x, size_t y)
+void cell::Init(unsigned int lpower, size_t x, size_t y)
 {
 	light_power = lpower;
-	light_coef = lcoef;
 	SetPosition(x, y);
 }
 
@@ -44,12 +43,12 @@ OrganicIterator cell::GetOrganic() const
 	return object;
 }
 
-bool cell::IsContainsOrganic() const
+bool cell::ContainsOrganic() const
 {
 	return has_object;
 }
 
 unsigned int cell::LightPower() const
 {
-	return y() ? y() * light_coef * light_power : light_power;
+	return (light_power / std::pow(1.3, y()));
 }

@@ -31,22 +31,20 @@ int main()
 	unsigned int WORLD_WIDTH		= 100;
 	unsigned int WORLD_HEIGHT		= 51;
 	unsigned short  LIGHT_POWER		= 2000;
-	double LIGHT_COEF				= 0.5;
 	unsigned short MAX_ORGANIC_TO_EAT = 3000;
 	unsigned short MAX_ENTITIES_TO_EAT = 6000;
 	unsigned short MAX_ENERGY = 20000;
-	unsigned short MAX_HP = 100;
+	unsigned short MAX_AGE = 100;
 
 	Genome::Init(GENOME_SEED);
 	World world(
 		WORLD_WIDTH, 
 		WORLD_HEIGHT,
 		LIGHT_POWER, 
-		LIGHT_COEF,
 		MAX_ORGANIC_TO_EAT, 
 		MAX_ENTITIES_TO_EAT, 
-		MAX_ENERGY, 
-		MAX_HP
+		MAX_ENERGY,
+		MAX_AGE
 	);
 
 	Map world_map(&world);
@@ -109,9 +107,6 @@ int main()
 	});
 	gui.menubar({ "View", "Ration" }, [ecosys_ptr]() {
 		ecosys_ptr->SetMode(Map::Mode::ration);
-	});
-	gui.menubar({ "View", "Hp" }, [ecosys_ptr]() {
-		ecosys_ptr->SetMode(Map::Mode::hp);
 	});
 	gui.menubar({ "View", "Success" }, [ecosys_ptr]() {
 		ecosys_ptr->SetMode(Map::Mode::success);
@@ -291,97 +286,85 @@ int main()
 	info_panel->add(info_age);
 
 	label = tgui::Label::create();
-	label->setPosition(72, 46);
-	label->setSize(100, 18);
-	label->setTextSize(13);
-	label->setText("hp:");
-	info_panel->add(label);
-	auto info_hp = tgui::Label::create();
-	info_hp->setPosition(110, 46);
-	info_hp->setSize(100, 18);
-	info_hp->setTextSize(13);
-	info_panel->add(info_hp);
-
-	label = tgui::Label::create();
-	label->setPosition(10, 75);
+	label->setPosition(10, 70);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("generation:");
 	info_panel->add(label);
 	auto info_generation = tgui::Label::create();
-	info_generation->setPosition(110, 75);
+	info_generation->setPosition(85, 70);
 	info_generation->setSize(100, 18);
 	info_generation->setTextSize(13);
 	info_panel->add(info_generation);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 100);
+	label->setPosition(10, 90);
 	label->setSize(125, 18);
 	label->setTextSize(13);
 	label->setText("mutation chance:");
 	info_panel->add(label);
 	auto info_mutation_chance = tgui::Label::create();
-	info_mutation_chance->setPosition(125, 100);
+	info_mutation_chance->setPosition(125, 90);
 	info_mutation_chance->setSize(100, 18);
 	info_mutation_chance->setTextSize(13);
 	info_panel->add(info_mutation_chance);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 125);
+	label->setPosition(10, 110);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("energy:");
 	info_panel->add(label);
 	auto info_energy = tgui::Label::create();
-	info_energy->setPosition(70, 125);
+	info_energy->setPosition(70, 110);
 	info_energy->setSize(100, 18);
 	info_energy->setTextSize(13);
 	info_panel->add(info_energy);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 150);
+	label->setPosition(10, 130);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("organic power:");
 	info_panel->add(label);
 	auto info_organic_power = tgui::Label::create();
-	info_organic_power->setPosition(110, 150);
+	info_organic_power->setPosition(110, 130);
 	info_organic_power->setSize(100, 18);
 	info_organic_power->setTextSize(13);
 	info_panel->add(info_organic_power);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 175);
+	label->setPosition(10, 150);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("light power:");
 	info_panel->add(label);
 	auto info_light_power = tgui::Label::create();
-	info_light_power->setPosition(110, 175);
+	info_light_power->setPosition(110, 150);
 	info_light_power->setSize(100, 18);
 	info_light_power->setTextSize(13);
 	info_panel->add(info_light_power);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 200);
+	label->setPosition(10, 170);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("genome:");
 	info_panel->add(label);
 	auto info_genome = tgui::Label::create();
-	info_genome->setPosition(70, 200);
+	info_genome->setPosition(70, 170);
 	info_genome->setSize(150, 40);
 	info_genome->setTextSize(13);
 	info_panel->add(info_genome);
 
 	label = tgui::Label::create();
-	label->setPosition(10, 215);
+	label->setPosition(10, 190);
 	label->setSize(100, 18);
 	label->setTextSize(13);
 	label->setText("genome args:");
 	info_panel->add(label);
 	auto info_genome_args = tgui::Label::create();
-	info_genome_args->setPosition(100, 215);
+	info_genome_args->setPosition(100, 190);
 	info_genome_args->setSize(150, 40);
 	info_genome_args->setTextSize(13);
 	info_panel->add(info_genome_args);
@@ -390,8 +373,9 @@ int main()
 		&hibernate, ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance,
 		info_energy, info_generation,
-		info_hp, info_age, info_title,
-		&cell_image, cell_image_canvas, info_genome_args, world_map](const Ecosystem::Logic::cell* cell)
+		info_age, info_title,
+		&cell_image, cell_image_canvas, info_genome_args, world_map
+	](const Ecosystem::Logic::cell* cell)
 	{
 		if (hibernate)
 		{
@@ -412,7 +396,6 @@ int main()
 			info_age->setText(to_string(cell->GetEntity()->Age()) + "/" + to_string(cell->GetEntity()->MaxAge()));
 			info_mutation_chance->setText(to_string(cell->GetEntity()->GetGenome().MutationChance()));
 			info_energy->setText(to_string(cell->GetEntity()->Energy()) + "/" + to_string(cell->GetEntity()->MaxEnergy()));
-			info_hp->setText(to_string(cell->GetEntity()->Hp()));
 			info_genome_args->setText(to_string(cell->GetEntity()->GetGenome().Args()));
 		}
 		else
@@ -423,11 +406,18 @@ int main()
 			info_age->setText("-");
 			info_mutation_chance->setText("-");
 			info_energy->setText("-");
-			info_hp->setText("-");
 			info_genome_args->setText("-");
 		}
 
-		info_organic_power->setText(to_string(cell->GetOrganic()->Energy()));
+		if (cell->ContainsOrganic())
+		{
+			info_organic_power->setText(to_string(cell->GetOrganic()->Energy()));
+		}
+		else
+		{
+			info_organic_power->setText("-");
+		}
+
 		info_light_power->setText(to_string(cell->LightPower()));
 
 		cell_image_canvas->clear();
@@ -444,7 +434,7 @@ int main()
 		&ecosys_ptr, info_genome, info_light_power,
 		info_organic_power, info_mutation_chance, 
 		info_energy, info_generation, 
-		info_hp, info_age, info_title,
+		info_age, info_title,
 		&cell_image, cell_image_canvas, info_genome_args]()
 	{
 		cell_image[0].color = sf::Color::White;
@@ -462,7 +452,6 @@ int main()
 		info_age->setText("-");
 		info_mutation_chance->setText("-");
 		info_energy->setText("-");
-		info_hp->setText("-");
 		info_organic_power->setText("-");
 		info_light_power->setText("-");
 		info_genome_args->setText("-");
@@ -517,6 +506,14 @@ int main()
 					break;
 				}
 			}
+		}
+
+		// Reload world if all entities die
+		if (!world.Entities().size())
+		{
+			GENOME_SEED = random::Generate();
+			Genome::Init(GENOME_SEED);
+			world.Reload();
 		}
 
 		// logic

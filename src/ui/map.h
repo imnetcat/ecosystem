@@ -17,13 +17,13 @@ namespace Ecosystem
 				energy,
 				species,
 				age,
-				hp,
 				success,
 				generations
 			};
 
 
 			Map(Logic::World* world);
+			void ChangeWorld(Logic::World* world);
 
 			void Draw(tgui::Canvas::Ptr canvas);
 			Logic::Color ObtainEntityColor(pool<Logic::Entity>::const_iterator entity) const;

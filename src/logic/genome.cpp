@@ -120,7 +120,7 @@ Genome Genome::Replicate(Coefficient coef)
 	auto new_genom = genome;
 	auto new_args = args;
 
-	unsigned __int8 rand = random.Generate(100);
+	unsigned __int8 rand = random.Generate(1000);
 	// Is mutation be
 	if (rand < mutationChance)
 	{
@@ -177,10 +177,10 @@ Genome Genome::Replicate(Coefficient coef)
 	switch (coef)
 	{
 	case Coefficient::enlarge:
-		if (new_mutationChance > 0) new_mutationChance--;
+		if (new_mutationChance > 1) new_mutationChance--;
 		break;
 	case Coefficient::reduce:
-		if (new_mutationChance < 100) new_mutationChance++;
+		if (new_mutationChance < 1000) new_mutationChance++;
 		break;
 	case Coefficient::unchanged:
 	default:
@@ -239,7 +239,7 @@ void Genome::Construct()
 	species.g %= 255;
 	species.b %= 255;
 
-	double food_triggers = 0;
+	double food_source_triggers = 0;
 	for (unsigned __int8 i = 0; i < genome_size; i++)
 	{
 		Gen gen = Read();
@@ -250,23 +250,23 @@ void Genome::Construct()
 		// Acummulate ration
 		switch (gen.trigger)
 		{
-		case Operation::Carnivorous:
-			food_triggers++;
+		case Operation::Attack:
+			food_source_triggers++;
 			ration.r++;
 			break;
 		case Operation::Photosyntesis:
-			food_triggers++;
+			food_source_triggers++;
 			ration.g++;
 			break;
 		case Operation::EatOrganic:
-			food_triggers++;
+			food_source_triggers++;
 			ration.b++;
 			break;
 		}
 	}
 
 	// Hash ration
-	ration.r = (ration.r / food_triggers) * 255;
-	ration.g = (ration.g / food_triggers) * 255;
-	ration.b = (ration.b / food_triggers) * 255;
+	ration.r = (ration.r / food_source_triggers) * 255;
+	ration.g = (ration.g / food_source_triggers) * 255;
+	ration.b = (ration.b / food_source_triggers) * 255;
 }

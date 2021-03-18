@@ -5,11 +5,10 @@ World::World(
 	unsigned int width,
 	unsigned int height,
 	unsigned short light_power,
-	double light_coef,
 	unsigned short max_organic_to_eat,
 	unsigned short max_entities_to_eat,
 	unsigned short max_energy,
-	unsigned short max_hp
+	unsigned short max_age
 )
 	: max_generation(1)
 	, width(width)
@@ -18,10 +17,10 @@ World::World(
 	, entities((size_t)height* width)
 	, organic((size_t)height* width)
 	, light_power(light_power)
-	, light_coef(light_coef)
 	, max_organic_to_eat(max_organic_to_eat)
 	, max_entities_to_eat(max_entities_to_eat)
-	, max_hp(max_hp)
+	, max_energy(max_energy)
+	, max_age(max_age)
 {
 	// Allocate 2d array for world map
 	terrain = new cell * [height];
@@ -33,7 +32,7 @@ World::World(
 	{
 		for (size_t x = 0; x < width; x++)
 		{
-			terrain[y][x].Init(light_power, light_coef, x, y);
+			terrain[y][x].Init(light_power, x, y);
 		}
 	}
 
@@ -43,12 +42,8 @@ World::World(
 	auto y = height / 8;
 	terrain[y][x].SetEntity(entities.get({
 		x, y,
-		max_hp,
 		100,
 		max_energy,
-		100,
-		0.01,
-		0.01,
 		Genome(
 			random::Generate(),
 			8,
@@ -68,11 +63,43 @@ World::~World()
 	delete[] terrain;
 }
 
+void World::Reload()
+{
+	// Remove all organics and entities
+	entities.clear();
+	organic.clear();
+
+	for (size_t y = 0; y < height; y++)
+	{
+		for (size_t x = 0; x < width; x++)
+		{
+			terrain[y][x].DelEntity();
+			terrain[y][x].DelOrganic();
+		}
+	}
+
+	// Put first entity
+	auto x = width / 2;
+	auto y = height / 8;
+	terrain[y][x].SetEntity(entities.get({
+		x, y,
+		100,
+		max_energy,
+		Genome(
+			random::Generate(),
+			8,
+			random::Generate(std::numeric_limits<unsigned __int8>().max()),
+			1,
+			100
+		)
+	}));
+}
+
 EntitiesIterator World::EntityDie(EntitiesIterator entity_iterator)
 {
 	auto x = entity_iterator->x();
 	auto y = entity_iterator->y();
-	if (terrain[y][x].IsContainsOrganic())
+	if (terrain[y][x].ContainsOrganic())
 	{
 		terrain[y][x].AddOrganic(entity_iterator->Energy() + 100ull);
 	}
@@ -97,7 +124,7 @@ void World::Update()
 			object++;
 			continue;
 		}
-		if (terrain[y + 1][x].IsContainsOrganic())
+		if (terrain[y + 1][x].ContainsOrganic())
 		{
 			object++;
 			continue;
@@ -135,8 +162,8 @@ void World::Update()
 			case Operation::Birth:
 				Birthing(gen.args, entity);
 				break;
-			case Operation::Carnivorous:
-				Carnivorousing(gen.args, entity);
+			case Operation::Attack:
+				Attacking(gen.args, entity);
 				break;
 			case Operation::EatOrganic:
 				EatOrganic(entity);
@@ -296,7 +323,7 @@ EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, const posit
 	switch (coef)
 	{
 	case Coefficient::enlarge:
-		if (new_max_age < 1000) new_max_age++;
+		if (new_max_age < max_age) new_max_age++;
 		break;
 	case Coefficient::reduce:
 		if (new_max_age > 0) new_max_age--;
@@ -310,13 +337,10 @@ EntitiesIterator World::Reproduction(EntitiesIterator parent_entity, const posit
 
 	terrain[pos.y()][pos.x()].SetEntity(entities.get({
 		pos.x(), pos.y(),
-		max_hp,
 		100,
 		parent_entity->MaxEnergy(),
-		new_max_age,
-		parent_entity->Defence(),
-		parent_entity->Attack(),
-		new_genom
+		new_genom,
+		new_max_age
 	}));
 
 	if (new_genom.Generation() > max_generation)
@@ -359,38 +383,34 @@ void World::Separationing(unsigned __int8 args, EntitiesIterator entity)
 	}
 }
 
-void World::Carnivorousing(unsigned __int8 args, EntitiesIterator entity)
+void World::Attacking(unsigned __int8 args, EntitiesIterator entity)
 {
 	position viewed_position = { entity->x(), entity->y() };
 	if (!GetViewPos(args, viewed_position))
 		return;
 
-	const auto& viewed_point = terrain[viewed_position.y()][viewed_position.x()];
+	const auto& viewed_cell = terrain[viewed_position.y()][viewed_position.x()];
 
-	if (viewed_point.ContainsEntity())
+	if (viewed_cell.ContainsEntity())
 	{
-		auto lhs_genom = viewed_point.GetEntity()->GetGenome().Data();
-		auto rhs_genom = viewed_point.GetEntity()->GetGenome().Data();
+		auto lhs_genom = viewed_cell.GetEntity()->GetGenome().Data();
+		auto rhs_genom = viewed_cell.GetEntity()->GetGenome().Data();
 
 		if (lhs_genom == rhs_genom)
 			return;
 
-		if (!viewed_point.GetEntity()->Defencing(entity->Attack()))
-		{
-			EntityDie(viewed_point.GetEntity());
-			entity->AttackUp();
-			auto e = viewed_point.GetEntity()->Energy();
-			if (e > max_entities_to_eat)
-				entity->IncreaceEnergy(max_entities_to_eat);
-			else
-				entity->IncreaceEnergy(e);
-		}
+		EntityDie(viewed_cell.GetEntity());
+		auto e = viewed_cell.GetOrganic()->Energy();
+		if (e > max_entities_to_eat)
+			entity->IncreaceEnergy(max_entities_to_eat);
+		else
+			entity->IncreaceEnergy(e);
 	}
 }
 
 void World::EatOrganic(EntitiesIterator entity)
 {
-	if (!terrain[entity->y()][entity->x()].IsContainsOrganic())
+	if (!terrain[entity->y()][entity->x()].ContainsOrganic())
 	{
 		return;
 	}
@@ -415,6 +435,7 @@ void World::EatOrganic(EntitiesIterator entity)
 		terrain[entity->y()][entity->x()].DelOrganic();
 	}
 }
+
 void World::Moving(unsigned __int8 args, EntitiesIterator entity)
 {
 	position new_position = { entity->x(), entity->y() };
@@ -428,17 +449,14 @@ void World::Moving(unsigned __int8 args, EntitiesIterator entity)
 		terrain[new_position.y()][new_position.x()].SetEntity(entity);
 	}
 }
+
 void World::Photosynthesing(EntitiesIterator entity)
 {
 	entity->IncreaceEnergy(
-			(((height - (double)entity->y()) / height) * light_coef) * light_power * 2
+		terrain[entity->y()][entity->x()].LightPower()
 	);
 }
 
-unsigned short World::MaxHp() const
-{
-	return max_hp;
-}
 size_t World::MaxGeneration() const
 {
 	return max_generation;
@@ -463,13 +481,4 @@ unsigned int World::Width() const
 unsigned int World::Height() const
 {
 	return height;
-}
-
-unsigned int World::LightPower() const
-{
-	return light_power;
-}
-double World::LightCoef() const
-{
-	return light_coef;
 }

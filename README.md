@@ -21,3 +21,9 @@ The world is somewhat like a cross-section of a small reservoir.
   - the genome of the cell can mutate, or it can remain the same
 - Organic has a gravity and fall down to the bottom
 - Light falls from above and with each passed cell its power becomes less and less
+
+### TODO:
+- Decompose GUI from data
+- Use new GUI libraries
+- Use vpkg for manage dependencies
+- Decompose genetic algorithm from it's special implementation

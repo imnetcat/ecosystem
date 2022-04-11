@@ -23,7 +23,7 @@ The world is somewhat like a cross-section of a small reservoir.
 - Light falls from above and with each passed cell its power becomes less and less
 
 ### Benchmarks
-World update max time:  1870 ms
+100x51 world update max time:  1870 ms
 
 ### TODO:
 - Decompose GUI from data

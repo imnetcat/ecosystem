@@ -22,6 +22,9 @@ The world is somewhat like a cross-section of a small reservoir.
 - Organic has a gravity and fall down to the bottom
 - Light falls from above and with each passed cell its power becomes less and less
 
+### Benchmarks
+World update max time:  1870 ms
+
 ### TODO:
 - Decompose GUI from data
 - Use new GUI libraries

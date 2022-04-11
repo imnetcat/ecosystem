@@ -1,11 +1,11 @@
-# ecosystem
-Interactive virtual ecosystem. Cells evolution. Evolution from unicellular to multicellular organisms in a virtual world
+# Ecosystem
+This is interactive cells ecosystem simulation.
 
 ### Concept
-This is implementation of the genetic algorithm with natural selection in a virtual world. The world is a 2D grid of cells closed along the x axis. 
+This is implementation of the cells genetic algorithm with natural selection in a virtual world. The world is a 2D grid of cells closed along the x axis. 
 
 ### World rules
-The world is somewhat like a cross-section of a small reservoir.
+The world is somewhat like a cross-section of a small reservoir, like lake or jar with watter.
 - World 2D
 - World closed along the x axis
 - There are live cells. They can:

@@ -31,7 +31,7 @@ vcpkg install wxwidgets:x64-windows
 100x51 world update max time:  1870 ms
 
 ### TODO:
-- Decompose GUI from data
-- Use new GUI libraries
-- Use vpkg for manage dependencies
-- Decompose genetic algorithm from it's special implementation
+- [ ] Decompose GUI from data
+- [x] Use new GUI libraries
+- [x] Use vpkg for manage dependencies
+- [ ] Decompose genetic algorithm from it's special implementation

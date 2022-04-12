@@ -1,9 +1,9 @@
 #include "world.h"
-using namespace Ecosystem::Logic;
+using namespace ecosystem::logic;
 
 World::World(
-	unsigned int width,
-	unsigned int height,
+	int width,
+	int height,
 	unsigned short light_power,
 	unsigned short max_organic_to_eat,
 	unsigned short max_entities_to_eat,
@@ -14,8 +14,8 @@ World::World(
 	, width(width)
 	, height(height)
 	, terrain(nullptr)
-	, entities((size_t)height* width)
-	, organic((size_t)height* width)
+	, entities(height * width)
+	, organic(height * width)
 	, light_power(light_power)
 	, max_organic_to_eat(max_organic_to_eat)
 	, max_entities_to_eat(max_entities_to_eat)
@@ -445,7 +445,7 @@ void World::Moving(unsigned __int8 args, EntitiesIterator entity)
 	if (!terrain[new_position.y()][new_position.x()].ContainsEntity())
 	{
 		terrain[entity->y()][entity->x()].DelEntity();
-		entity->SetPosition(new_position.x(), new_position.y());
+		entity->set(new_position.x(), new_position.y());
 		terrain[new_position.y()][new_position.x()].SetEntity(entity);
 	}
 }

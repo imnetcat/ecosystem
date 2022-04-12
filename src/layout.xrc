@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<resource version="3.0">
+  <object class="wxFrame" name="main">
+    <object class="wxBoxSizer">
+      <orient>wxHORIZONTAL</orient>
+      <object class="sizeritem">
+        <object class="wxTextCtrl" name="text"/>
+        <option>1</option>
+        <flag>wxALL|wxEXPAND</flag>
+        <border>10</border>
+      </object>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <object class="sizeritem">
+            <object class="wxButton" name="clickme_btn">
+              <label>Click</label>
+            </object>
+            <flag>wxRIGHT</flag>
+            <border>10</border>
+          </object>
+          <object class="sizeritem">
+            <object class="wxButton" name="wxID_OK">
+              <label>OK</label>
+            </object>
+            <flag>wxLEFT</flag>
+            <border>10</border>
+          </object>
+          <orient>wxHORIZONTAL</orient>
+        </object>
+        <flag>wxALL|wxALIGN_CENTRE</flag>
+        <border>10</border>
+      </object>
+    </object>
+  </object>
+</resource>

@@ -1,9 +1,9 @@
 #pragma once
 #include "position.h"
 #include "../utils/pool.h"
-namespace Ecosystem
+namespace ecosystem
 {
-	namespace Logic
+	namespace logic
 	{
 		class Organic : public position
 		{
@@ -11,7 +11,7 @@ namespace Ecosystem
 			unsigned __int64 energy;
 		public:
 			Organic();
-			Organic(size_t x, size_t y, unsigned __int64 energy);
+			Organic(int x, int y, unsigned __int64 energy);
 
 			unsigned __int64 Energy();
 			void Increace(unsigned __int64 value);

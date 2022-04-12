@@ -1,5 +1,5 @@
 #include "genome.h"
-using namespace Ecosystem::Logic;
+using namespace ecosystem::logic;
 
 const std::uniform_int_distribution<unsigned __int64> Genome::distributor = std::uniform_int_distribution<unsigned __int64>(1, args_max - 1);
 
@@ -209,36 +209,52 @@ void Genome::Construct()
 	}
 	part3 = genome_size - (part2 + part1);
 
-	for (unsigned short i = 0; i < part1; i++)
-	{
-		species.r += static_cast<unsigned char>(Read().trigger);
-	}
-	for (unsigned short i = 0; i < part2; i++)
-	{
-		species.g += static_cast<unsigned char>(Read().trigger);
-	}
-	for (unsigned short i = 0; i < part3; i++)
-	{
-		species.b += static_cast<unsigned char>(Read().trigger);
-	}
+	unsigned int rgb = species.GetRGB();
+	/* Convertion from unsigned int into RGBA chars
+	unsigned char b = (argb) & 0xFF;
+	unsigned char g = (argb >> 8) & 0xFF;
+	unsigned char r = (argb >> 16) & 0xFF;
+	unsigned char a = (argb >> 24) & 0xFF;
+	*/
+
+	unsigned char b = (rgb) & 0xFF;
+	unsigned char g = (rgb >> 8) & 0xFF;
+	unsigned char r = (rgb >> 16) & 0xFF;
 
 	for (unsigned short i = 0; i < part1; i++)
 	{
-		species.r += Read().args;
+		r += static_cast<unsigned char>(Read().trigger);
 	}
 	for (unsigned short i = 0; i < part2; i++)
 	{
-		species.g += Read().args;
+		g += static_cast<unsigned char>(Read().trigger);
 	}
 	for (unsigned short i = 0; i < part3; i++)
 	{
-		species.b += Read().args;
+		b += static_cast<unsigned char>(Read().trigger);
 	}
 
-	species.r %= 255;
-	species.g %= 255;
-	species.b %= 255;
+	for (unsigned short i = 0; i < part1; i++)
+	{
+		r += Read().args;
+	}
+	for (unsigned short i = 0; i < part2; i++)
+	{
+		g += Read().args;
+	}
+	for (unsigned short i = 0; i < part3; i++)
+	{
+		b += Read().args;
+	}
 
+	r %= 255;
+	g %= 255;
+	b %= 255;
+
+	species.SetRGB(256 * 256 * r + 256 * g + b);
+
+	// Hash ration
+	rgb = ration.GetRGB();
 	double food_source_triggers = 0;
 	for (unsigned __int8 i = 0; i < genome_size; i++)
 	{
@@ -252,21 +268,21 @@ void Genome::Construct()
 		{
 		case Operation::Attack:
 			food_source_triggers++;
-			ration.r++;
+			r++;
 			break;
 		case Operation::Photosyntesis:
 			food_source_triggers++;
-			ration.g++;
+			g++;
 			break;
 		case Operation::EatOrganic:
 			food_source_triggers++;
-			ration.b++;
+			b++;
 			break;
 		}
 	}
 
-	// Hash ration
-	ration.r = (ration.r / food_source_triggers) * 255;
-	ration.g = (ration.g / food_source_triggers) * 255;
-	ration.b = (ration.b / food_source_triggers) * 255;
+	r = (r / food_source_triggers) * 255;
+	g = (g / food_source_triggers) * 255;
+	b = (b / food_source_triggers) * 255;
+	ration.SetRGB(256 * 256 * r + 256 * g + b);
 }

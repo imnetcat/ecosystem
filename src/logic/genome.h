@@ -2,14 +2,15 @@
 #include "gen.h"
 #include "../utils/pool.h"
 #include "../utils/random.h"
-#include <SFML/Graphics/Color.hpp>
+#define _CRT_SECURE_NO_WARNINGS // For wxWidgets lib
+#include <wx/colour.h>
 #include "coefficient.h"
 #include <limits>
-namespace Ecosystem
+namespace ecosystem
 {
-	namespace Logic
+	namespace logic
 	{
-		using Color = sf::Color;
+		using Color = wxColor;
 
 		class Genome
 		{

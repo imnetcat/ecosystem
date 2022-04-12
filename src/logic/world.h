@@ -1,15 +1,15 @@
 #pragma once
 #include "cell.h"
-namespace Ecosystem
+namespace ecosystem
 {
-	namespace Logic
+	namespace logic
 	{
 		class World
 		{
 		public:
 			explicit World(
-				unsigned int width,
-				unsigned int height,
+				int width,
+				int height,
 				unsigned short light_power,
 				unsigned short max_orginic_to_eat,
 				unsigned short max_entities_to_eat,
@@ -33,8 +33,8 @@ namespace Ecosystem
 			unsigned int Height() const;
 		protected:
 
-			const unsigned int width;
-			const unsigned int height;
+			const int width;
+			const int height;
 
 			const unsigned short light_power;
 			const unsigned short max_age;

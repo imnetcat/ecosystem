@@ -1,10 +1,10 @@
 #include "cell.h"
-using namespace Ecosystem::Logic;
+using namespace ecosystem::logic;
 
 void cell::Init(unsigned int lpower, size_t x, size_t y)
 {
 	light_power = lpower;
-	SetPosition(x, y);
+	set(x, y);
 }
 
 EntitiesIterator cell::GetEntity() const

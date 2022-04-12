@@ -1,9 +1,9 @@
 #pragma once
 #include "Organic.h"
 #include "Entity.h"
-namespace Ecosystem
+namespace ecosystem
 {
-	namespace Logic
+	namespace logic
 	{
 		class cell : private position
 		{

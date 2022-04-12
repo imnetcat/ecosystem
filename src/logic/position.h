@@ -1,23 +1,23 @@
 #pragma once
-namespace Ecosystem
+namespace ecosystem
 {
-	namespace Logic
+	namespace logic
 	{
 		class position
 		{
 		private:
-			size_t x_;
-			size_t y_;
+			int x_;
+			int y_;
 		public:
 			position();
-			position(size_t x, size_t y);
+			position(int x, int y);
 
-			size_t x() const;
-			size_t y() const;
-			void x(size_t);
-			void y(size_t);
+			int x() const;
+			int y() const;
+			void x(int);
+			void y(int);
 
-			void SetPosition(size_t x, size_t y);
+			void set(int x, int y);
 		};
 	}
 }

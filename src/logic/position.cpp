@@ -1,33 +1,33 @@
 #include "position.h"
-using namespace Ecosystem::Logic;
+using namespace ecosystem::logic;
 
 position::position()
 	: x_(0)
 	, y_(0)
 { }
 
-position::position(size_t x, size_t y)
+position::position(int x, int y)
 	: x_(x)
 	, y_(y)
 { }
 
-size_t position::x() const
+int position::x() const
 {
 	return x_;
 }
-size_t position::y() const
+int position::y() const
 {
 	return y_;
 }
-void position::x(size_t value)
+void position::x(int value)
 {
 	x_ = value;
 }
-void position::y(size_t value)
+void position::y(int value)
 {
 	y_ = value;
 }
-void position::SetPosition(size_t x, size_t y)
+void position::set(int x, int y)
 {
 	x_ = x;
 	y_ = y;

@@ -1,5 +1,5 @@
 #include "Entity.h"
-using namespace Ecosystem::Logic;
+using namespace ecosystem::logic;
 
 Entity::Entity()
 	:
@@ -11,8 +11,8 @@ Entity::Entity()
 {}
 
 Entity::Entity(
-	size_t x,
-	size_t y,
+	int x,
+	int y,
 	unsigned short energy,
 	unsigned short max_energy,
 	Genome g,

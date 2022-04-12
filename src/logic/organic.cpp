@@ -1,8 +1,8 @@
 #include "organic.h"
-using namespace Ecosystem::Logic;
+using namespace ecosystem::logic;
 
 Organic::Organic() : energy(0) {}
-Organic::Organic(size_t x, size_t y, unsigned __int64 energy)
+Organic::Organic(int x, int y, unsigned __int64 energy)
 	: position(x, y)
 	, energy(energy)
 {}

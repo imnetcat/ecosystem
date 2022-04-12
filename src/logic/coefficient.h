@@ -1,7 +1,7 @@
 #pragma once
-namespace Ecosystem
+namespace ecosystem
 {
-	namespace Logic
+	namespace logic
 	{
 		enum class Coefficient
 		{

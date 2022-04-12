@@ -2,9 +2,9 @@
 #include "genome.h"
 #include "position.h"
 #include "../utils/pool.h"
-namespace Ecosystem
+namespace ecosystem
 {
-	namespace Logic
+	namespace logic
 	{
 		class Entity : public position
 		{
@@ -20,8 +20,8 @@ namespace Ecosystem
 		public:
 			Entity();
 			Entity(
-				size_t x,
-				size_t y,
+				int x,
+				int y,
 				unsigned short energy,
 				unsigned short max_energy,
 				Genome g,

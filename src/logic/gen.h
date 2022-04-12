@@ -1,8 +1,8 @@
 #pragma once
 #include <map>
-namespace Ecosystem
+namespace ecosystem
 {
-	namespace Logic
+	namespace logic
 	{
 		enum class Operation
 		{

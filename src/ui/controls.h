@@ -1,12 +1,18 @@
 #pragma once
 
-static int SPEED = 50;
+static int SPEED = 3;
+static int MIN_SPEED = 1;
+static int MAX_SPEED = 3;
+
+static int ZOOM = 3;
+static int MIN_ZOOM = 1;
+static int MAX_ZOOM = 5;
 
 static bool do_tic = false;
 static bool pause = false;
 static bool hibernate = false;
 
-static unsigned int WORLD_WIDTH = 25;
+static unsigned int WORLD_WIDTH = 40;
 static unsigned int WORLD_HEIGHT = 25;
 static unsigned short LIGHT_POWER = 2000;
 static unsigned short MAX_ORGANIC_TO_EAT = 3000;

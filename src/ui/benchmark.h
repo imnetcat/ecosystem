@@ -2,7 +2,7 @@
 #include <chrono> 
 #include <iostream>
 
-long long speedmeter = 0;
+static long long speedmeter = 0;
 
 #define MYBENCHMARK(func, label) { \
 	auto start = std::chrono::high_resolution_clock::now(); \

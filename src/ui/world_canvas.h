@@ -14,11 +14,7 @@ namespace ecosystem
 		public:
 
 			world_canvas(
-				int pos_x, 
-				int pos_y, 
-				int size_x, 
-				int size_y, 
-				wxFrame* parent,
+				wxWindow* parent,
 				logic::World* world
 			);
 			

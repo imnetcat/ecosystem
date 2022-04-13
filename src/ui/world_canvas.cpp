@@ -1,5 +1,6 @@
 #include "world_canvas.h"
 #include "controls.h"
+#include "layout.h"
 #include "colors.h"
 using namespace ecosystem::ui;
 using namespace ecosystem::logic;
@@ -80,20 +81,14 @@ END_EVENT_TABLE()
 */
 
 world_canvas::world_canvas(
-	int pos_x,
-	int pos_y,
-	int size_x,
-	int size_y,
-	wxFrame* parent,
+	wxWindow* parent,
 	logic::World* world
-) : wxGrid(parent, -1 
-		, wxPoint(pos_x, pos_y)
-		, wxSize(size_x, size_y)
-	)
+)
+	: wxGrid(parent, wxID_ANY, { 0, 0 }, { WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT })
 	, world(world)
 {
 	// Set up grid dimension and diable selecting
-	CreateGrid(WORLD_WIDTH, WORLD_HEIGHT, wxGrid::wxGridSelectionModes::wxGridSelectNone);
+	CreateGrid(WORLD_HEIGHT, WORLD_WIDTH, wxGrid::wxGridSelectionModes::wxGridSelectNone);
 
 	// Disable cells borders
 	EnableGridLines(false);

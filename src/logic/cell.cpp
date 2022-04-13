@@ -52,3 +52,13 @@ unsigned int cell::LightPower() const
 {
 	return (light_power / std::pow(1.3, y()));
 }
+
+int cell::x() const
+{
+	return position::x();
+}
+
+int cell::y() const
+{
+	return position::y();
+}

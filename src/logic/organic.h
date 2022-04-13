@@ -13,7 +13,7 @@ namespace ecosystem
 			Organic();
 			Organic(int x, int y, unsigned __int64 energy);
 
-			unsigned __int64 Energy();
+			unsigned __int64 Energy() const;
 			void Increace(unsigned __int64 value);
 			void Decreace(unsigned __int64 value);
 		};

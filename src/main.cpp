@@ -3,6 +3,7 @@
 #include "ui/world_canvas.h"
 #include "ui/benchmark.h"
 #include "ui/form.h"
+#include "ui/layout.h"
 
 #include <wx/wxprec.h>
 

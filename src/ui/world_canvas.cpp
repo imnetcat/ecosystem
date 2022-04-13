@@ -61,7 +61,7 @@ BEGIN_EVENT_TABLE(world_canvas, wxPanel)
  EVT_KEY_UP(BasicDrawPane::keyReleased)
  EVT_MOUSEWHEEL(BasicDrawPane::mouseWheelMoved)
 */
-
+EVT_GRID_SELECT_CELL(world_canvas::on_select_cell)
 // catch paint events
 EVT_PAINT(world_canvas::paintEvent)
 
@@ -84,7 +84,15 @@ world_canvas::world_canvas(
 	wxWindow* parent,
 	logic::World* world
 )
-	: wxGrid(parent, wxID_ANY, { 0, 0 }, { WINDOW_WIDTH - SIDEBAR_WIDTH, WINDOW_HEIGHT })
+	: wxGrid(
+		parent, wxID_ANY, { 0, 0 },
+		{
+			static_cast<int>(WORLD_WIDTH * CELL_SIZE + WORLD_WIDTH * 2),
+			static_cast<int>(WORLD_HEIGHT * CELL_SIZE + WORLD_HEIGHT * 2)
+		}
+	)
+	, observed_cell(nullptr)
+	, observed_entity(nullptr)
 	, world(world)
 {
 	// Set up grid dimension and diable selecting
@@ -94,8 +102,8 @@ world_canvas::world_canvas(
 	EnableGridLines(false);
 
 	// Set up cells size
-	SetDefaultRowSize(cell_size, true);
-	SetDefaultColSize(cell_size, true);
+	SetDefaultRowSize(CELL_SIZE, true);
+	SetDefaultColSize(CELL_SIZE, true);
 
 	// Make all cells read-only for user
 	EnableEditing(false);
@@ -132,15 +140,6 @@ void world_canvas::paintEvent(wxPaintEvent& evt)
 void world_canvas::change_world(logic::World* w)
 {
 	world = w;
-}
-
-unsigned int world_canvas::Width()
-{
-	return map_width;
-}
-unsigned int world_canvas::Height()
-{
-	return map_height;
 }
 
 Color world_canvas::ObtainEntityColor(pool<Entity>::const_iterator entity) const
@@ -225,6 +224,17 @@ Color world_canvas::ObtainColor(const cell* cell) const
 	return BLUE;
 }
 
+void world_canvas::on_select_cell(wxGridEvent& evt)
+{
+	const int x = evt.GetCol();
+	const int y = evt.GetRow();
+	observed_cell = world->get_cell(x, y);
+	if (observed_cell->ContainsEntity())
+	{
+		observed_entity = *(observed_cell->GetEntity());
+	}
+}
+
 void world_canvas::render(wxDC& dc)
 {
 	// Clear the grid buffers
@@ -251,9 +261,30 @@ void world_canvas::render(wxDC& dc)
 		organic++;
 	}
 
+
+	if (observed_entity)
+	{
+		if (observed_entity->IsDead())
+		{
+			// Clear cell selections
+			observed_entity = nullptr;
+			observed_cell = nullptr;
+			ClearSelection();
+		}
+		else
+		{
+			// Select cell on the grid
+			int x = observed_entity->x();
+			int y = observed_entity->y();
+			SelectBlock(y, x, y, x);
+			observed_cell = world->get_cell(x, y);
+		}
+	}
+
 	if (mode == Mode::organic)
 	{
 		// For "Show Organic" mode this is enought, so we can exit
+		Render(dc);
 		return;
 	}
 	
@@ -278,25 +309,11 @@ size_t world_canvas::GetMaxGeneration()
 	return world->MaxGeneration();
 }
 
-void world_canvas::ScaleCellSize(float scale)
+void world_canvas::ScaleCellSize(unsigned int new_size)
 {
-	cell_size = cell_default_size * scale;
-	cell_outline = cell_size + OUTLINE;
-	map_width = world->Width() * cell_outline + 1;
-	map_height = world->Height() * cell_outline + 1;
-}
-
-const cell* world_canvas::GetCell(int x_px, int y_px)
-{
-	int x = x_px / cell_outline;
-	int y = y_px / cell_outline;
-
-	if (x >= world->Width() || y >= world->Height())
-	{
-		return nullptr;
-	}
-
-	return &world->Terrain()[y][x];
+	CELL_SIZE = new_size;
+	SetDefaultRowSize(CELL_SIZE, true);
+	SetDefaultColSize(CELL_SIZE, true);
 }
 
 size_t world_canvas::GetEntitiesCount()
@@ -311,3 +328,12 @@ void world_canvas::SetMode(Mode new_val)
 {
 	mode = new_val;
 }
+const cell* world_canvas::get_observed_cell() const
+{
+	return observed_cell;
+}
+const Entity* world_canvas::get_observed_entity() const
+{
+	return observed_entity;
+}
+

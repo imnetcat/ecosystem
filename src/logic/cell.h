@@ -15,6 +15,10 @@ namespace ecosystem
 			unsigned int light_power;
 			double light_coef;
 		public:
+
+			int x() const;
+			int y() const;
+
 			void Init(unsigned int light_power, size_t x, size_t y);
 			void SetEntity(EntitiesIterator);
 			void DelEntity();

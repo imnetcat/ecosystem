@@ -40,6 +40,20 @@ namespace ecosystem
 
             logic::World* world;
             world_canvas* canvas;
+
+            wxStaticText* entity_DEBUG_coords_info;
+            wxStaticText* cell_coords_info;
+            wxStaticText* cell_age_info;
+            wxStaticText* cell_generation_info;
+            wxStaticText* cell_mutation_chance_info;
+            wxStaticText* cell_organic_energy_info;
+            wxStaticText* cell_light_energy_info;
+            wxStaticText* cell_genome_info;
+            wxStaticText* cell_genome_args_info;
+
+            wxStaticText* max_generation_info;
+            wxStaticText* entities_count_info;
+            wxStaticText* ticks_info;
         };
 
 	}

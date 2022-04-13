@@ -26,7 +26,7 @@ namespace ecosystem
 
 			// Getters
 			size_t MaxGeneration() const;
-			cell** const Terrain() const;
+			const cell* const get_cell(int x, int y) const;
 			const pool<Entity>& Entities() const;
 			const pool<Organic>& Organics() const;
 			unsigned int Width() const;

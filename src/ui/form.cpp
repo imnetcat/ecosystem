@@ -4,13 +4,15 @@
 #include "benchmark.h"
 #include <wx/splitter.h>
 #include <wx/statline.h>
+#include <string>
+using namespace std;
 using namespace ecosystem::ui;
 using namespace ecosystem::logic;
 
 BEGIN_EVENT_TABLE(Form, wxFrame)
 END_EVENT_TABLE()
 
-#define customWXId(ID) (wxID_HIGHEST + (int)ID)
+#define convertToWxId(ID) (wxID_HIGHEST + (int)ID)
 
 Form::~Form()
 {
@@ -40,7 +42,51 @@ void Form::onIdle(wxIdleEvent& evt)
 
     canvas->paintNow();
 
-    Sleep(5);
+    max_generation_info->SetLabel("Max generation: " + to_string(world->MaxGeneration()));
+    entities_count_info->SetLabel("Entities: " + to_string(world->Entities().size()));
+    ticks_info->SetLabel("Tics: " + to_string(ticks));
+
+    const logic::Entity* observed_entity = canvas->get_observed_entity();
+    if (observed_entity)
+    {
+        entity_DEBUG_coords_info->SetLabel("entity coords: x=" + to_string(observed_entity->x()) + " y=" + to_string(observed_entity->y()));
+        cell_age_info->SetLabel("age: " + to_string(observed_entity->Age()));
+        cell_generation_info->SetLabel("generation: " + to_string(observed_entity->GetGenome().Generation()));
+        cell_mutation_chance_info->SetLabel("mutation chance: " + to_string(observed_entity->GetGenome().MutationChance()));
+        cell_genome_info->SetLabel("genome: " + to_string(observed_entity->GetGenome().Data()));
+        cell_genome_args_info->SetLabel("genome args: " + to_string(observed_entity->GetGenome().Args()));
+    }
+    else
+    {
+        entity_DEBUG_coords_info->SetLabel("entity coords: -");
+        cell_age_info->SetLabel("age: -");
+        cell_generation_info->SetLabel("generation: -");
+        cell_mutation_chance_info->SetLabel("mutation chance: -");
+        cell_genome_info->SetLabel("genome: -");
+        cell_genome_args_info->SetLabel("genome args: -");
+    }
+
+    const logic::cell* observed_cell = canvas->get_observed_cell();
+    if (observed_cell)
+    {
+        cell_coords_info->SetLabel("coords: x=" + to_string(observed_cell->x()) + " y=" + to_string(observed_cell->y()));
+        if (observed_cell->ContainsOrganic())
+        {
+            const auto* organic = *observed_cell->GetOrganic();
+            cell_organic_energy_info->SetLabel("organic energy: " + to_string(organic->Energy()));
+        }
+        cell_light_energy_info->SetLabel("light energy: " + to_string(observed_cell->LightPower()));
+    }
+    else
+    {
+        cell_coords_info->SetLabel("coords: -");
+        cell_organic_energy_info->SetLabel("organic energy: -");
+        cell_light_energy_info->SetLabel("light energy: -");
+    }
+
+    ticks++;
+
+    Sleep(250 * MAX_SPEED - 250 * SPEED);
 }
 
 Form::Form()
@@ -48,7 +94,7 @@ Form::Form()
         NULL,
         wxID_ANY,
         "Ecosystem simulation",
-        wxPoint(0, 0),
+        wxPoint(150, 150),
         wxSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     )
 {
@@ -70,26 +116,26 @@ Form::Form()
 
     // Set up win menu panel
     wxMenu* menuAbout = new wxMenu;
-    menuAbout->Append(customWXId(MenuItemID::Wiki), "&Wiki", "Wiki");
-    menuAbout->Append(customWXId(MenuItemID::Repository), "&Repository", "Repository");
+    menuAbout->Append(convertToWxId(MenuItemID::Wiki), "&Wiki", "Wiki");
+    menuAbout->Append(convertToWxId(MenuItemID::Repository), "&Repository", "Repository");
     menuAbout->AppendSeparator();
-    menuAbout->Append(customWXId(MenuItemID::Author), "&Author", "Author");
+    menuAbout->Append(convertToWxId(MenuItemID::Author), "&Author", "Author");
 
     wxMenu* menuWorld = new wxMenu;
-    menuWorld->Append(customWXId(MenuItemID::Run), "&Run", "Run");
-    menuWorld->Append(customWXId(MenuItemID::Pause), "&Pause", "Pause");
-    menuWorld->Append(customWXId(MenuItemID::ByTick), "&Runbytick", "Run by tick");
-    menuWorld->Append(customWXId(MenuItemID::Hybernate), "&Hybernate", "Hybernate");
+    menuWorld->Append(convertToWxId(MenuItemID::Run), "&Run", "Run");
+    menuWorld->Append(convertToWxId(MenuItemID::Pause), "&Pause", "Pause");
+    menuWorld->Append(convertToWxId(MenuItemID::ByTick), "&Runbytick", "Run by tick");
+    menuWorld->Append(convertToWxId(MenuItemID::Hybernate), "&Hybernate", "Hybernate");
 
     wxMenu* menuView = new wxMenu;
-    menuView->Append(customWXId(MenuItemID::Terrain), "&Terrain", "Terrain");
-    menuView->Append(customWXId(MenuItemID::Energy), "&Energy", "Energy");
-    menuView->Append(customWXId(MenuItemID::Organic), "&Organic", "Organic");
-    menuView->Append(customWXId(MenuItemID::Species), "&Species", "Species");
-    menuView->Append(customWXId(MenuItemID::Age), "&Age", "Age");
-    menuView->Append(customWXId(MenuItemID::Ration), "&Ration", "Ration");
-    menuView->Append(customWXId(MenuItemID::Success), "&Success", "Success");
-    menuView->Append(customWXId(MenuItemID::Generation), "&Generation", "Generation");
+    menuView->Append(convertToWxId(MenuItemID::Terrain), "&Terrain", "Terrain");
+    menuView->Append(convertToWxId(MenuItemID::Energy), "&Energy", "Energy");
+    menuView->Append(convertToWxId(MenuItemID::Organic), "&Organic", "Organic");
+    menuView->Append(convertToWxId(MenuItemID::Species), "&Species", "Species");
+    menuView->Append(convertToWxId(MenuItemID::Age), "&Age", "Age");
+    menuView->Append(convertToWxId(MenuItemID::Ration), "&Ration", "Ration");
+    menuView->Append(convertToWxId(MenuItemID::Success), "&Success", "Success");
+    menuView->Append(convertToWxId(MenuItemID::Generation), "&Generation", "Generation");
 
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(menuAbout, "&About");
@@ -101,15 +147,15 @@ Form::Form()
     Bind(wxEVT_MENU, [](wxCommandEvent&)
     {
         ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem/wiki", NULL, NULL, SW_SHOW);
-    }, customWXId(MenuItemID::Wiki));
+    }, convertToWxId(MenuItemID::Wiki));
     Bind(wxEVT_MENU, [](wxCommandEvent&)
     {
         ShellExecuteA(0, 0, "https://github.com/imnetcat/ecosystem", NULL, NULL, SW_SHOW);
-    }, customWXId(MenuItemID::Repository));
+    }, convertToWxId(MenuItemID::Repository));
     Bind(wxEVT_MENU, [](wxCommandEvent&)
     {
         ShellExecuteA(0, 0, "https://github.com/imnetcat", NULL, NULL, SW_SHOW);
-    }, customWXId(MenuItemID::Author));
+    }, convertToWxId(MenuItemID::Author));
 
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
@@ -118,7 +164,7 @@ Form::Form()
             return;
         }
         pause = false;
-    }, customWXId(MenuItemID::Run));
+    }, convertToWxId(MenuItemID::Run));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         if (hibernate)
@@ -126,7 +172,7 @@ Form::Form()
             return;
         }
         pause = true;
-    }, customWXId(MenuItemID::Pause));
+    }, convertToWxId(MenuItemID::Pause));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         if (hibernate)
@@ -135,7 +181,7 @@ Form::Form()
         }
         pause = true;
         do_tic = true;
-    }, customWXId(MenuItemID::ByTick));
+    }, convertToWxId(MenuItemID::ByTick));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         hibernate = !hibernate;
@@ -153,48 +199,48 @@ Form::Form()
             speed_slider->setEnabled(true);
             */
         }
-    }, customWXId(MenuItemID::Hybernate));
+    }, convertToWxId(MenuItemID::Hybernate));
 
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         canvas->SetMode(world_canvas::Mode::terrain);
         SetStatusText("mode: terrain");
-    }, customWXId(MenuItemID::Terrain));
+    }, convertToWxId(MenuItemID::Terrain));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         canvas->SetMode(world_canvas::Mode::energy);
         SetStatusText("mode: energy");
-    }, customWXId(MenuItemID::Energy));
+    }, convertToWxId(MenuItemID::Energy));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         canvas->SetMode(world_canvas::Mode::organic);
         SetStatusText("mode: organic");
-    }, customWXId(MenuItemID::Organic));
+    }, convertToWxId(MenuItemID::Organic));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         canvas->SetMode(world_canvas::Mode::species);
         SetStatusText("mode: species");
-    }, customWXId(MenuItemID::Species));
+    }, convertToWxId(MenuItemID::Species));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         canvas->SetMode(world_canvas::Mode::age);
         SetStatusText("mode: age");
-    }, customWXId(MenuItemID::Age));
+    }, convertToWxId(MenuItemID::Age));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         canvas->SetMode(world_canvas::Mode::ration);
         SetStatusText("mode: ration");
-    }, customWXId(MenuItemID::Ration));
+    }, convertToWxId(MenuItemID::Ration));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         canvas->SetMode(world_canvas::Mode::success);
         SetStatusText("mode: success");
-    }, customWXId(MenuItemID::Success));
+    }, convertToWxId(MenuItemID::Success));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
         canvas->SetMode(world_canvas::Mode::generations);
         SetStatusText("mode: generations");
-    }, customWXId(MenuItemID::Generation));
+    }, convertToWxId(MenuItemID::Generation));
 
     // Set up layout
     wxGridSizer* form_layout = new wxFlexGridSizer(2);
@@ -233,23 +279,23 @@ Form::Form()
             wxSL_LABELS
         )
     );
-    
+
     wxStaticBoxSizer* info_box = new wxStaticBoxSizer(wxHORIZONTAL, this, "System info");
     wxBoxSizer* info_box_layout = new wxBoxSizer(wxVERTICAL);
-    wxStaticText* max_generation_info = new wxStaticText(
+    max_generation_info = new wxStaticText(
         info_box->GetStaticBox(),
         wxID_ANY,
-        "Max generation: "
+        ""
     );
-    wxStaticText* entities_count_info = new wxStaticText(
+    entities_count_info = new wxStaticText(
         info_box->GetStaticBox(),
         wxID_ANY,
-        "Entities: "
+        ""
     );
-    wxStaticText* ticks_info = new wxStaticText(
+    ticks_info = new wxStaticText(
         info_box->GetStaticBox(),
         wxID_ANY,
-        "Tics: "
+        ""
     );
 
     info_box_layout->Add(max_generation_info);
@@ -260,42 +306,54 @@ Form::Form()
 
     wxStaticBoxSizer* selected_cell_info_box = new wxStaticBoxSizer(wxHORIZONTAL, this, "Selected cell");
     wxBoxSizer* selected_cell_info_box_layout = new wxBoxSizer(wxVERTICAL);
-    wxStaticText* cell_age_info = new wxStaticText(
+    cell_coords_info = new wxStaticText(
         selected_cell_info_box->GetStaticBox(),
         wxID_ANY,
-        "age: -"
+        ""
     );
-    wxStaticText* cell_generation_info = new wxStaticText(
+    cell_age_info = new wxStaticText(
         selected_cell_info_box->GetStaticBox(),
         wxID_ANY,
-        "generation: -"
+        ""
     );
-    wxStaticText* cell_mutation_chance_info = new wxStaticText(
+    entity_DEBUG_coords_info = new wxStaticText(
         selected_cell_info_box->GetStaticBox(),
         wxID_ANY,
-        "mutation chance: -"
+        ""
     );
-    wxStaticText* cell_organic_energy_info = new wxStaticText(
+    cell_generation_info = new wxStaticText(
         selected_cell_info_box->GetStaticBox(),
         wxID_ANY,
-        "organic energy: -"
+        ""
     );
-    wxStaticText* cell_light_energy_info = new wxStaticText(
+    cell_mutation_chance_info = new wxStaticText(
         selected_cell_info_box->GetStaticBox(),
         wxID_ANY,
-        "light energy: -"
+        ""
     );
-    wxStaticText* cell_genome_info = new wxStaticText(
+    cell_organic_energy_info = new wxStaticText(
         selected_cell_info_box->GetStaticBox(),
         wxID_ANY,
-        "genome: -"
+        ""
     );
-    wxStaticText* cell_genome_args_info = new wxStaticText(
+    cell_light_energy_info = new wxStaticText(
         selected_cell_info_box->GetStaticBox(),
         wxID_ANY,
-        "genome args: -"
+        ""
+    );
+    cell_genome_info = new wxStaticText(
+        selected_cell_info_box->GetStaticBox(),
+        wxID_ANY,
+        ""
+    );
+    cell_genome_args_info = new wxStaticText(
+        selected_cell_info_box->GetStaticBox(),
+        wxID_ANY,
+        ""
     );
 
+    selected_cell_info_box_layout->Add(entity_DEBUG_coords_info);
+    selected_cell_info_box_layout->Add(cell_coords_info);
     selected_cell_info_box_layout->Add(cell_age_info);
     selected_cell_info_box_layout->Add(cell_generation_info);
     selected_cell_info_box_layout->Add(cell_mutation_chance_info);

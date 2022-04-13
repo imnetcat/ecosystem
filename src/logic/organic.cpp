@@ -7,7 +7,7 @@ Organic::Organic(int x, int y, unsigned __int64 energy)
 	, energy(energy)
 {}
 
-unsigned __int64 Organic::Energy()
+unsigned __int64 Organic::Energy() const
 {
 	return energy;
 }

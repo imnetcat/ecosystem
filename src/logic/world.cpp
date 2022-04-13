@@ -461,10 +461,12 @@ size_t World::MaxGeneration() const
 {
 	return max_generation;
 }
-cell** const World::Terrain() const
+
+const cell* const World::get_cell(int x, int y) const
 {
-	return terrain;
+	return &terrain[y][x];
 }
+
 const pool<Entity>& World::Entities() const
 {
 	return entities;

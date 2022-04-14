@@ -49,7 +49,6 @@ void Form::onIdle(wxIdleEvent& evt)
     const logic::Entity* observed_entity = canvas->get_observed_entity();
     if (observed_entity)
     {
-        entity_DEBUG_coords_info->SetLabel("entity coords: x=" + to_string(observed_entity->x()) + " y=" + to_string(observed_entity->y()));
         cell_age_info->SetLabel("age: " + to_string(observed_entity->Age()));
         cell_generation_info->SetLabel("generation: " + to_string(observed_entity->GetGenome().Generation()));
         cell_mutation_chance_info->SetLabel("mutation chance: " + to_string(observed_entity->GetGenome().MutationChance()));
@@ -58,7 +57,6 @@ void Form::onIdle(wxIdleEvent& evt)
     }
     else
     {
-        entity_DEBUG_coords_info->SetLabel("entity coords: -");
         cell_age_info->SetLabel("age: -");
         cell_generation_info->SetLabel("generation: -");
         cell_mutation_chance_info->SetLabel("mutation chance: -");
@@ -316,11 +314,6 @@ Form::Form()
         wxID_ANY,
         ""
     );
-    entity_DEBUG_coords_info = new wxStaticText(
-        selected_cell_info_box->GetStaticBox(),
-        wxID_ANY,
-        ""
-    );
     cell_generation_info = new wxStaticText(
         selected_cell_info_box->GetStaticBox(),
         wxID_ANY,
@@ -352,7 +345,6 @@ Form::Form()
         ""
     );
 
-    selected_cell_info_box_layout->Add(entity_DEBUG_coords_info);
     selected_cell_info_box_layout->Add(cell_coords_info);
     selected_cell_info_box_layout->Add(cell_age_info);
     selected_cell_info_box_layout->Add(cell_generation_info);

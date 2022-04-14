@@ -117,7 +117,12 @@ world_canvas::world_canvas(
 	HideColLabels();
 	HideRowLabels();
 
-	ClearSelection();
+	// Set {0, 0} cell observed
+	observed_cell = world->get_cell(0, 0);
+	if (observed_cell->ContainsEntity())
+	{
+		observed_entity = *(observed_cell->GetEntity());
+	}
 }
 
 void world_canvas::tick()
@@ -259,26 +264,6 @@ void world_canvas::render(wxDC& dc)
 		auto y = organic->y();
 		SetCellBackgroundColour(y, x, ORGANIC_COLOR);
 		organic++;
-	}
-
-
-	if (observed_entity)
-	{
-		if (observed_entity->IsDead())
-		{
-			// Clear cell selections
-			observed_entity = nullptr;
-			observed_cell = nullptr;
-			ClearSelection();
-		}
-		else
-		{
-			// Select cell on the grid
-			int x = observed_entity->x();
-			int y = observed_entity->y();
-			SelectBlock(y, x, y, x);
-			observed_cell = world->get_cell(x, y);
-		}
 	}
 
 	if (mode == Mode::organic)

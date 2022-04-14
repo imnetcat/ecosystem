@@ -36,8 +36,21 @@ World::World(
 		}
 	}
 
-
 	// Put first entity
+
+	// test
+	terrain[0][0].SetEntity(entities.get({
+		0, 0,
+		100,
+		max_energy,
+		Genome(
+			random::Generate(),
+			8,
+			random::Generate(std::numeric_limits<unsigned __int8>().max()),
+			1,
+			10
+		)
+    }));
 	auto x = width / 2;
 	auto y = height / 8;
 	terrain[y][x].SetEntity(entities.get({

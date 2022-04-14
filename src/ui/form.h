@@ -41,7 +41,6 @@ namespace ecosystem
             logic::World* world;
             world_canvas* canvas;
 
-            wxStaticText* entity_DEBUG_coords_info;
             wxStaticText* cell_coords_info;
             wxStaticText* cell_age_info;
             wxStaticText* cell_generation_info;

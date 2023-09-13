@@ -102,8 +102,8 @@ world_canvas::world_canvas(
 	EnableGridLines(false);
 
 	// Set up cells size
-	SetDefaultRowSize(CELL_SIZE, true);
-	SetDefaultColSize(CELL_SIZE, true);
+	SetDefaultRowSize(CELL_SIZE);
+	SetDefaultColSize(CELL_SIZE);
 
 	// Make all cells read-only for user
 	EnableEditing(false);
@@ -118,11 +118,11 @@ world_canvas::world_canvas(
 	HideRowLabels();
 
 	// Set {0, 0} cell observed
-	observed_cell = world->get_cell(0, 0);
-	if (observed_cell->ContainsEntity())
-	{
-		observed_entity = *(observed_cell->GetEntity());
-	}
+	//observed_cell = world->get_cell(0, 0);
+	//if (observed_cell->ContainsEntity())
+	//{
+	//	observed_entity = *(observed_cell->GetEntity());
+	//}
 }
 
 void world_canvas::tick()

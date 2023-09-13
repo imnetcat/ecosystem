@@ -36,6 +36,9 @@ namespace ecosystem
                 Ration,
                 Success,
                 Generation,
+
+                speed,
+                zoom,
             };
 
             logic::World* world;

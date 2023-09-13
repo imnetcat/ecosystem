@@ -21,33 +21,39 @@ Form::~Form()
 
 void Form::onIdle(wxIdleEvent& evt)
 {
-    MYBENCHMARK(world->Update(), "World update max time");
-
-    // Recreate world if all entities die
-    if (world->Entities().size() == 0)
+    if (!pause)
     {
-        world = new World(
-            WORLD_WIDTH,
-            WORLD_HEIGHT,
-            LIGHT_POWER,
-            MAX_ORGANIC_TO_EAT,
-            MAX_ENTITIES_TO_EAT,
-            MAX_ENERGY,
-            MAX_AGE
-        );
+        MYBENCHMARK(world->Update(), "World update max time");
 
-        canvas->change_world(world);
-        return;
+        // Recreate world if all entities die
+        if (world->Entities().size() == 0)
+        {
+            world = new World(
+                WORLD_WIDTH,
+                WORLD_HEIGHT,
+                LIGHT_POWER,
+                MAX_ORGANIC_TO_EAT,
+                MAX_ENTITIES_TO_EAT,
+                MAX_ENERGY,
+                MAX_AGE
+            );
+
+            canvas->change_world(world);
+            return;
+        }
     }
 
-    canvas->paintNow();
+    if (!hibernate)
+    {
+        canvas->paintNow();
+    }
 
     max_generation_info->SetLabel("Max generation: " + to_string(world->MaxGeneration()));
     entities_count_info->SetLabel("Entities: " + to_string(world->Entities().size()));
     ticks_info->SetLabel("Tics: " + to_string(ticks));
 
     const logic::Entity* observed_entity = canvas->get_observed_entity();
-    if (observed_entity)
+    if (observed_entity && !hibernate)
     {
         cell_age_info->SetLabel("age: " + to_string(observed_entity->Age()));
         cell_generation_info->SetLabel("generation: " + to_string(observed_entity->GetGenome().Generation()));
@@ -65,7 +71,7 @@ void Form::onIdle(wxIdleEvent& evt)
     }
 
     const logic::cell* observed_cell = canvas->get_observed_cell();
-    if (observed_cell)
+    if (observed_cell && !hibernate)
     {
         cell_coords_info->SetLabel("coords: x=" + to_string(observed_cell->x()) + " y=" + to_string(observed_cell->y()));
         if (observed_cell->ContainsOrganic())
@@ -82,9 +88,20 @@ void Form::onIdle(wxIdleEvent& evt)
         cell_light_energy_info->SetLabel("light energy: -");
     }
 
-    ticks++;
+    if (!pause)
+    {
+        ticks++;
+    }
 
-    Sleep(250 * MAX_SPEED - 250 * SPEED);
+    if (!hibernate)
+    {
+        unsigned int interval = 250 * MAX_SPEED - 250 * SPEED;
+        Sleep(interval);
+    }
+    else
+    {
+        Sleep(250);
+    }
 }
 
 Form::Form()
@@ -182,7 +199,7 @@ Form::Form()
     }, convertToWxId(MenuItemID::ByTick));
     Bind(wxEVT_MENU, [&](wxCommandEvent&)
     {
-        hibernate = !hibernate;
+        hibernate = true;
         pause = false;
         if (hibernate)
         {
@@ -255,7 +272,8 @@ Form::Form()
     speed_controls_box->Add(
         new wxSlider(
             speed_controls_box->GetStaticBox(),
-            wxID_ANY, SPEED, MIN_SPEED, MAX_SPEED,
+            convertToWxId(MenuItemID::speed),
+            SPEED, MIN_SPEED, MAX_SPEED,
             wxDefaultPosition, wxDefaultSize,
             wxSL_LABELS
         )
@@ -272,11 +290,22 @@ Form::Form()
     controls_box->Add(
         new wxSlider(
             controls_box->GetStaticBox(),
-            wxID_ANY, ZOOM, MIN_ZOOM, MAX_ZOOM,
+            convertToWxId(MenuItemID::zoom),
+            ZOOM, MIN_ZOOM, MAX_ZOOM,
             wxDefaultPosition, wxDefaultSize,
             wxSL_LABELS
         )
     );
+    
+    Bind(wxEVT_SLIDER, [&](wxCommandEvent& evnt)
+    {
+        SPEED = evnt.GetInt();
+    }, convertToWxId(MenuItemID::speed));
+
+    Bind(wxEVT_SLIDER, [&](wxCommandEvent& evnt)
+    {
+        ZOOM = evnt.GetInt();
+    }, convertToWxId(MenuItemID::zoom));
 
     wxStaticBoxSizer* info_box = new wxStaticBoxSizer(wxHORIZONTAL, this, "System info");
     wxBoxSizer* info_box_layout = new wxBoxSizer(wxVERTICAL);

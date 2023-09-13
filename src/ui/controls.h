@@ -4,7 +4,7 @@ static int SPEED = 3;
 static int MIN_SPEED = 1;
 static int MAX_SPEED = 3;
 
-static int ZOOM = 3;
+static int ZOOM = 1;
 static int MIN_ZOOM = 1;
 static int MAX_ZOOM = 5;
 
@@ -14,8 +14,8 @@ static bool hibernate = false;
 
 static unsigned int CELL_SIZE = 10;
 
-static unsigned int WORLD_WIDTH = 60;
-static unsigned int WORLD_HEIGHT = 40;
+static unsigned int WORLD_WIDTH = 112;
+static unsigned int WORLD_HEIGHT = 63;
 static unsigned short LIGHT_POWER = 2000;
 static unsigned short MAX_ORGANIC_TO_EAT = 3000;
 static unsigned short MAX_ENTITIES_TO_EAT = 6000;

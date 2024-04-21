@@ -23,7 +23,8 @@ void Form::onIdle(wxIdleEvent& evt)
 {
     if (!pause)
     {
-        MYBENCHMARK(world->Update(), "World update max time");
+        //MYBENCHMARK(world->Update(), "World update max time");
+        world->Update();
 
         // Recreate world if all entities die
         if (world->Entities().size() == 0)
@@ -45,6 +46,7 @@ void Form::onIdle(wxIdleEvent& evt)
 
     if (!hibernate)
     {
+        //MYBENCHMARK2(canvas->paintNow(), "World render max time");
         canvas->paintNow();
     }
 

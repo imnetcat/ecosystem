@@ -23,12 +23,26 @@ The world is somewhat like a cross-section of a small reservoir, like lake or ja
 - Light falls from above and with each passed cell its power becomes less and less
 
 ### Dependencies
+SFML 2.6.1+
+TGUI
+
+##Install dependencies with vcpkg:
+
+Install vcpkg:
 ```
-vcpkg install wxwidgets:x64-windows
+git clone https://github.com/microsoft/vcpkg
+.\vcpkg\bootstrap-vcpkg.bat
+```
+Install dependencies:
+```
+.\vcpkg\vcpkg install sfml:x64-windows
+.\vcpkg\vcpkg install tgui:x64-windows
 ```
 
 ### Benchmarks
-100x51 world update max time:  1870 ms
+100x51 world, 4000 life entities
+Render max time: 199431 ms
+Simulation tick update max time: 1020 ms
 
 ### TODO:
 - [ ] Decompose GUI from data
